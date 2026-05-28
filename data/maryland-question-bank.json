@@ -1,0 +1,761 @@
+[
+  {
+    "id": "md-life-001",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Annuities",
+    "difficulty": "prometric",
+    "question": "Maria, age 68, pays a single premium and wants income payments to begin next month. Which product BEST meets her goal?",
+    "choices": [
+      "Deferred fixed annuity",
+      "Immediate annuity",
+      "Variable universal life",
+      "Term life insurance"
+    ],
+    "correctAnswer": "Immediate annuity",
+    "explanation": {
+      "correct": "Immediate annuities convert a lump sum into income that typically starts within one payment period after purchase.",
+      "wrongAnswers": {
+        "Deferred fixed annuity": "Deferred annuities postpone income to a future date.",
+        "Variable universal life": "VUL is life insurance with investment subaccounts, not a single-premium income stream.",
+        "Term life insurance": "Term provides death benefit only, not lifetime income."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-life-002",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Tax treatment",
+    "difficulty": "hard",
+    "question": "During the accumulation phase of a non-qualified annuity, how are contract earnings generally taxed if left inside the contract?",
+    "choices": [
+      "Taxed annually as ordinary income",
+      "Tax-deferred until withdrawn",
+      "Tax-free permanently",
+      "Taxed as long-term capital gains annually"
+    ],
+    "correctAnswer": "Tax-deferred until withdrawn",
+    "explanation": {
+      "correct": "Earnings inside a non-qualified annuity grow tax-deferred until distributions trigger taxation.",
+      "wrongAnswers": {
+        "Taxed annually as ordinary income": "Annual taxation applies to many investments, not typical annuity accumulation.",
+        "Tax-free permanently": "Withdrawals of gain are generally taxable; only certain products have different rules.",
+        "Taxed as long-term capital gains annually": "Annuity growth is not taxed as capital gains each year during accumulation."
+      }
+    }
+  },
+  {
+    "id": "md-life-003",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Beneficiaries",
+    "difficulty": "medium",
+    "question": "Tom names his estate as the beneficiary of his life policy. At his death, the proceeds will MOST likely be paid to whom first?",
+    "choices": [
+      "Tom's children directly",
+      "The insurer's general account",
+      "The estate, then distributed per probate",
+      "The state of Maryland"
+    ],
+    "correctAnswer": "The estate, then distributed per probate",
+    "explanation": {
+      "correct": "Naming the estate as beneficiary sends proceeds through probate with other estate assets.",
+      "wrongAnswers": {
+        "Tom's children directly": "Children receive proceeds only if named or through estate distribution.",
+        "The insurer's general account": "The insurer pays the named beneficiary, not retain funds.",
+        "The state of Maryland": "Escheat applies only when no beneficiary can be found."
+      }
+    }
+  },
+  {
+    "id": "md-life-004",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Policy provisions",
+    "difficulty": "prometric",
+    "question": "A policyowner misses the premium due date but pays within the grace period. Coverage during the grace period is BEST described as:",
+    "choices": [
+      "Suspended until reinstatement",
+      "Continues in force",
+      "Converted to term only",
+      "Automatically cancelled"
+    ],
+    "correctAnswer": "Continues in force",
+    "explanation": {
+      "correct": "The grace period keeps the policy in force temporarily after a missed premium.",
+      "wrongAnswers": {
+        "Suspended until reinstatement": "Reinstatement applies after lapse, not during grace.",
+        "Converted to term only": "Grace does not change policy type.",
+        "Automatically cancelled": "Cancellation follows lapse after grace expires."
+      }
+    }
+  },
+  {
+    "id": "md-life-005",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Cash value",
+    "difficulty": "medium",
+    "question": "Kevin surrenders his whole life policy after 12 years. The insurer pays the cash value minus any outstanding policy loan and surrender charge. This illustrates:",
+    "choices": [
+      "Nonforfeiture option",
+      "Automatic premium loan",
+      "Paid-up addition",
+      "Waiver of premium"
+    ],
+    "correctAnswer": "Nonforfeiture option",
+    "explanation": {
+      "correct": "Cash surrender is a nonforfeiture benefit that returns accumulated value minus deductions.",
+      "wrongAnswers": {
+        "Automatic premium loan": "APL borrows cash value to pay premiums, not a full surrender.",
+        "Paid-up addition": "Paid-up additions buy extra paid-up insurance, not surrender.",
+        "Waiver of premium": "Waiver waives premiums during disability."
+      }
+    }
+  },
+  {
+    "id": "md-health-001",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "Medical expense plans",
+    "difficulty": "prometric",
+    "question": "John's health policy requires him to pay the first $1,000 of covered expenses each year before benefits begin. Which provision applies?",
+    "choices": [
+      "Coinsurance",
+      "Deductible",
+      "Copayment",
+      "Stop-loss"
+    ],
+    "correctAnswer": "Deductible",
+    "explanation": {
+      "correct": "A deductible is the amount the insured pays before the insurer shares covered costs.",
+      "wrongAnswers": {
+        "Coinsurance": "Coinsurance is the percentage split after the deductible is met.",
+        "Copayment": "A copayment is a fixed fee per service, not an annual threshold.",
+        "Stop-loss": "Stop-loss limits the insured's maximum out-of-pocket exposure."
+      }
+    }
+  },
+  {
+    "id": "md-health-002",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "HMO and PPO plans",
+    "difficulty": "medium",
+    "question": "Lisa must choose a primary care physician who coordinates referrals to specialists. Her plan is MOST likely a:",
+    "choices": [
+      "PPO",
+      "HMO",
+      "Indemnity plan",
+      "Fee-for-service plan"
+    ],
+    "correctAnswer": "HMO",
+    "explanation": {
+      "correct": "HMOs commonly use a gatekeeper PCP model for specialist access.",
+      "wrongAnswers": {
+        "PPO": "PPOs offer more flexibility and often do not require PCP gatekeeping.",
+        "Indemnity plan": "Traditional indemnity plans typically lack gatekeepers.",
+        "Fee-for-service plan": "FFS allows broad provider choice without required referrals."
+      }
+    }
+  },
+  {
+    "id": "md-health-003",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "COBRA",
+    "difficulty": "hard",
+    "question": "After leaving her employer, Nina elects COBRA. She may continue group coverage for up to how long (general rule for employees)?",
+    "choices": [
+      "18 months",
+      "29 months for all dependents",
+      "36 months for employees",
+      "12 months only"
+    ],
+    "correctAnswer": "18 months",
+    "explanation": {
+      "correct": "COBRA generally allows 18 months of continuation for qualifying employees; certain events extend periods.",
+      "wrongAnswers": {
+        "29 months for all dependents": "29 months applies in limited disability-related situations, not all dependents.",
+        "36 months for employees": "36 months applies to certain dependent events, not standard employee continuation.",
+        "12 months only": "Federal minimum is longer than 12 months for employees."
+      }
+    }
+  },
+  {
+    "id": "md-health-004",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "Medicare",
+    "difficulty": "prometric",
+    "question": "Which part of Medicare primarily covers hospital inpatient care?",
+    "choices": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D"
+    ],
+    "correctAnswer": "Part A",
+    "explanation": {
+      "correct": "Medicare Part A covers inpatient hospital and related services for eligible beneficiaries.",
+      "wrongAnswers": {
+        "Part B": "Part B covers outpatient physician and medical services.",
+        "Part C": "Part C is Medicare Advantage, which bundles benefits through private plans.",
+        "Part D": "Part D provides prescription drug coverage."
+      }
+    }
+  },
+  {
+    "id": "md-health-005",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "Long-term care",
+    "difficulty": "medium",
+    "question": "Activities of daily living (ADLs) are used in LTC policies to determine:",
+    "choices": [
+      "Premium tax credits",
+      "Eligibility for benefits",
+      "COBRA election periods",
+      "Medicare Part B enrollment"
+    ],
+    "correctAnswer": "Eligibility for benefits",
+    "explanation": {
+      "correct": "Inability to perform ADLs often triggers LTC benefit eligibility.",
+      "wrongAnswers": {
+        "Premium tax credits": "Tax credits relate to other programs, not standard ADL triggers.",
+        "COBRA election periods": "COBRA concerns group continuation, not LTC triggers.",
+        "Medicare Part B enrollment": "Part B enrollment is separate from LTC benefit triggers."
+      }
+    }
+  },
+  {
+    "id": "md-health-006",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "Disability income",
+    "difficulty": "hard",
+    "question": "A disability policy defines disability as inability to perform duties of the insured's own occupation. This is:",
+    "choices": [
+      "Any occupation definition",
+      "Own occupation definition",
+      "Residual disability",
+      "Elimination period"
+    ],
+    "correctAnswer": "Own occupation definition",
+    "explanation": {
+      "correct": "Own-occupation coverage pays if the insured cannot perform their specific occupation.",
+      "wrongAnswers": {
+        "Any occupation definition": "Any-occupation requires inability to work in any job suited by training.",
+        "Residual disability": "Residual pays partial benefits for partial disability.",
+        "Elimination period": "The elimination period is the waiting time before benefits begin."
+      }
+    }
+  },
+  {
+    "id": "md-health-007",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "HIPAA",
+    "difficulty": "medium",
+    "question": "HIPAA portability rules primarily help individuals:",
+    "choices": [
+      "Avoid all pre-existing condition exclusions forever",
+      "Reduce gaps when changing group health coverage",
+      "Obtain Medicaid automatically",
+      "Cancel COBRA early without cost"
+    ],
+    "correctAnswer": "Reduce gaps when changing group health coverage",
+    "explanation": {
+      "correct": "HIPAA limits pre-existing condition exclusions when moving between credible coverage.",
+      "wrongAnswers": {
+        "Avoid all pre-existing condition exclusions forever": "Rules credit prior coverage; they do not eliminate all exclusions in every case.",
+        "Obtain Medicaid automatically": "Medicaid is a separate needs-based program.",
+        "Cancel COBRA early without cost": "COBRA termination has its own rules and costs."
+      }
+    }
+  },
+  {
+    "id": "md-reg-001",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Maryland Insurance Regulations",
+    "subdomain": "Producer licensing",
+    "difficulty": "prometric",
+    "isStateLaw": true,
+    "question": "A producer sells policies in Maryland without a valid license. The Insurance Commissioner may issue which order FIRST to stop the activity?",
+    "choices": [
+      "Cease and desist order",
+      "Automatic policy rescission",
+      "Federal Medicare sanction",
+      "NAIC model revocation only"
+    ],
+    "correctAnswer": "Cease and desist order",
+    "explanation": {
+      "correct": "Regulators may issue cease and desist orders to stop unauthorized or unfair conduct.",
+      "wrongAnswers": {
+        "Automatic policy rescission": "Policy rescission is contractual/legal, not the first regulatory tool named here.",
+        "Federal Medicare sanction": "Medicare sanctions are federal and not the typical first state licensing remedy.",
+        "NAIC model revocation only": "States enforce licensing; NAIC models guide but do not directly revoke."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-reg-002",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Maryland Insurance Regulations",
+    "subdomain": "Twisting and rebating",
+    "difficulty": "hard",
+    "isStateLaw": true,
+    "question": "An agent induces a client to lapse an existing policy by misrepresenting the new policy's benefits. This unfair trade practice is called:",
+    "choices": [
+      "Rebating",
+      "Twisting",
+      "Coercion",
+      "Defamation"
+    ],
+    "correctAnswer": "Twisting",
+    "explanation": {
+      "correct": "Twisting uses misrepresentation to induce replacement or lapse of existing coverage.",
+      "wrongAnswers": {
+        "Rebating": "Rebating offers something of value not in the policy as an inducement.",
+        "Coercion": "Coercion uses force or threats, not necessarily misrepresentation about benefits.",
+        "Defamation": "Defamation injures reputation of insurers or persons."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-reg-003",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Maryland Insurance Regulations",
+    "subdomain": "Replacement rules",
+    "difficulty": "prometric",
+    "isStateLaw": true,
+    "question": "When replacing life insurance, producers must provide notices that help the applicant compare:",
+    "choices": [
+      "Only the new insurer's marketing brochure",
+      "Existing and proposed coverage",
+      "Medicare Part D formularies",
+      "Workers compensation classifications"
+    ],
+    "correctAnswer": "Existing and proposed coverage",
+    "explanation": {
+      "correct": "Replacement regulations require disclosure so applicants understand impacts of replacing coverage.",
+      "wrongAnswers": {
+        "Only the new insurer's marketing brochure": "Brochures alone do not satisfy replacement comparison duties.",
+        "Medicare Part D formularies": "Part D is unrelated to life insurance replacement.",
+        "Workers compensation classifications": "Workers comp is a different line of insurance."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-reg-004",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Maryland Insurance Regulations",
+    "subdomain": "Unfair trade practices",
+    "difficulty": "medium",
+    "isStateLaw": true,
+    "question": "Offering a prospect $50 cash to purchase a policy if not stated in the contract is BEST described as:",
+    "choices": [
+      "Rebating",
+      "Twisting",
+      "Defamation",
+      "Stockbroker fraud"
+    ],
+    "correctAnswer": "Rebating",
+    "explanation": {
+      "correct": "Rebating gives inducements not specified in the policy, such as cash or favors.",
+      "wrongAnswers": {
+        "Twisting": "Twisting involves misrepresentation to replace coverage.",
+        "Defamation": "Defamation is false harmful statements about competitors.",
+        "Stockbroker fraud": "Securities fraud is outside standard insurance rebating definitions."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-reg-005",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Maryland Insurance Regulations",
+    "subdomain": "Continuing education",
+    "difficulty": "easy",
+    "isStateLaw": true,
+    "question": "Maryland licensed producers must complete continuing education to:",
+    "choices": [
+      "Avoid all E&O claims",
+      "Maintain license renewal eligibility",
+      "Sell securities without registration",
+      "Bypass federal HIPAA rules"
+    ],
+    "correctAnswer": "Maintain license renewal eligibility",
+    "explanation": {
+      "correct": "CE requirements support ongoing competency and are tied to license renewal.",
+      "wrongAnswers": {
+        "Avoid all E&O claims": "CE reduces risk but does not eliminate E&O exposure.",
+        "Sell securities without registration": "Securities require separate licensing.",
+        "Bypass federal HIPAA rules": "HIPAA compliance is unrelated to insurance CE hours."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-gen-001",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "General Insurance Concepts",
+    "subdomain": "Insurable interest",
+    "difficulty": "medium",
+    "question": "Before issuing a life policy on another person, an applicant must demonstrate:",
+    "choices": [
+      "Insurable interest",
+      "Adverse selection",
+      "Indemnity to the beneficiary",
+      "Law of large numbers"
+    ],
+    "correctAnswer": "Insurable interest",
+    "explanation": {
+      "correct": "Insurable interest prevents wagering on another's life and must exist at policy inception.",
+      "wrongAnswers": {
+        "Adverse selection": "Adverse selection is tendency of higher-risk individuals to buy coverage.",
+        "Indemnity to the beneficiary": "Life insurance pays a stated benefit, not strict indemnity for loss.",
+        "Law of large numbers": "Large numbers help insurers predict losses, not establish insurable interest."
+      }
+    }
+  },
+  {
+    "id": "md-gen-002",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "General Insurance Concepts",
+    "subdomain": "Indemnity",
+    "difficulty": "easy",
+    "question": "A homeowner's policy pays to repair storm damage up to policy limits so the insured is restored financially. This reflects the principle of:",
+    "choices": [
+      "Indemnity",
+      "Insurable interest",
+      "Utmost good faith only",
+      "Rebating"
+    ],
+    "correctAnswer": "Indemnity",
+    "explanation": {
+      "correct": "Indemnity restores the insured to approximately the pre-loss financial position.",
+      "wrongAnswers": {
+        "Insurable interest": "Insurable interest concerns legal stake in the insured subject.",
+        "Utmost good faith only": "Utmost good faith requires honesty, not the payment principle itself.",
+        "Rebating": "Rebating is an illegal inducement, not a payment principle."
+      }
+    }
+  },
+  {
+    "id": "md-gen-003",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "General Insurance Concepts",
+    "subdomain": "Adverse selection",
+    "difficulty": "hard",
+    "question": "Only customers who expect high claims rush to buy coverage during open enrollment without underwriting. Insurers face:",
+    "choices": [
+      "Moral hazard",
+      "Adverse selection",
+      "Law of large numbers",
+      "Rebating"
+    ],
+    "correctAnswer": "Adverse selection",
+    "explanation": {
+      "correct": "Adverse selection occurs when higher-risk individuals are more likely to purchase insurance.",
+      "wrongAnswers": {
+        "Moral hazard": "Moral hazard is increased careless behavior after coverage is in force.",
+        "Law of large numbers": "Large numbers improve predictability, not selective enrollment risk.",
+        "Rebating": "Rebating is an unfair trade practice, not underwriting imbalance."
+      }
+    }
+  },
+  {
+    "id": "md-gen-004",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "General Insurance Concepts",
+    "subdomain": "Law of large numbers",
+    "difficulty": "medium",
+    "question": "As an insurer writes more similar policies, actual losses tend to approach expected losses. This is the:",
+    "choices": [
+      "Law of large numbers",
+      "Principle of indemnity",
+      "Grace period rule",
+      "Replacement notice"
+    ],
+    "correctAnswer": "Law of large numbers",
+    "explanation": {
+      "correct": "Pooling many similar exposures makes aggregate results more predictable.",
+      "wrongAnswers": {
+        "Principle of indemnity": "Indemnity governs how much is paid on a covered loss.",
+        "Grace period rule": "Grace period is a policy provision for late premiums.",
+        "Replacement notice": "Replacement notices are regulatory disclosures."
+      }
+    }
+  },
+  {
+    "id": "md-gen-005",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "General Insurance Concepts",
+    "subdomain": "Risk",
+    "difficulty": "easy",
+    "question": "Purchasing insurance to transfer the financial consequences of loss is an example of:",
+    "choices": [
+      "Risk retention",
+      "Risk transfer",
+      "Risk avoidance only",
+      "Speculation"
+    ],
+    "correctAnswer": "Risk transfer",
+    "explanation": {
+      "correct": "Insurance transfers financial risk of loss to the insurer in exchange for premium.",
+      "wrongAnswers": {
+        "Risk retention": "Retention means keeping the risk, such as through deductibles or self-insurance.",
+        "Risk avoidance only": "Avoidance eliminates the activity causing risk; insurance does not avoid the peril.",
+        "Speculation": "Insurance requires insurable interest; speculation seeks profit from uncertainty."
+      }
+    }
+  },
+  {
+    "id": "md-life-006",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Types of policies",
+    "difficulty": "medium",
+    "question": "Which policy provides coverage for a specified period and pays a death benefit only if death occurs during that period?",
+    "choices": [
+      "Term life insurance",
+      "Whole life insurance",
+      "Endowment at age 100",
+      "Variable annuity"
+    ],
+    "correctAnswer": "Term life insurance",
+    "explanation": {
+      "correct": "Term insurance is temporary protection for a set number of years or to a stated age.",
+      "wrongAnswers": {
+        "Whole life insurance": "Whole life is permanent coverage with cash value.",
+        "Endowment at age 100": "Endowment pays a living benefit at maturity; wording here is not standard term.",
+        "Variable annuity": "Annuities provide income, not term death protection."
+      }
+    }
+  },
+  {
+    "id": "md-health-008",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "Medicaid",
+    "difficulty": "medium",
+    "question": "Medicaid eligibility is PRIMARILY based on:",
+    "choices": [
+      "Age 65 and Medicare enrollment",
+      "Income and resource limits set by federal/state rules",
+      "Employer group size",
+      "Number of years licensed as a producer"
+    ],
+    "correctAnswer": "Income and resource limits set by federal/state rules",
+    "explanation": {
+      "correct": "Medicaid is a means-tested program for low-income individuals and families.",
+      "wrongAnswers": {
+        "Age 65 and Medicare enrollment": "Medicare serves seniors; Medicaid uses financial need tests.",
+        "Employer group size": "Group size affects small-group rules, not Medicaid eligibility.",
+        "Number of years licensed as a producer": "Producer licensing is unrelated to Medicaid."
+      }
+    }
+  },
+  {
+    "id": "md-reg-006",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Maryland Insurance Regulations",
+    "subdomain": "Advertising regulations",
+    "difficulty": "medium",
+    "isStateLaw": true,
+    "question": "An advertisement states 'guaranteed approval with no health questions' for life insurance. The producer must ensure the ad is:",
+    "choices": [
+      "Not misleading and compliant with state advertising rules",
+      "Approved only by the client's attorney",
+      "Sent to Medicare only",
+      "Published without the insurer's name"
+    ],
+    "correctAnswer": "Not misleading and compliant with state advertising rules",
+    "explanation": {
+      "correct": "Insurance advertising must be truthful and comply with state unfair trade practice and advertising regulations.",
+      "wrongAnswers": {
+        "Approved only by the client's attorney": "Attorney approval is not the standard advertising compliance path.",
+        "Sent to Medicare only": "Medicare marketing has separate rules; this is general life advertising.",
+        "Published without the insurer's name": "Ads typically must identify the insurer and comply with disclosure rules."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-life-007",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Policy riders and options",
+    "difficulty": "hard",
+    "question": "If the insured becomes totally disabled, premiums are waived but coverage continues. Which rider applies?",
+    "choices": [
+      "Waiver of premium",
+      "Accidental death",
+      "Guaranteed insurability",
+      "Cost of living"
+    ],
+    "correctAnswer": "Waiver of premium",
+    "explanation": {
+      "correct": "Waiver of premium rider pays premiums during qualifying disability.",
+      "wrongAnswers": {
+        "Accidental death": "AD&D pays extra benefit for accidental death.",
+        "Guaranteed insurability": "Allows buying additional coverage without evidence of insurability.",
+        "Cost of living": "Adjusts benefits for inflation, not disability premium waiver."
+      }
+    }
+  },
+  {
+    "id": "md-health-009",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "Group health insurance",
+    "difficulty": "medium",
+    "question": "Under a typical employer group health plan, the contract is between:",
+    "choices": [
+      "Each employee and the insurer directly",
+      "The employer (policyholder) and the insurer",
+      "Medicare and the employee",
+      "The state and the pharmacy"
+    ],
+    "correctAnswer": "The employer (policyholder) and the insurer",
+    "explanation": {
+      "correct": "The employer holds the master contract; employees receive certificates of coverage.",
+      "wrongAnswers": {
+        "Each employee and the insurer directly": "Individual contracts are not standard for employer group plans.",
+        "Medicare and the employee": "Medicare is separate from employer-sponsored group coverage.",
+        "The state and the pharmacy": "Pharmacy networks are vendors, not the group contract parties."
+      }
+    }
+  },
+  {
+    "id": "md-gen-006",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "General Insurance Concepts",
+    "subdomain": "Underwriting",
+    "difficulty": "prometric",
+    "question": "An underwriter declines an applicant with multiple DUI convictions seeking auto insurance. The underwriter is managing:",
+    "choices": [
+      "Moral hazard only",
+      "Selection of risks",
+      "Coinsurance",
+      "COBRA continuation"
+    ],
+    "correctAnswer": "Selection of risks",
+    "explanation": {
+      "correct": "Underwriting selects and classifies risks to maintain a profitable pool.",
+      "wrongAnswers": {
+        "Moral hazard only": "Moral hazard is post-policy behavior; DUI history is selection/ hazard.",
+        "Coinsurance": "Coinsurance is cost-sharing in health policies.",
+        "COBRA continuation": "COBRA is unrelated to auto underwriting."
+      }
+    }
+  },
+  {
+    "id": "md-reg-007",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Maryland Insurance Regulations",
+    "subdomain": "Claims handling",
+    "difficulty": "hard",
+    "isStateLaw": true,
+    "question": "A producer deliberately delays submitting a client's claim to pressure the client to drop it. This may violate:",
+    "choices": [
+      "Claims handling / unfair claims practices",
+      "HIPAA portability only",
+      "Social Security tax rules",
+      "Annuity free-look periods"
+    ],
+    "correctAnswer": "Claims handling / unfair claims practices",
+    "explanation": {
+      "correct": "Unfair claims practices include unjustified delay or failure to act on claims.",
+      "wrongAnswers": {
+        "HIPAA portability only": "HIPAA addresses health information and coverage portability.",
+        "Social Security tax rules": "Tax rules do not define insurance claims conduct.",
+        "Annuity free-look periods": "Free-look allows cancellation after purchase, not claims delay."
+      }
+    },
+    "sourceType": "curated"
+  },
+  {
+    "id": "md-life-008",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Life Insurance",
+    "subdomain": "Premiums",
+    "difficulty": "easy",
+    "question": "Level premium whole life charges higher premiums early in the policy primarily because:",
+    "choices": [
+      "Premiums fund cash value and level lifetime cost",
+      "The insurer pays dividends only in year one",
+      "Term rates increase every month",
+      "Medicare requires it"
+    ],
+    "correctAnswer": "Premiums fund cash value and level lifetime cost",
+    "explanation": {
+      "correct": "Early excess premiums build cash value to support level premiums over life.",
+      "wrongAnswers": {
+        "The insurer pays dividends only in year one": "Dividends are not guaranteed and not limited to year one.",
+        "Term rates increase every month": "Whole life is not term; monthly term increases are irrelevant.",
+        "Medicare requires it": "Medicare does not regulate life insurance premiums."
+      }
+    }
+  },
+  {
+    "id": "md-health-010",
+    "state": "Maryland",
+    "examType": "Life and Health",
+    "domain": "Health Insurance",
+    "subdomain": "Medical expense plans",
+    "difficulty": "hard",
+    "question": "After meeting her $2,000 deductible, Anna pays 20% of each bill and the insurer pays 80%. This cost-sharing is:",
+    "choices": [
+      "Coinsurance",
+      "Copayment",
+      "Premium",
+      "Elimination period"
+    ],
+    "correctAnswer": "Coinsurance",
+    "explanation": {
+      "correct": "Coinsurance splits covered expenses between insured and insurer after the deductible.",
+      "wrongAnswers": {
+        "Copayment": "Copayments are flat dollar amounts per visit or service.",
+        "Premium": "Premium is the periodic payment to keep coverage in force.",
+        "Elimination period": "Elimination period is a waiting time before disability benefits."
+      }
+    }
+  }
+]
