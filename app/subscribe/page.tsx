@@ -99,6 +99,18 @@ function SubscribeContent() {
     }
   }, [loading, user, router]);
 
+  /** DB may be active while JWT cookie is stale (paid before confirm/webhook). */
+  useEffect(() => {
+    if (loading || !isLoggedIn || (user && canAccessFullApp(user))) return;
+    void (async () => {
+      const refreshed = await refreshSession();
+      if (refreshed && canAccessFullApp(refreshed)) {
+        await refresh();
+        router.replace("/dashboard");
+      }
+    })();
+  }, [loading, isLoggedIn, user, refresh, router]);
+
   useEffect(() => {
     if (success && isLoggedIn) {
       void syncAfterPayment();
