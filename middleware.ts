@@ -15,6 +15,7 @@ type SessionPayload = {
   email: string;
   name: string;
   hasSubscription: boolean;
+  isAdmin: boolean;
 };
 
 async function getSessionPayload(
@@ -33,11 +34,15 @@ async function getSessionPayload(
     ) {
       return null;
     }
+    const email = payload.email;
+    const isAdmin =
+      payload.isAdmin === true || isAdminEmail(email);
     return {
       userId: payload.userId,
-      email: payload.email,
+      email,
       name: payload.name,
       hasSubscription: payload.hasSubscription === true,
+      isAdmin,
     };
   } catch {
     return null;
@@ -45,7 +50,7 @@ async function getSessionPayload(
 }
 
 function canAccessProtectedApp(session: SessionPayload): boolean {
-  if (isAdminEmail(session.email)) return true;
+  if (session.isAdmin || isAdminEmail(session.email)) return true;
   return session.hasSubscription;
 }
 

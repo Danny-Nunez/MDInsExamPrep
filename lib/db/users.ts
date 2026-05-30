@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS } from "@/lib/db/collections";
+import { isAdminEmail } from "@/lib/admin-emails";
 import { userHasActiveSubscription } from "@/lib/subscription";
 import type { SessionUser, UserDocument } from "@/types/user";
 
@@ -10,6 +11,7 @@ export function toSessionUser(user: UserDocument & { _id: ObjectId }): SessionUs
     email: user.email,
     name: user.name,
     hasSubscription: userHasActiveSubscription(user),
+    isAdmin: isAdminEmail(user.email),
   };
 }
 
