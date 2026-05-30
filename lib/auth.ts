@@ -32,6 +32,7 @@ export async function createSessionToken(
     userId: user.userId,
     email: user.email,
     name: user.name,
+    hasSubscription: user.hasSubscription,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -55,6 +56,7 @@ export async function verifySessionToken(
       userId: payload.userId,
       email: payload.email,
       name: payload.name,
+      hasSubscription: payload.hasSubscription === true,
     };
   } catch {
     return null;

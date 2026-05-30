@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { SESSION_COOKIE } from "@/lib/auth";
+import { isAdminEmail } from "@/lib/admin-emails";
 import { isProtectedAppPath } from "@/lib/routes";
 
 function getSecret(): Uint8Array | null {
@@ -9,21 +10,43 @@ function getSecret(): Uint8Array | null {
   return new TextEncoder().encode(secret);
 }
 
-async function hasValidSession(request: NextRequest): Promise<boolean> {
+type SessionPayload = {
+  userId: string;
+  email: string;
+  name: string;
+  hasSubscription: boolean;
+};
+
+async function getSessionPayload(
+  request: NextRequest
+): Promise<SessionPayload | null> {
   const token = request.cookies.get(SESSION_COOKIE)?.value;
-  if (!token) return false;
+  if (!token) return null;
   const secret = getSecret();
-  if (!secret) return false;
+  if (!secret) return null;
   try {
     const { payload } = await jwtVerify(token, secret);
-    return (
-      typeof payload.userId === "string" &&
-      typeof payload.email === "string" &&
-      typeof payload.name === "string"
-    );
+    if (
+      typeof payload.userId !== "string" ||
+      typeof payload.email !== "string" ||
+      typeof payload.name !== "string"
+    ) {
+      return null;
+    }
+    return {
+      userId: payload.userId,
+      email: payload.email,
+      name: payload.name,
+      hasSubscription: payload.hasSubscription === true,
+    };
   } catch {
-    return false;
+    return null;
   }
+}
+
+function canAccessProtectedApp(session: SessionPayload): boolean {
+  if (isAdminEmail(session.email)) return true;
+  return session.hasSubscription;
 }
 
 export async function middleware(request: NextRequest) {
@@ -33,16 +56,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (await hasValidSession(request)) {
-    return NextResponse.next();
+  const session = await getSessionPayload(request);
+  if (!session) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set(
+      "next",
+      `${pathname}${request.nextUrl.search}`
+    );
+    return NextResponse.redirect(loginUrl);
   }
 
-  const loginUrl = new URL("/login", request.url);
-  loginUrl.searchParams.set(
-    "next",
-    `${pathname}${request.nextUrl.search}`
-  );
-  return NextResponse.redirect(loginUrl);
+  if (!canAccessProtectedApp(session)) {
+    const subscribeUrl = new URL("/subscribe", request.url);
+    return NextResponse.redirect(subscribeUrl);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
@@ -61,5 +90,9 @@ export const config = {
     "/performance/:path*",
     "/results",
     "/results/:path*",
+    "/quiz",
+    "/quiz/:path*",
+    "/admin",
+    "/admin/:path*",
   ],
 };

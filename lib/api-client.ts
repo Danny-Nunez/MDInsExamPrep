@@ -46,6 +46,29 @@ export async function logoutUser(): Promise<void> {
   });
 }
 
+export async function refreshSession(): Promise<SessionUser | null> {
+  const res = await fetch("/api/auth/refresh-session", {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.user ?? null;
+}
+
+export async function startStripeCheckout(): Promise<{
+  url?: string;
+  error?: string;
+}> {
+  const res = await fetch("/api/stripe/checkout", {
+    method: "POST",
+    credentials: "include",
+  });
+  const data = await res.json();
+  if (!res.ok) return { error: data.error ?? "Checkout failed" };
+  return { url: data.url };
+}
+
 export async function fetchExamAttempts(): Promise<ExamAttempt[]> {
   const res = await fetch("/api/exams", { credentials: "include" });
   if (res.status === 401) return [];

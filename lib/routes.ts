@@ -1,3 +1,6 @@
+import { canAccessFullApp } from "@/lib/access";
+import type { SessionUser } from "@/types/user";
+
 /** App routes that require a signed-in session */
 export const PROTECTED_APP_PATHS = [
   "/dashboard",
@@ -7,6 +10,8 @@ export const PROTECTED_APP_PATHS = [
   "/flashcards",
   "/performance",
   "/results",
+  "/quiz",
+  "/admin",
 ] as const;
 
 export function isProtectedAppPath(pathname: string): boolean {
@@ -29,4 +34,15 @@ export function safeRedirectPath(next: string | null): string {
     return "/dashboard";
   }
   return next;
+}
+
+/** Where to send the user after login/register */
+export function afterAuthRedirect(
+  user: SessionUser,
+  next: string | null
+): string {
+  const path = safeRedirectPath(next);
+  if (canAccessFullApp(user)) return path;
+  if (isProtectedAppPath(path)) return "/subscribe";
+  return path;
 }

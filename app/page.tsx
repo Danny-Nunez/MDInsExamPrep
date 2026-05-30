@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -9,15 +8,15 @@ import {
   CheckCircle2,
   ClipboardList,
   Sparkles,
-  Star,
+  Target,
   Trophy,
-  Users,
 } from "lucide-react";
 import LandingNav from "@/components/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 import LandingHeroMockup from "@/components/landing/LandingHeroMockup";
-import { loginWithRedirect } from "@/lib/routes";
+import { HERO_BADGE } from "@/lib/branding";
 import { useAuth } from "@/contexts/AuthContext";
+import { canAccessFullApp } from "@/lib/access";
 
 const heroChecks = [
   "Maryland-focused",
@@ -48,53 +47,61 @@ const howItWorks = [
 ];
 
 const stats = [
-  { icon: Users, value: "15,000+", label: "Students helped" },
-  { icon: Trophy, value: "92%", label: "Pass rate improvement" },
   { icon: BookOpen, value: "1,200+", label: "Exam-style questions" },
-  { icon: Star, value: "4.8/5", label: "Average student rating" },
+  { icon: Target, value: "Adaptive", label: "Personalized weak-area tracking" },
+  {
+    icon: Sparkles,
+    value: "Maryland",
+    label: "Built for focused Maryland exam prep",
+  },
+  {
+    icon: ClipboardList,
+    value: "Prometric",
+    label: "Scenario-based practice modes",
+  },
 ];
 
-const testimonials = [
+const featureQuotes = [
   {
+    icon: ClipboardList,
     quote:
-      "The AI quizzes on my weak areas made the difference. I passed on my first try after two weeks of focused practice.",
-    name: "Sarah M.",
-    detail: "Passed May 2026",
-    avatar: "/avatars/sarah-m.png",
+      "Scenario questions use BEST-answer wording so you practice the way Prometric tests reasoning—not memorization alone.",
+    title: "Prometric-style practice",
+    subtitle: "Exam simulation & study modes",
   },
   {
+    icon: BarChart3,
     quote:
-      "Category tracking showed I was weak on regulation. I drilled those topics and walked into Prometric confident.",
-    name: "James T.",
-    detail: "Passed April 2026",
-    avatar: "/avatars/james-t.png",
+      "Performance rolls up by Maryland blueprint domain and subdomain, so you see gaps by topic—not a single generic score.",
+    title: "Blueprint performance",
+    subtitle: "Weak-area tracking",
   },
   {
+    icon: Sparkles,
     quote:
-      "Scenario questions felt just like the real exam. Way better than reading the textbook alone.",
-    name: "Priya K.",
-    detail: "Passed March 2026",
-    avatar: "/avatars/priya-k.png",
+      "AI quizzes target your weakest subdomains with fresh items aligned to licensing objectives.",
+    title: "AI study recommendations",
+    subtitle: "Personalized quizzes",
   },
   {
+    icon: BookOpen,
     quote:
-      "Study mode with instant explanations helped me learn fast. Exam simulation prepared me for test day pressure.",
-    name: "Marcus L.",
-    detail: "Passed February 2026",
-    avatar: "/avatars/marcus-l.png",
+      "Instant explanations in study mode help you learn why an answer is correct before you move on.",
+    title: "Learn as you practice",
+    subtitle: "Structured feedback",
   },
 ];
 
 export default function LandingPage() {
-  const { isLoggedIn, loading } = useAuth();
+  const { isLoggedIn, loading, user } = useAuth();
 
-  const primaryHref = !loading && isLoggedIn ? "/dashboard" : "/register";
-  const primaryLabel =
-    !loading && isLoggedIn ? "Open Dashboard" : "Start practicing free";
-  const sampleExamHref =
-    !loading && isLoggedIn
-      ? "/practice?session=study"
-      : loginWithRedirect("/practice?session=study");
+  const sampleExamHref = "/sample";
+  const signupHref =
+    !loading && isLoggedIn && user && canAccessFullApp(user)
+      ? "/dashboard"
+      : !loading && isLoggedIn
+        ? "/subscribe"
+        : "/register";
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -104,32 +111,22 @@ export default function LandingPage() {
       <section className="border-b border-stone-200 bg-white">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:py-16">
           <div>
-            <div className="badge-md mb-5">
-              Official Maryland exam prep · Life, Accident, Health &amp; Sickness
-              Producer
-            </div>
+            <div className="badge-md mb-5">{HERO_BADGE}</div>
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-md-black sm:text-5xl">
-              Pass the Maryland insurance exam with{" "}
-              <span className="text-md-red">confidence</span>
+              Pass the Maryland Life &amp; Health Insurance Exam
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-stone-600">
-              Realistic Prometric-style practice questions, personalized
-              performance tracking, and AI-generated quizzes targeting your
-              weakest exam topics—so you study what actually moves your score.
+              Practice with realistic Prometric-style questions, track your weakest
+              topics, and generate AI-powered quizzes built around the Maryland
+              licensing exam blueprint.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href={primaryHref}
-                className="btn-primary inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-base"
-              >
-                {primaryLabel}
-                <ArrowRight className="h-5 w-5" />
-              </Link>
+            <div className="mt-8">
               <Link
                 href={sampleExamHref}
-                className="btn-secondary inline-flex items-center justify-center rounded-xl px-7 py-3.5 text-base"
+                className="btn-primary inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 text-base"
               >
-                Take a sample exam
+                Take a Sample Exam
+                <ArrowRight className="h-5 w-5" />
               </Link>
             </div>
             <ul className="mt-8 grid gap-2 sm:grid-cols-2">
@@ -203,10 +200,7 @@ export default function LandingPage() {
             Your personalized path to passing
           </h2>
 
-          <div
-            id="practice"
-            className="mt-12 grid gap-8 md:grid-cols-3"
-          >
+          <div id="practice" className="mt-12 grid gap-8 md:grid-cols-3">
             {howItWorks.map((step) => {
               const Icon = step.icon;
               return (
@@ -248,43 +242,37 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Reviews */}
+      {/* Reviews — feature-focused */}
       <section id="reviews" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-md-red">
-          Student success
+          Built for licensing prep
         </p>
         <h2 className="mt-2 text-center text-3xl font-bold text-md-black">
-          Loved by future insurance professionals
+          Practice tools aligned to the Maryland exam
         </h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {testimonials.map((t) => (
-            <div
-              key={t.name}
-              className="flex flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm"
-            >
-              <div className="flex gap-0.5 text-md-gold-dark">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-current" />
-                ))}
-              </div>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-stone-700">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="mt-4 flex items-center gap-3 border-t border-stone-100 pt-4">
-                <Image
-                  src={t.avatar}
-                  alt={t.name}
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-stone-100"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-md-black">{t.name}</p>
-                  <p className="text-xs text-stone-500">{t.detail}</p>
+          {featureQuotes.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.title}
+                className="flex flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-md-red-light text-md-red">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-stone-700">
+                  &ldquo;{item.quote}&rdquo;
+                </p>
+                <div className="mt-4 border-t border-stone-100 pt-4">
+                  <p className="text-sm font-semibold text-md-black">
+                    {item.title}
+                  </p>
+                  <p className="text-xs text-stone-500">{item.subtitle}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -295,16 +283,18 @@ export default function LandingPage() {
             <Trophy className="mt-1 h-10 w-10 shrink-0 text-md-gold" />
             <div>
               <h2 className="text-2xl font-bold sm:text-3xl">
-                Ready to pass your Maryland insurance exam?
+                Ready to prepare for your Maryland licensing exam?
               </h2>
-              <p className="mt-1 text-sm text-red-100">No credit card required.</p>
+              <p className="mt-1 text-sm text-red-100">
+                Start with a sample exam—no credit card required.
+              </p>
             </div>
           </div>
           <Link
-            href={primaryHref}
+            href={signupHref}
             className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-base font-semibold text-md-red shadow-lg transition hover:bg-stone-50"
           >
-            {primaryLabel}
+            Get started free
             <ArrowRight className="h-5 w-5" />
           </Link>
         </div>

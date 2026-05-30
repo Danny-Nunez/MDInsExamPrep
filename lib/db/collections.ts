@@ -4,4 +4,7 @@ export const COLLECTIONS = {
   categoryPerformance: "category_performance",
   generatedQuizzes: "generated_quizzes",
   examImageAnalyses: "exam_image_analyses",
+  concepts: "concepts",
+  questions: "questions",
+  userProgress: "userProgress",
 } as const;

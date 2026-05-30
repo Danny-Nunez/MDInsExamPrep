@@ -26,13 +26,13 @@ export default function LandingHeroMockup() {
           <p className="text-sm font-semibold text-md-black">
             Welcome back, Jordan 👋
           </p>
-          <p className="text-xs text-stone-500">Your exam readiness snapshot</p>
+          <p className="text-xs text-stone-500">Maryland exam readiness snapshot</p>
         </div>
       </div>
 
       <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {[
-          { label: "Exam Readiness", value: "71%" },
+          { label: "Maryland Exam Readiness", value: "71%" },
           { label: "Average Score", value: "66%" },
           { label: "Exams Taken", value: "6" },
           { label: "Weak Areas", value: "4" },
@@ -52,7 +52,7 @@ export default function LandingHeroMockup() {
       <div className="grid gap-4 lg:grid-cols-2">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
-            Category Performance
+            Maryland Blueprint Performance
           </p>
           <ul className="max-h-48 space-y-2 overflow-y-auto pr-1">
             {categories.map((cat) => (

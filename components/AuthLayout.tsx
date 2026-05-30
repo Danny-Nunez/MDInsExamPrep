@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { APP_NAME, APP_TAGLINE, LOGO_PATH } from "@/lib/branding";
+import { APP_NAME, APP_TAGLINE_SHORT, LOGO_ALT, LOGO_PATH } from "@/lib/branding";
 import LandingNav from "./LandingNav";
 
 export default function AuthLayout({
@@ -21,7 +21,7 @@ export default function AuthLayout({
             <Link href="/" className="mb-4 inline-block">
               <Image
                 src={LOGO_PATH}
-                alt="Maryland state seal"
+                alt={LOGO_ALT}
                 width={80}
                 height={80}
                 className="h-20 w-20 object-contain"
@@ -29,7 +29,7 @@ export default function AuthLayout({
               />
             </Link>
             <p className="text-lg font-bold text-md-black">{APP_NAME}</p>
-            <p className="text-sm text-stone-500">{APP_TAGLINE}</p>
+            <p className="text-sm text-stone-500">{APP_TAGLINE_SHORT}</p>
             <h1 className="mt-4 text-2xl font-bold text-md-black">{title}</h1>
             <p className="mt-1 text-stone-600">{subtitle}</p>
           </div>

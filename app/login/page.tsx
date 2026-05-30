@@ -5,23 +5,23 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { safeRedirectPath } from "@/lib/routes";
+import { fetchCurrentUser } from "@/lib/api-client";
+import { afterAuthRedirect } from "@/lib/routes";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = safeRedirectPath(searchParams.get("next"));
-  const { login, isLoggedIn, loading: authLoading } = useAuth();
+  const { login, isLoggedIn, loading: authLoading, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && isLoggedIn) {
-      router.replace(nextPath);
+    if (!authLoading && isLoggedIn && user) {
+      router.replace(afterAuthRedirect(user, searchParams.get("next")));
     }
-  }, [authLoading, isLoggedIn, router, nextPath]);
+  }, [authLoading, isLoggedIn, user, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +33,12 @@ function LoginForm() {
       setError(err);
       return;
     }
-    router.push(nextPath);
+    const current = await fetchCurrentUser();
+    router.push(
+      current
+        ? afterAuthRedirect(current, searchParams.get("next"))
+        : "/subscribe"
+    );
     router.refresh();
   };
 

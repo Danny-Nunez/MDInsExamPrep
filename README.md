@@ -1,4 +1,4 @@
-# Pass Maryland Insurance
+# Maryland Insurance Exam
 
 AI-powered licensing exam prep for Maryland Life, Accident, Health, and Sickness Producer practice.
 

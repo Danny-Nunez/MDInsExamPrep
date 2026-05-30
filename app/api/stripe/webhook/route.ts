@@ -1,0 +1,97 @@
+import { NextResponse } from "next/server";
+import type Stripe from "stripe";
+import { ObjectId } from "mongodb";
+import { getStripe } from "@/lib/stripe";
+import { updateUserSubscription } from "@/lib/db/users";
+import type { SubscriptionStatus } from "@/lib/subscription";
+
+export const runtime = "nodejs";
+
+function periodEndFromSubscription(sub: Stripe.Subscription): Date | undefined {
+  const end = sub.items?.data?.[0]?.current_period_end;
+  if (typeof end === "number") {
+    return new Date(end * 1000);
+  }
+  return undefined;
+}
+
+async function applySubscription(
+  userId: string,
+  sub: Stripe.Subscription
+): Promise<void> {
+  let status: SubscriptionStatus = "none";
+  if (sub.status === "active" || sub.status === "trialing") {
+    status = "active";
+  } else if (sub.status === "past_due" || sub.status === "unpaid") {
+    status = "past_due";
+  } else if (sub.status === "canceled") {
+    status = "canceled";
+  }
+
+  await updateUserSubscription(userId, {
+    subscriptionStatus: status,
+    stripeSubscriptionId: sub.id,
+    stripeCustomerId:
+      typeof sub.customer === "string" ? sub.customer : sub.customer?.id,
+    subscriptionCurrentPeriodEnd: periodEndFromSubscription(sub),
+  });
+}
+
+export async function POST(request: Request) {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    return NextResponse.json(
+      { error: "Webhook secret not configured." },
+      { status: 503 }
+    );
+  }
+
+  const signature = request.headers.get("stripe-signature");
+  if (!signature) {
+    return NextResponse.json({ error: "Missing signature." }, { status: 400 });
+  }
+
+  const body = await request.text();
+  let event: Stripe.Event;
+
+  try {
+    event = getStripe().webhooks.constructEvent(body, signature, webhookSecret);
+  } catch (err) {
+    console.error("stripe webhook verify error:", err);
+    return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
+  }
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const userId = session.metadata?.userId;
+        const subscriptionId =
+          typeof session.subscription === "string"
+            ? session.subscription
+            : session.subscription?.id;
+        if (userId && subscriptionId) {
+          const sub = await getStripe().subscriptions.retrieve(subscriptionId);
+          await applySubscription(userId, sub);
+        }
+        break;
+      }
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
+        const sub = event.data.object as Stripe.Subscription;
+        const userId = sub.metadata?.userId;
+        if (userId && ObjectId.isValid(userId)) {
+          await applySubscription(userId, sub);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  } catch (err) {
+    console.error("stripe webhook handler error:", err);
+    return NextResponse.json({ error: "Handler failed." }, { status: 500 });
+  }
+
+  return NextResponse.json({ received: true });
+}

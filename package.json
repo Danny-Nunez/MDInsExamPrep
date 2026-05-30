@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rm -rf .next-dev .next"
+    "clean": "rm -rf .next-dev .next",
+    "seed:blueprint": "node --env-file=.env scripts/seed-blueprint.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -17,7 +18,8 @@
     "next": "^15.3.3",
     "openai": "^4.104.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "stripe": "^22.2.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

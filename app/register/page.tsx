@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { fetchCurrentUser } from "@/lib/api-client";
+import { afterAuthRedirect } from "@/lib/routes";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
-  const { register, isLoggedIn, loading: authLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const { register, isLoggedIn, loading: authLoading, user } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,10 +19,10 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && isLoggedIn) {
-      router.replace("/dashboard");
+    if (!authLoading && isLoggedIn && user) {
+      router.replace(afterAuthRedirect(user, searchParams.get("next")));
     }
-  }, [authLoading, isLoggedIn, router]);
+  }, [authLoading, isLoggedIn, user, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +34,12 @@ export default function RegisterPage() {
       setError(err);
       return;
     }
-    router.push("/dashboard");
+    const current = await fetchCurrentUser();
+    router.push(
+      current
+        ? afterAuthRedirect(current, searchParams.get("next"))
+        : "/subscribe"
+    );
     router.refresh();
   };
 
@@ -46,7 +54,7 @@ export default function RegisterPage() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Start tracking exams and AI-generated quizzes"
+      subtitle="Subscribe after your free sample to unlock full exam prep"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -119,7 +127,10 @@ export default function RegisterPage() {
 
       <p className="mt-6 text-center text-sm text-stone-600">
         Already have an account?{" "}
-        <Link href="/login" className="link-accent">
+        <Link
+          href={`/login?next=${encodeURIComponent(searchParams.get("next") ?? "/subscribe")}`}
+          className="link-accent"
+        >
           Sign in
         </Link>
       </p>
@@ -129,5 +140,19 @@ export default function RegisterPage() {
         </Link>
       </p>
     </AuthLayout>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center text-stone-500">
+          Loading...
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

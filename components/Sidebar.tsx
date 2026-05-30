@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,6 +12,8 @@ import {
   History,
   BarChart3,
   LogOut,
+  ClipboardList,
+  Shield,
 } from "lucide-react";
 import MarylandLogo from "@/components/MarylandLogo";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,11 +21,17 @@ import { useAuth } from "@/contexts/AuthContext";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/practice", label: "Practice Exams", icon: FileText },
+  { href: "/quiz", label: "Question Bank Quiz", icon: ClipboardList },
   { href: "/ai-quiz", label: "AI Quiz Generator", icon: Sparkles },
   { href: "/study-areas", label: "Study Areas", icon: BookOpen },
   { href: "/flashcards", label: "Flashcards", icon: Layers },
   { href: "/results", label: "Exam History", icon: History },
   { href: "/performance", label: "Performance", icon: BarChart3 },
+];
+
+const adminNavItems = [
+  { href: "/admin/concepts", label: "Admin · Concepts", icon: Shield },
+  { href: "/admin/review", label: "Admin · Review", icon: Shield },
 ];
 
 function getInitials(name: string): string {
@@ -37,15 +46,34 @@ function getInitials(name: string): string {
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, isLoggedIn, logout, loading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsAdmin(false);
+      return;
+    }
+    fetch("/api/admin/me", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => setIsAdmin(Boolean(data.isAdmin)))
+      .catch(() => setIsAdmin(false));
+  }, [isLoggedIn]);
+
+  const allNavItems = isAdmin ? [...navItems, ...adminNavItems] : navItems;
 
   return (
     <aside className="flex h-screen w-64 flex-col border-r border-slate-200 bg-white">
       <div className="border-b border-slate-200 p-5">
-        <MarylandLogo href="/dashboard" size="sm" />
+        <MarylandLogo
+          href="/dashboard"
+          size="sm"
+          showTagline
+          tagline="short"
+        />
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {navItems.map((item) => {
+        {allNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
 

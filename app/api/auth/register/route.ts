@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import {
   createSessionToken,
@@ -6,6 +7,7 @@ import {
   setSessionCookie,
 } from "@/lib/auth";
 import { COLLECTIONS } from "@/lib/db/collections";
+import { toSessionUser } from "@/lib/db/users";
 import type { UserDocument } from "@/types/user";
 
 export async function POST(request: Request) {
@@ -58,13 +60,24 @@ export async function POST(request: Request) {
         createdAt: new Date(),
       });
 
-    const userId = insertResult.insertedId.toString();
-    const token = await createSessionToken({ userId, email, name });
+    const doc = await db
+      .collection<UserDocument>(COLLECTIONS.users)
+      .findOne({ _id: insertResult.insertedId });
+
+    if (!doc?._id) {
+      return NextResponse.json(
+        { error: "Registration failed. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    const sessionUser = toSessionUser(
+      doc as UserDocument & { _id: ObjectId }
+    );
+    const token = await createSessionToken(sessionUser);
     await setSessionCookie(token);
 
-    return NextResponse.json({
-      user: { userId, email, name },
-    });
+    return NextResponse.json({ user: sessionUser });
   } catch (err) {
     console.error("register error:", err);
     return NextResponse.json(

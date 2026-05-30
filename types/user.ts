@@ -1,7 +1,10 @@
+import type { SubscriptionStatus } from "@/lib/subscription";
+
 export type SessionUser = {
   userId: string;
   email: string;
   name: string;
+  hasSubscription: boolean;
 };
 
 export type UserDocument = {
@@ -10,4 +13,8 @@ export type UserDocument = {
   name: string;
   passwordHash: string;
   createdAt: Date;
+  subscriptionStatus?: SubscriptionStatus;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  subscriptionCurrentPeriodEnd?: Date;
 };

@@ -1,16 +1,33 @@
 import Link from "next/link";
 import MarylandLogo from "@/components/MarylandLogo";
-import { APP_DESCRIPTION, APP_NAME } from "@/lib/branding";
+import {
+  APP_DESCRIPTION,
+  APP_NAME,
+  COPYRIGHT_YEAR,
+  FOOTER_DISCLAIMER,
+} from "@/lib/branding";
 import { Facebook, Instagram, Mail, Youtube } from "lucide-react";
 
 const footerLinks = {
   Explore: [
-    { label: "Features", href: "#features" },
-    { label: "How It Works", href: "#how-it-works" },
-    { label: "Reviews", href: "#reviews" },
-    { label: "Pricing", href: "#pricing" },
+    { label: "Practice Exam", href: "/practice-test" },
+    { label: "Features", href: "/#features" },
+    { label: "Pricing", href: "/pricing" },
+    {
+      label: "How to Get a License",
+      href: "/how-to-get-a-maryland-insurance-license",
+    },
+    {
+      label: "Exam Requirements",
+      href: "/maryland-life-health-insurance-exam-requirements",
+    },
+    {
+      label: "Free Practice Test",
+      href: "/maryland-insurance-practice-test",
+    },
   ],
   Account: [
+    { label: "Dashboard", href: "/dashboard" },
     { label: "Sign in", href: "/login" },
     { label: "Create account", href: "/register" },
   ],
@@ -22,7 +39,7 @@ export default function LandingFooter() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-4">
           <div className="lg:col-span-2">
-            <MarylandLogo href="/" size="md" />
+            <MarylandLogo href="/" size="md" showTagline tagline="short" />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-stone-600">
               {APP_DESCRIPTION}
             </p>
@@ -65,8 +82,12 @@ export default function LandingFooter() {
           ))}
         </div>
 
-        <p className="mt-10 border-t border-stone-100 pt-6 text-center text-sm text-stone-500">
-          © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+        <p className="mt-8 max-w-3xl text-xs leading-relaxed text-stone-500">
+          {FOOTER_DISCLAIMER}
+        </p>
+
+        <p className="mt-6 border-t border-stone-100 pt-6 text-center text-sm text-stone-500">
+          © {COPYRIGHT_YEAR} {APP_NAME}. All rights reserved.
         </p>
       </div>
     </footer>

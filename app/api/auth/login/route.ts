@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import {
   createSessionToken,
@@ -6,6 +7,7 @@ import {
   verifyPassword,
 } from "@/lib/auth";
 import { COLLECTIONS } from "@/lib/db/collections";
+import { toSessionUser } from "@/lib/db/users";
 import type { UserDocument } from "@/types/user";
 
 export async function POST(request: Request) {
@@ -43,17 +45,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const userId = user._id.toString();
-    const token = await createSessionToken({
-      userId,
-      email: user.email,
-      name: user.name,
-    });
+    const sessionUser = toSessionUser(
+      user as UserDocument & { _id: ObjectId }
+    );
+    const token = await createSessionToken(sessionUser);
     await setSessionCookie(token);
 
-    return NextResponse.json({
-      user: { userId, email: user.email, name: user.name },
-    });
+    return NextResponse.json({ user: sessionUser });
   } catch (err) {
     console.error("login error:", err);
     return NextResponse.json(
