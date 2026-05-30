@@ -33,6 +33,10 @@ yarn-error.log*
 .env*.local
 .env
 
+# openai batch runs
+.batch-prometric-state.json
+.batch-output/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

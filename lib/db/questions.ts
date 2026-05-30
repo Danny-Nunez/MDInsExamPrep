@@ -2,6 +2,7 @@ import type { Filter } from "mongodb";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS } from "@/lib/db/collections";
+import { EXAM_LIKE_DIFFICULTY_LABELS } from "@/lib/normalize-difficulty";
 import type {
   BankQuizQuestion,
   QuestionDocument,
@@ -121,7 +122,11 @@ export async function getApprovedQuizQuestions(options: {
   const query: Filter<QuestionDocument> = { status: "approved" };
 
   if (options.domain) query.domain = options.domain;
-  if (options.difficulty) query.difficulty = options.difficulty;
+  if (options.difficulty) {
+    query.difficulty = options.difficulty;
+  } else {
+    query.difficulty = { $in: [...EXAM_LIKE_DIFFICULTY_LABELS] };
+  }
   if (options.conceptIds?.length) {
     query.conceptId = { $in: options.conceptIds };
   }

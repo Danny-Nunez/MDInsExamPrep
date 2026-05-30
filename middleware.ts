@@ -34,15 +34,13 @@ async function getSessionPayload(
     ) {
       return null;
     }
-    const email = payload.email;
-    const isAdmin =
-      payload.isAdmin === true || isAdminEmail(email);
     return {
       userId: payload.userId,
-      email,
+      email: payload.email,
       name: payload.name,
       hasSubscription: payload.hasSubscription === true,
-      isAdmin,
+      isAdmin:
+        payload.isAdmin === true || isAdminEmail(payload.email),
     };
   } catch {
     return null;

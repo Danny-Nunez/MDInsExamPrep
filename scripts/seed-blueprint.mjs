@@ -6,13 +6,7 @@
  */
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import { MongoClient } from "mongodb";
-
-const URI = process.env.MONGO_URI?.trim();
-if (!URI) {
-  console.error("MONGO_URI is required. Set it in .env or the environment.");
-  process.exit(1);
-}
+import { connectMongo } from "./lib/mongo-connect.mjs";
 
 const jsonPath = resolve(
   process.cwd(),
@@ -53,12 +47,7 @@ async function main() {
     `Loaded ${blueprint.length} blueprint concepts → ${docs.length} learning objectives`
   );
 
-  const client = new MongoClient(URI, {
-    serverApi: { version: "1", strict: true, deprecationErrors: true },
-    autoSelectFamily: false,
-  });
-
-  await client.connect();
+  const client = await connectMongo();
   const col = client.db("examprep").collection("concepts");
 
   await col.createIndex({ objectiveId: 1 }, { unique: true });

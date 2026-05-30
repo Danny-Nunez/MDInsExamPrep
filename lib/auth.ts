@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { isAdminEmail } from "@/lib/admin-emails";
 import type { SessionUser } from "@/types/user";
 
 const SESSION_COOKIE = "examprep_session";
@@ -54,15 +53,12 @@ export async function verifySessionToken(
     ) {
       return null;
     }
-    const email = payload.email;
-    const isAdmin =
-      payload.isAdmin === true || isAdminEmail(email);
     return {
       userId: payload.userId,
-      email,
+      email: payload.email,
       name: payload.name,
       hasSubscription: payload.hasSubscription === true,
-      isAdmin,
+      isAdmin: payload.isAdmin === true,
     };
   } catch {
     return null;

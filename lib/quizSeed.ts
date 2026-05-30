@@ -5,9 +5,15 @@ import type { QuizQuestion } from "@/types/quiz";
 export const PROMETRIC_EXAM_LENGTH = 60;
 export const DEFAULT_PRACTICE_LENGTH = 20;
 
-/** Free public sample — fixed count, no login */
+import type { Difficulty } from "@/types/quiz";
+
+const EXAM_LIKE_DIFFICULTIES: Difficulty[] = ["hard", "prometric"];
+
+/** Free public sample — exam-like difficulty only */
 export function getSampleExamQuestions(): QuizQuestion[] {
-  return pickExamQuestions(FREE_SAMPLE_QUESTION_COUNT);
+  return pickExamQuestions(FREE_SAMPLE_QUESTION_COUNT, {
+    difficulties: EXAM_LIKE_DIFFICULTIES,
+  });
 }
 
 /** Practice exam questions from the local Maryland question bank */
@@ -22,9 +28,7 @@ export function getPracticeExamQuestions(
   return pickExamQuestions(count, {
     domains: options?.domains,
     subdomains: options?.subdomains,
-    difficulties: options?.prometricOnly
-      ? ["hard", "prometric"]
-      : undefined,
+    difficulties: EXAM_LIKE_DIFFICULTIES,
   });
 }
 

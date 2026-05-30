@@ -40,6 +40,12 @@ export type QuestionDocument = {
   difficulty: string;
   questionType: string;
   status: QuestionStatus;
+  source?: string;
+  qualityCheck?: {
+    ruleScore: number;
+    ruleFailures: string[];
+    autoApproveEligible?: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
 };

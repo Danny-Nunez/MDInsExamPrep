@@ -4,6 +4,10 @@ import { getSessionUser } from "@/lib/auth";
 import { getRecentLearningContext, saveGeneratedQuiz } from "@/lib/db/exams";
 import { ALL_SUBDOMAINS } from "@/lib/marylandBlueprint";
 import { DOMAINS, MARYLAND_EXAM } from "@/types/quiz";
+import {
+  difficultyWritingGuide,
+  PROMETRIC_STYLE_RULES,
+} from "@/lib/prometric-prompt";
 import type { Difficulty, QuizQuestion } from "@/types/quiz";
 
 const VALID_DOMAINS = new Set<string>(DOMAINS);
@@ -34,15 +38,15 @@ function buildPrompt(
 Focus domains: ${weakAreas.join(", ")}
 ${subdomains.length > 0 ? `Focus subdomains: ${subdomains.join(", ")}` : ""}
 
-Create ${questionCount} multiple-choice questions at difficulty "${difficulty}".
+Create ${questionCount} multiple-choice questions.
 
-Rules (Prometric-style):
-- Use scenario-based stems (named clients, dollar amounts, timelines) — NOT "What is X?"
-- At least half should use "BEST", "MOST likely", or "PRIMARILY"
-- Four plausible distractors; only one correct
+${difficultyWritingGuide(difficulty)}
+
+${PROMETRIC_STYLE_RULES}
+
 - domain must be one of: ${DOMAINS.join(", ")}
 - subdomain should match the blueprint topic when possible
-- difficulty: easy | medium | hard | prometric
+- Set each item's difficulty field to "${difficulty}"
 - isStateLaw: true for Maryland Insurance Regulations items
 - explanation object with "correct" and "wrongAnswers" keyed by exact choice text
 
@@ -311,7 +315,7 @@ export async function POST(request: Request) {
           ),
         },
       ],
-      temperature: 0.7,
+      temperature: 0.55,
       response_format: { type: "json_object" },
     });
 

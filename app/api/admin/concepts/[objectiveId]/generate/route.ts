@@ -6,6 +6,7 @@ import {
   insertQuestions,
 } from "@/lib/db/questions";
 import { generateQuestionsForConcept } from "@/lib/generate-concept-questions";
+import { normalizeBlueprintDifficulty } from "@/lib/normalize-difficulty";
 
 type RouteParams = { params: Promise<{ objectiveId: string }> };
 
@@ -33,7 +34,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
         choices: q.choices,
         correctAnswer: q.correctAnswer,
         explanation: q.explanation,
-        difficulty: concept.difficulty,
+        difficulty: normalizeBlueprintDifficulty(concept.difficulty),
         questionType: concept.questionType,
         status: "needs_review",
       }))

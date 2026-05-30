@@ -41,8 +41,13 @@ export function afterAuthRedirect(
   user: SessionUser,
   next: string | null
 ): string {
+  if (user.isAdmin) return "/dashboard";
+
   const path = safeRedirectPath(next);
-  if (canAccessFullApp(user)) return path;
+  if (canAccessFullApp(user)) {
+    if (path === "/subscribe") return "/dashboard";
+    return path;
+  }
   if (isProtectedAppPath(path)) return "/subscribe";
   return path;
 }

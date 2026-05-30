@@ -1,0 +1,66 @@
+# Prometric batch question bank
+
+Build ~100–400 **approved** Prometric questions using OpenAI **Batch API** (lower cost than live calls) plus a **free rule-based checklist** for auto-approve.
+
+## Prerequisites
+
+- `.env` with `OPENAI_API_KEY` and MongoDB credentials
+- **Recommended:** `MONGO_USER` + `MONGO_PASSWORD` (plain password; scripts encode it for you)
+- Or `MONGO_URI` + `MONGO_URI_STANDARD` if SRV DNS fails locally
+- Blueprint seeded: `npm run seed:blueprint`
+- Optional: `BATCH_MODEL=gpt-4o-mini` (default)
+
+## Recommended run (~320 questions)
+
+```bash
+# 1) Preview which objectives will be used
+npm run batch:prometric:submit -- --dry-run --concepts 40 --per-concept 8 --exam-weight High
+
+# 2) Submit batch (completes within ~24h, often much faster)
+npm run batch:prometric:submit -- --concepts 40 --per-concept 8 --exam-weight High
+
+# 3) Poll status
+npm run batch:prometric:status
+
+# 4) When status is completed, import + auto-approve
+npm run batch:prometric:process
+```
+
+## Auto-approve checklist (Prometric only)
+
+A question is **`approved`** only if **all** rules pass:
+
+| Rule | Requirement |
+|------|-------------|
+| Difficulty | `prometric` |
+| Stem length | 50–1200 characters |
+| Exam style | Contains `?` OR words like BEST / MOST likely / PRIMARILY |
+| Not recall | No “What is the definition…” stems |
+| Choices | 4 unique options, each ≥ 8 chars, no “all/none of the above” |
+| Answer | `correctAnswer` matches one choice exactly |
+| Explanation | ≥ 40 characters |
+
+Failed items are saved as **`needs_review`** with `qualityCheck.ruleFailures` for manual fix in `/admin/review`.
+
+## Test locally first (3 concepts)
+
+Uses standard API (not batch pricing), good for prompt QA:
+
+```bash
+npm run batch:prometric:local -- --concepts 3 --per-concept 5
+```
+
+## Flags
+
+- `--no-auto-approve` — insert everything as `needs_review` (inspect checklist only)
+- `--min-approved-skip 3` — skip objectives that already have 3+ approved Prometric questions
+- `--batch-id batch_xxx` — process a specific batch without `.batch-prometric-state.json`
+
+## Output files
+
+- `.batch-prometric-state.json` — last submitted batch id
+- `.batch-output/` — JSONL input/output (gitignored)
+
+## Cost note
+
+Batch API is typically **~50% cheaper** than synchronous chat for the same model. Check [OpenAI pricing](https://openai.com/api/pricing/) for current rates.

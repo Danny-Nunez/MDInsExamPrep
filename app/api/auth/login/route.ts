@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth";
 import { COLLECTIONS } from "@/lib/db/collections";
 import { toSessionUser } from "@/lib/db/users";
+import { isAdminEmail } from "@/lib/admin-emails";
 import type { UserDocument } from "@/types/user";
 
 export async function POST(request: Request) {
@@ -43,6 +44,14 @@ export async function POST(request: Request) {
         { error: "Invalid email or password." },
         { status: 401 }
       );
+    }
+
+    if (isAdminEmail(email) && user.role !== "admin") {
+      await db.collection<UserDocument>(COLLECTIONS.users).updateOne(
+        { _id: user._id },
+        { $set: { role: "admin" } }
+      );
+      user.role = "admin";
     }
 
     const sessionUser = toSessionUser(

@@ -9,11 +9,14 @@ export type SessionUser = {
   isAdmin: boolean;
 };
 
+export type UserRole = "admin" | "user";
+
 export type UserDocument = {
   _id?: import("mongodb").ObjectId;
   email: string;
   name: string;
   passwordHash: string;
+  role?: UserRole;
   createdAt: Date;
   subscriptionStatus?: SubscriptionStatus;
   stripeCustomerId?: string;

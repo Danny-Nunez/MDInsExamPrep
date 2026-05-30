@@ -1,4 +1,8 @@
 import OpenAI from "openai";
+import {
+  difficultyWritingGuide,
+  PROMETRIC_STYLE_RULES,
+} from "@/lib/prometric-prompt";
 import type { ConceptDocument } from "@/types/question-bank";
 
 export type GeneratedBankQuestion = {
@@ -64,17 +68,16 @@ Concept: ${concept.concept}
 Domain: ${concept.domain} > ${concept.subdomain}
 Learning objective: ${concept.objective}
 Question type: ${concept.questionType}
-Difficulty: ${concept.difficulty}
+Blueprint difficulty label: ${concept.difficulty}
 Maryland-specific focus: ${concept.marylandSpecific}
+
+${difficultyWritingGuide(concept.difficulty)}
 
 ${concept.generationPrompt ?? ""}
 
-Rules:
-- Prometric-style, scenario-based when possible
-- Use BEST / MOST likely / PRIMARILY where appropriate
-- Four plausible choices, exactly one correct
-- Do NOT copy real exam questions or provider materials
-- Return JSON only:
+${PROMETRIC_STYLE_RULES}
+
+Return JSON only:
 
 {
   "questions": [
@@ -93,11 +96,11 @@ Rules:
       {
         role: "system",
         content:
-          "You write original Maryland insurance licensing exam items. JSON only.",
+          "You write original Maryland insurance licensing exam items at Prometric difficulty. Challenging, scenario-based, JSON only.",
       },
       { role: "user", content: prompt },
     ],
-    temperature: 0.7,
+    temperature: 0.55,
     response_format: { type: "json_object" },
   });
 
