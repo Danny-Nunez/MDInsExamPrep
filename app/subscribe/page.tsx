@@ -13,7 +13,11 @@ import {
 import LandingNav from "@/components/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 import { useAuth } from "@/contexts/AuthContext";
-import { refreshSession, startStripeCheckout } from "@/lib/api-client";
+import {
+  confirmStripeCheckout,
+  refreshSession,
+  startStripeCheckout,
+} from "@/lib/api-client";
 import { canAccessFullApp } from "@/lib/access";
 import { getSampleScore } from "@/lib/sample-storage";
 import {
@@ -54,6 +58,7 @@ function SubscribeContent() {
 
   const success = searchParams.get("success") === "1";
   const canceled = searchParams.get("canceled") === "1";
+  const checkoutSessionId = searchParams.get("session_id");
 
   useEffect(() => {
     setSampleScore(getSampleScore());
@@ -61,7 +66,20 @@ function SubscribeContent() {
 
   const syncAfterPayment = useCallback(async () => {
     setError(null);
-    for (let attempt = 0; attempt < 10; attempt++) {
+
+    if (checkoutSessionId) {
+      const confirmed = await confirmStripeCheckout(checkoutSessionId);
+      if (confirmed.user && canAccessFullApp(confirmed.user)) {
+        await refresh();
+        router.replace("/dashboard");
+        return;
+      }
+      if (confirmed.error) {
+        console.warn("stripe confirm:", confirmed.error);
+      }
+    }
+
+    for (let attempt = 0; attempt < 8; attempt++) {
       const refreshed = await refreshSession();
       if (refreshed && canAccessFullApp(refreshed)) {
         await refresh();
@@ -71,9 +89,9 @@ function SubscribeContent() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
     }
     setError(
-      "Payment received, but your account is still activating. Wait a minute and refresh this page, or sign out and back in."
+      "Payment received, but your account is still activating. Refresh this page, sign out and back in, or try Subscribe again. If checkout fails, fix STRIPE_PRICE_ID on Vercel and redeploy."
     );
-  }, [refresh, router]);
+  }, [checkoutSessionId, refresh, router]);
 
   useEffect(() => {
     if (!loading && user && canAccessFullApp(user)) {
@@ -85,7 +103,7 @@ function SubscribeContent() {
     if (success && isLoggedIn) {
       void syncAfterPayment();
     }
-  }, [success, isLoggedIn, syncAfterPayment]);
+  }, [success, isLoggedIn, syncAfterPayment, checkoutSessionId]);
 
   const handleSubscribe = async () => {
     setError(null);

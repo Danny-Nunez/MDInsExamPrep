@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { getSessionUser } from "@/lib/auth";
 import { canAccessFullApp } from "@/lib/access";
 import { getUserById } from "@/lib/db/users";
+import { getStripePriceId, stripePriceConfigError } from "@/lib/stripe-config";
 import { getAppUrl, getStripe } from "@/lib/stripe";
 import { SUBSCRIPTION_AMOUNT_CENTS } from "@/lib/subscription";
 
@@ -19,10 +20,14 @@ export async function POST() {
       );
     }
 
-    const priceId = process.env.STRIPE_PRICE_ID;
+    const priceId = getStripePriceId();
     if (!priceId) {
+      console.error("stripe checkout: invalid STRIPE_PRICE_ID", {
+        configured: Boolean(process.env.STRIPE_PRICE_ID),
+        prefix: process.env.STRIPE_PRICE_ID?.slice(0, 12),
+      });
       return NextResponse.json(
-        { error: "Subscription is not configured yet." },
+        { error: stripePriceConfigError() },
         { status: 503 }
       );
     }
@@ -56,7 +61,7 @@ export async function POST() {
       mode: "subscription",
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}/subscribe?success=1`,
+      success_url: `${appUrl}/subscribe?success=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/subscribe?canceled=1`,
       metadata: { userId: sessionUser.userId },
       subscription_data: {
@@ -77,9 +82,10 @@ export async function POST() {
     });
   } catch (err) {
     console.error("stripe checkout error:", err);
-    return NextResponse.json(
-      { error: "Checkout failed. Please try again." },
-      { status: 500 }
-    );
+    const message =
+      err instanceof Error && err.message.includes("No such price")
+        ? stripePriceConfigError()
+        : "Checkout failed. Please try again.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

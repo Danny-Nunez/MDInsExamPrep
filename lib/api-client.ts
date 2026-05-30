@@ -69,6 +69,21 @@ export async function startStripeCheckout(): Promise<{
   return { url: data.url };
 }
 
+export async function confirmStripeCheckout(sessionId: string): Promise<{
+  user?: SessionUser;
+  error?: string;
+}> {
+  const res = await fetch("/api/stripe/confirm", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ sessionId }),
+  });
+  const data = await res.json();
+  if (!res.ok) return { error: data.error ?? "Could not confirm payment" };
+  return { user: data.user };
+}
+
 export async function fetchExamAttempts(): Promise<ExamAttempt[]> {
   const res = await fetch("/api/exams", { credentials: "include" });
   if (res.status === 401) return [];
