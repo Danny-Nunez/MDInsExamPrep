@@ -60,11 +60,19 @@ function SubscribeContent() {
   }, []);
 
   const syncAfterPayment = useCallback(async () => {
-    const refreshed = await refreshSession();
-    if (refreshed) {
-      await refresh();
-      router.replace("/dashboard");
+    setError(null);
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const refreshed = await refreshSession();
+      if (refreshed && canAccessFullApp(refreshed)) {
+        await refresh();
+        router.replace("/dashboard");
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1500));
     }
+    setError(
+      "Payment received, but your account is still activating. Wait a minute and refresh this page, or sign out and back in."
+    );
   }, [refresh, router]);
 
   useEffect(() => {
