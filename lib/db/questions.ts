@@ -13,10 +13,17 @@ export type QuestionFilters = {
   status?: QuestionStatus;
   conceptId?: string;
   domain?: string;
+  subdomain?: string;
+  /** Partial match on blueprint concept name (topic). */
+  concept?: string;
   difficulty?: string;
   limit?: number;
   skip?: number;
 };
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 function toQuizQuestion(doc: QuestionDocument & { _id?: ObjectId }): BankQuizQuestion {
   return {
@@ -67,6 +74,13 @@ export async function listQuestions(filters: QuestionFilters = {}) {
   if (filters.status) query.status = filters.status;
   if (filters.conceptId) query.conceptId = filters.conceptId;
   if (filters.domain) query.domain = filters.domain;
+  if (filters.subdomain) query.subdomain = filters.subdomain;
+  if (filters.concept?.trim()) {
+    query.concept = {
+      $regex: escapeRegex(filters.concept.trim()),
+      $options: "i",
+    };
+  }
   if (filters.difficulty) query.difficulty = filters.difficulty;
 
   const limit = Math.min(filters.limit ?? 50, 200);
@@ -78,6 +92,31 @@ export async function listQuestions(filters: QuestionFilters = {}) {
   ]);
 
   return { items, total };
+}
+
+export async function getQuestionReviewFilterOptions(filters: {
+  status?: QuestionStatus;
+  domain?: string;
+}) {
+  const db = await getDb();
+  const col = db.collection<QuestionDocument>(COLLECTIONS.questions);
+  const query: Filter<QuestionDocument> = {};
+  if (filters.status) query.status = filters.status;
+  if (filters.domain) query.domain = filters.domain;
+
+  const [subdomains, concepts] = await Promise.all([
+    filters.domain
+      ? col.distinct("subdomain", query)
+      : Promise.resolve([] as string[]),
+    filters.domain
+      ? col.distinct("concept", query)
+      : Promise.resolve([] as string[]),
+  ]);
+
+  return {
+    subdomains: subdomains.filter(Boolean).sort((a, b) => a.localeCompare(b)),
+    concepts: concepts.filter(Boolean).sort((a, b) => a.localeCompare(b)),
+  };
 }
 
 export async function getQuestionById(id: string) {

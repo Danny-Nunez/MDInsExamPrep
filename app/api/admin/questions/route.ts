@@ -14,6 +14,8 @@ export async function GET(request: Request) {
     status: status ?? undefined,
     conceptId: searchParams.get("conceptId") ?? undefined,
     domain: searchParams.get("domain") ?? undefined,
+    subdomain: searchParams.get("subdomain") ?? undefined,
+    concept: searchParams.get("concept") ?? undefined,
     difficulty: searchParams.get("difficulty") ?? undefined,
     limit: Number(searchParams.get("limit")) || 50,
     skip: Number(searchParams.get("skip")) || 0,

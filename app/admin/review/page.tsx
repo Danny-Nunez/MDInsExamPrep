@@ -6,16 +6,57 @@ import Pagination from "@/components/admin/Pagination";
 import QuestionReviewCard, {
   type ReviewQuestion,
 } from "@/components/admin/QuestionReviewCard";
+import QuestionReviewFilters, {
+  type QuestionReviewFilterValues,
+} from "@/components/admin/QuestionReviewFilters";
 
 const PAGE_SIZE = 25;
+
+const emptyFilters: QuestionReviewFilterValues = {
+  domain: "",
+  subdomain: "",
+  concept: "",
+};
 
 export default function AdminReviewPage() {
   const [items, setItems] = useState<ReviewQuestion[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("needs_review");
+  const [filters, setFilters] = useState(emptyFilters);
+  const [subdomains, setSubdomains] = useState<string[]>([]);
+  const [concepts, setConcepts] = useState<string[]>([]);
+  const [loadingOptions, setLoadingOptions] = useState(false);
   const [loading, setLoading] = useState(true);
   const [forbidden, setForbidden] = useState(false);
+
+  const handleFiltersChange = (next: QuestionReviewFilterValues) => {
+    setFilters(next);
+    setPage(1);
+  };
+
+  const loadFilterOptions = useCallback(async () => {
+    if (!filters.domain) {
+      setSubdomains([]);
+      setConcepts([]);
+      return;
+    }
+    setLoadingOptions(true);
+    const params = new URLSearchParams({ status, domain: filters.domain });
+    const res = await fetch(`/api/admin/questions/filters?${params}`, {
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setSubdomains(data.subdomains ?? []);
+      setConcepts(data.concepts ?? []);
+    }
+    setLoadingOptions(false);
+  }, [status, filters.domain]);
+
+  useEffect(() => {
+    loadFilterOptions();
+  }, [loadFilterOptions]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -25,6 +66,10 @@ export default function AdminReviewPage() {
       skip: String(skip),
       status,
     });
+    if (filters.domain) params.set("domain", filters.domain);
+    if (filters.subdomain) params.set("subdomain", filters.subdomain);
+    if (filters.concept.trim()) params.set("concept", filters.concept.trim());
+
     const res = await fetch(`/api/admin/questions?${params}`, {
       credentials: "include",
     });
@@ -37,10 +82,11 @@ export default function AdminReviewPage() {
     setItems(data.items ?? []);
     setTotal(data.total ?? 0);
     setLoading(false);
-  }, [status, page]);
+  }, [status, page, filters]);
 
   useEffect(() => {
-    load();
+    const t = setTimeout(load, 300);
+    return () => clearTimeout(t);
   }, [load]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -54,11 +100,20 @@ export default function AdminReviewPage() {
   const handleStatusChange = (next: string) => {
     setStatus(next);
     setPage(1);
+    setFilters(emptyFilters);
   };
 
   const handleSaved = () => {
     load();
   };
+
+  const activeFilterLabel = [
+    filters.domain,
+    filters.subdomain,
+    filters.concept.trim(),
+  ]
+    .filter(Boolean)
+    .join(" › ");
 
   if (forbidden) {
     return (
@@ -88,14 +143,26 @@ export default function AdminReviewPage() {
         </select>
       </div>
 
-      <p className="mb-4 text-sm text-slate-500">
-        {total.toLocaleString()} questions · {PAGE_SIZE} per page
-      </p>
+      <div className="mb-4 space-y-3">
+        <QuestionReviewFilters
+          values={filters}
+          onChange={handleFiltersChange}
+          subdomains={subdomains}
+          concepts={concepts}
+          loadingOptions={loadingOptions}
+        />
+        <p className="text-sm text-slate-500">
+          {total.toLocaleString()} questions · {PAGE_SIZE} per page
+          {activeFilterLabel ? (
+            <span className="text-slate-700"> · Filtered: {activeFilterLabel}</span>
+          ) : null}
+        </p>
+      </div>
 
       {loading ? (
         <p className="text-slate-500">Loading…</p>
       ) : items.length === 0 ? (
-        <p className="text-slate-500">No questions in this queue.</p>
+        <p className="text-slate-500">No questions match these filters.</p>
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-2">

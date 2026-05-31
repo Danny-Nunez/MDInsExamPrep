@@ -22,3 +22,23 @@ export function difficultyWritingGuide(blueprintDifficulty: string): string {
   }
   return `Difficulty target: FOUNDATIONAL — short scenario, one concept, but still four plausible choices (not trivia).`;
 }
+
+/** Example JSON for bank / batch generation — must use full choice sentences, not a/b/c/d labels. */
+export const BANK_QUESTION_JSON_SCHEMA = `Return JSON only:
+{
+  "questions": [
+    {
+      "question": "Full scenario stem ending in a question?",
+      "choices": [
+        "First complete answer option as a full sentence (not the letter a)",
+        "Second complete answer option as a full sentence",
+        "Third complete answer option as a full sentence",
+        "Fourth complete answer option as a full sentence"
+      ],
+      "correctAnswer": "Second complete answer option as a full sentence",
+      "explanation": "Why the correct option is best and why each distractor is wrong"
+    }
+  ]
+}
+
+CRITICAL: Each entry in "choices" must be the full answer text (typically 15–120 characters). Never use "a", "b", "c", or "d" as choice values. "correctAnswer" must exactly match one choice string.`;

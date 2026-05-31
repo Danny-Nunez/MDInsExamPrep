@@ -26,13 +26,20 @@ Return JSON only:
 {
   "questions": [
     {
-      "question": "...",
-      "choices": ["a","b","c","d"],
-      "correctAnswer": "exact choice text",
-      "explanation": "why correct and brief note on distractors"
+      "question": "Full scenario stem ending in a question?",
+      "choices": [
+        "First complete answer option as a full sentence (not the letter a)",
+        "Second complete answer option as a full sentence",
+        "Third complete answer option as a full sentence",
+        "Fourth complete answer option as a full sentence"
+      ],
+      "correctAnswer": "Second complete answer option as a full sentence",
+      "explanation": "Why the correct option is best and why each distractor is wrong"
     }
   ]
-}`;
+}
+
+CRITICAL: Each "choices" entry must be full answer text (15+ characters). Never use "a", "b", "c", or "d" as values. "correctAnswer" must exactly match one choice string.`;
 }
 
 export function buildBatchRequestLine(concept, count, model) {

@@ -15,6 +15,10 @@ export const APP_DESCRIPTION =
 
 export const SITE_URL = "https://marylandinsuranceexam.com";
 
+/** Google Analytics measurement ID (gtag.js). Override via NEXT_PUBLIC_GA_MEASUREMENT_ID. */
+export const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || "G-P95DGK7KB4";
+
 export const SEO_TITLE =
   "Maryland Life & Health Insurance Exam Prep | Maryland Insurance Exam";
 

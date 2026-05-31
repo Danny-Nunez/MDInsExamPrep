@@ -1,9 +1,18 @@
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import type { SessionUser } from "@/types/user";
 
 const SESSION_COOKIE = "examprep_session";
+
+const SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  path: "/",
+  maxAge: 60 * 60 * 24 * 30,
+};
 const SALT_ROUNDS = 12;
 
 function getSecret(): Uint8Array {
@@ -72,17 +81,27 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   return verifySessionToken(token);
 }
 
-export async function setSessionCookie(token: string): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
+/** Attach session cookie to a Route Handler response (required for Set-Cookie to reach the browser). */
+export function withSessionCookie(
+  response: NextResponse,
+  token: string
+): NextResponse {
+  response.cookies.set(SESSION_COOKIE, token, SESSION_COOKIE_OPTIONS);
+  return response;
 }
 
+export function withoutSessionCookie(response: NextResponse): NextResponse {
+  response.cookies.delete(SESSION_COOKIE);
+  return response;
+}
+
+/** @deprecated Prefer withSessionCookie on the NextResponse returned from route handlers. */
+export async function setSessionCookie(token: string): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, token, SESSION_COOKIE_OPTIONS);
+}
+
+/** @deprecated Prefer withoutSessionCookie on the NextResponse returned from route handlers. */
 export async function clearSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE);

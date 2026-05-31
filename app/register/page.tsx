@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchCurrentUser } from "@/lib/api-client";
 import { afterAuthRedirect } from "@/lib/routes";
+import type { SessionUser } from "@/types/user";
 
 function RegisterForm() {
   const router = useRouter();
@@ -24,23 +24,22 @@ function RegisterForm() {
     }
   }, [authLoading, isLoggedIn, user, router, searchParams]);
 
+  const redirectAfterAuth = (sessionUser: SessionUser) => {
+    const dest = afterAuthRedirect(sessionUser, searchParams.get("next"));
+    window.location.assign(dest);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const err = await register(name, email, password);
-    setLoading(false);
-    if (err) {
-      setError(err);
+    const result = await register(name, email, password);
+    if (typeof result === "string") {
+      setLoading(false);
+      setError(result);
       return;
     }
-    const current = await fetchCurrentUser();
-    router.push(
-      current
-        ? afterAuthRedirect(current, searchParams.get("next"))
-        : "/subscribe"
-    );
-    router.refresh();
+    redirectAfterAuth(result);
   };
 
   if (authLoading) {

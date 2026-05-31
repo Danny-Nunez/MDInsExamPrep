@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { isPlaceholderLetterChoices } from "@/lib/normalize-question-choices";
 import type { QuestionStatus } from "@/types/question-bank";
+
+const CHOICE_LABELS = ["A", "B", "C", "D"];
 
 export type ReviewQuestion = {
   _id: string;
@@ -40,6 +43,7 @@ export default function QuestionReviewCard({
 
   const isApproved = question.status === "approved";
   const isRejected = question.status === "rejected";
+  const placeholderChoices = isPlaceholderLetterChoices(question.choices);
 
   const patch = async (status?: QuestionStatus) => {
     setLoading(true);
@@ -89,6 +93,14 @@ export default function QuestionReviewCard({
       <p className="text-xs text-slate-500">{question.concept}</p>
       <p className="mb-3 text-xs text-slate-600">{question.objective}</p>
 
+      {placeholderChoices && !editing && (
+        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          Answer choices were saved as placeholders (a/b/c/d only). The model
+          copied a bad JSON example — use Edit to paste full choice text, or
+          Reject and regenerate.
+        </p>
+      )}
+
       {editing ? (
         <div className="space-y-3">
           <textarea
@@ -98,16 +110,21 @@ export default function QuestionReviewCard({
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
           {form.choices.map((c, i) => (
-            <input
-              key={i}
-              value={c}
-              onChange={(e) => {
-                const choices = [...form.choices];
-                choices[i] = e.target.value;
-                setForm({ ...form, choices });
-              }}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div key={i} className="flex gap-2">
+              <span className="w-6 shrink-0 pt-2 text-sm font-semibold text-slate-500">
+                {CHOICE_LABELS[i]}.
+              </span>
+              <input
+                value={c}
+                onChange={(e) => {
+                  const choices = [...form.choices];
+                  choices[i] = e.target.value;
+                  setForm({ ...form, choices });
+                }}
+                placeholder={`Choice ${CHOICE_LABELS[i]} — full answer text`}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              />
+            </div>
           ))}
           <select
             value={form.correctAnswer}
@@ -116,9 +133,9 @@ export default function QuestionReviewCard({
             }
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           >
-            {form.choices.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {form.choices.map((c, i) => (
+              <option key={`${i}-${c}`} value={c}>
+                {CHOICE_LABELS[i]}. {c || "(empty)"}
               </option>
             ))}
           </select>
@@ -135,15 +152,18 @@ export default function QuestionReviewCard({
         <>
           <p className="font-medium text-slate-900">{question.question}</p>
           <ul className="mt-2 space-y-1 text-sm text-slate-700">
-            {question.choices.map((c) => (
+            {question.choices.map((c, i) => (
               <li
-                key={c}
+                key={`${i}-${c}`}
                 className={
                   c === question.correctAnswer
                     ? "font-semibold text-green-700"
                     : ""
                 }
               >
+                <span className="font-semibold text-slate-500">
+                  {CHOICE_LABELS[i]}.
+                </span>{" "}
                 {c}
               </li>
             ))}

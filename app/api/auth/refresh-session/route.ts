@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
-import { createSessionToken, getSessionUser, setSessionCookie } from "@/lib/auth";
+import {
+  createSessionToken,
+  getSessionUser,
+  withSessionCookie,
+} from "@/lib/auth";
 import { getUserById, toSessionUser } from "@/lib/db/users";
 import type { UserDocument } from "@/types/user";
 
@@ -20,9 +24,7 @@ export async function POST() {
       doc as UserDocument & { _id: ObjectId }
     );
     const token = await createSessionToken(user);
-    await setSessionCookie(token);
-
-    return NextResponse.json({ user });
+    return withSessionCookie(NextResponse.json({ user }), token);
   } catch (err) {
     console.error("refresh-session error:", err);
     return NextResponse.json(

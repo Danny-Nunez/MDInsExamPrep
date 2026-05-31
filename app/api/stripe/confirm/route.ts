@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import {
   createSessionToken,
   getSessionUser,
-  setSessionCookie,
+  withSessionCookie,
 } from "@/lib/auth";
 import { getUserById, toSessionUser } from "@/lib/db/users";
 import { getStripe } from "@/lib/stripe";
@@ -52,9 +52,10 @@ export async function POST(request: Request) {
 
     const user = toSessionUser(doc as UserDocument & { _id: ObjectId });
     const token = await createSessionToken(user);
-    await setSessionCookie(token);
-
-    return NextResponse.json({ user, activated: true });
+    return withSessionCookie(
+      NextResponse.json({ user, activated: true }),
+      token
+    );
   } catch (err) {
     console.error("stripe confirm error:", err);
     return NextResponse.json(

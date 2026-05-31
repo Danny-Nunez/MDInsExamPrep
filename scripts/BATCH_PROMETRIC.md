@@ -1,5 +1,7 @@
 # Prometric batch question bank
 
+Quick start and “run all concepts” commands: see **[README.md § Prometric question bank](../README.md#prometric-question-bank-openai-batch)**.
+
 Build ~100–400 **approved** Prometric questions using OpenAI **Batch API** (lower cost than live calls) plus a **free rule-based checklist** for auto-approve.
 
 ## Prerequisites
@@ -49,6 +51,32 @@ Uses standard API (not batch pricing), good for prompt QA:
 ```bash
 npm run batch:prometric:local -- --concepts 3 --per-concept 5
 ```
+
+## Run all Prometric objectives
+
+`--concepts` is a **cap** (your `50` run stopped at 50). Blueprint v4 has ~**676** High-weight Prometric objectives and ~**978** total Prometric.
+
+```bash
+# All High-weight Prometric (~4,056 questions @ 6 each)
+npm run batch:prometric:submit -- --dry-run --concepts 676 --per-concept 6 --exam-weight High
+npm run batch:prometric:submit -- --concepts 676 --per-concept 6 --exam-weight High
+
+# All Prometric (High + Medium)
+npm run batch:prometric:submit -- --concepts 978 --per-concept 6
+```
+
+Prefer chunked runs (`--concepts 200`) and repeat after `process`; see README.
+
+## Breadth across blueprint concepts (default)
+
+Submit uses **`--spread`** by default: round-robin across blueprint concept ids (`md-lh-0001`, …) with **`--max-per-blueprint 1`**, so `--concepts 200` picks ~200 different topics. Use `--dry-run` to see domain breakdown before spending on the batch.
+
+```bash
+npm run batch:prometric:submit -- --dry-run --concepts 200 --per-concept 6 --exam-weight High
+```
+
+- `--max-per-blueprint 2` — up to two Prometric objectives from the same blueprint row per batch  
+- `--sequential` — legacy: first N objectives in examWeight / objectiveId order  
 
 ## Flags
 

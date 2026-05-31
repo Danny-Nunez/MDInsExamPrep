@@ -4,7 +4,7 @@ import { getDb } from "@/lib/mongodb";
 import {
   createSessionToken,
   hashPassword,
-  setSessionCookie,
+  withSessionCookie,
 } from "@/lib/auth";
 import { COLLECTIONS } from "@/lib/db/collections";
 import { toSessionUser } from "@/lib/db/users";
@@ -75,9 +75,10 @@ export async function POST(request: Request) {
       doc as UserDocument & { _id: ObjectId }
     );
     const token = await createSessionToken(sessionUser);
-    await setSessionCookie(token);
-
-    return NextResponse.json({ user: sessionUser });
+    return withSessionCookie(
+      NextResponse.json({ user: sessionUser }),
+      token
+    );
   } catch (err) {
     console.error("register error:", err);
     return NextResponse.json(

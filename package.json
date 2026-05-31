@@ -15,7 +15,8 @@
     "batch:prometric:process": "node --env-file=.env scripts/batch-prometric-bank.mjs process",
     "batch:prometric:local": "node --env-file=.env scripts/batch-prometric-bank.mjs run-local",
     "mongo:ping": "node --env-file=.env scripts/mongo-ping.mjs",
-    "mongo:diagnose": "node --env-file=.env scripts/mongo-diagnose.mjs"
+    "mongo:diagnose": "node --env-file=.env scripts/mongo-diagnose.mjs",
+    "questions:reject-placeholders": "node --env-file=.env scripts/reject-placeholder-choices.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

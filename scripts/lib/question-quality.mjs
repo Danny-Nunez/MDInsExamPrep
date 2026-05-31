@@ -9,6 +9,58 @@ const DEFINITION_STEM_RE =
 const TRIVIAL_STEM_RE = /^which of the following (?:is|are) (?:true|correct)\b/i;
 
 const BAD_CHOICE_RE = /\b(all of the above|none of the above)\b/i;
+const LETTER_ONLY_CHOICE = /^[a-d]$/i;
+
+function isPlaceholderLetterChoices(choices) {
+  return (
+    choices.length === 4 &&
+    choices.every((c) => LETTER_ONLY_CHOICE.test(c.trim()))
+  );
+}
+
+function normalizeChoicesField(raw) {
+  if (Array.isArray(raw)) {
+    const choices = raw.map((c) => String(c).trim()).filter(Boolean);
+    return choices.length === 4 ? choices : null;
+  }
+  if (raw && typeof raw === "object") {
+    const choices = ["a", "b", "c", "d"].map((k) => {
+      const v = raw[k] ?? raw[k.toUpperCase()];
+      return typeof v === "string" ? v.trim() : "";
+    });
+    if (choices.every((c) => c.length > 0)) return choices;
+  }
+  return null;
+}
+
+function resolveCorrectAnswer(correctAnswer, choices) {
+  const trimmed = correctAnswer.trim();
+  if (choices.includes(trimmed)) return trimmed;
+  if (LETTER_ONLY_CHOICE.test(trimmed)) {
+    const idx = trimmed.toLowerCase().charCodeAt(0) - 97;
+    if (idx >= 0 && idx < choices.length) return choices[idx];
+  }
+  return null;
+}
+
+function normalizeGeneratedQuestion(item) {
+  if (typeof item.question !== "string" || !item.question.trim()) return null;
+  const choices = normalizeChoicesField(item.choices);
+  if (!choices || isPlaceholderLetterChoices(choices)) return null;
+  if (typeof item.correctAnswer !== "string") return null;
+  const correctAnswer = resolveCorrectAnswer(item.correctAnswer, choices);
+  if (!correctAnswer) return null;
+  if (typeof item.explanation !== "string" || !item.explanation.trim()) {
+    return null;
+  }
+  return {
+    question: item.question.trim(),
+    choices,
+    correctAnswer,
+    explanation: item.explanation.trim(),
+    difficulty: "prometric",
+  };
+}
 
 export function normalizeDifficultyLabel(label) {
   if (!label) return "";
@@ -35,6 +87,9 @@ export function evaluateQuestionQuality(q) {
   }
   if (choices.length !== 4) failures.push("choices_count_not_four");
   if (new Set(choices).size !== 4) failures.push("duplicate_choices");
+  if (isPlaceholderLetterChoices(choices)) {
+    failures.push("choices_placeholder_letters");
+  }
   if (choices.some((c) => c.length < 8)) failures.push("choice_too_short");
   if (choices.some((c) => BAD_CHOICE_RE.test(c))) failures.push("weak_choice_pattern");
   if (!choices.includes((q.correctAnswer ?? "").trim())) {
@@ -61,30 +116,8 @@ export function parseGeneratedQuestions(content) {
   const valid = [];
   for (const item of parsed.questions) {
     if (!item || typeof item !== "object") continue;
-    if (typeof item.question !== "string" || !item.question.trim()) continue;
-    if (
-      !Array.isArray(item.choices) ||
-      item.choices.length !== 4 ||
-      !item.choices.every((c) => typeof c === "string" && c.trim())
-    ) {
-      continue;
-    }
-    if (
-      typeof item.correctAnswer !== "string" ||
-      !item.choices.includes(item.correctAnswer)
-    ) {
-      continue;
-    }
-    if (typeof item.explanation !== "string" || !item.explanation.trim()) {
-      continue;
-    }
-    valid.push({
-      question: item.question.trim(),
-      choices: item.choices.map((c) => c.trim()),
-      correctAnswer: item.correctAnswer.trim(),
-      explanation: item.explanation.trim(),
-      difficulty: "prometric",
-    });
+    const normalized = normalizeGeneratedQuestion(item);
+    if (normalized) valid.push(normalized);
   }
   return valid;
 }

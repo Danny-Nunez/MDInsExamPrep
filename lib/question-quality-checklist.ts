@@ -1,3 +1,8 @@
+import {
+  isPlaceholderLetterChoices,
+  normalizeGeneratedQuestion,
+} from "@/lib/normalize-question-choices";
+
 export type QuestionLike = {
   question: string;
   choices: string[];
@@ -50,6 +55,9 @@ export function evaluateQuestionQuality(q: QuestionLike): QualityCheckResult {
   }
   if (choices.length !== 4) failures.push("choices_count_not_four");
   if (new Set(choices).size !== 4) failures.push("duplicate_choices");
+  if (isPlaceholderLetterChoices(choices)) {
+    failures.push("choices_placeholder_letters");
+  }
   if (choices.some((c) => c.length < 8)) failures.push("choice_too_short");
   if (choices.some((c) => BAD_CHOICE_RE.test(c))) failures.push("weak_choice_pattern");
   if (!choices.includes(q.correctAnswer?.trim() ?? "")) {
@@ -77,29 +85,10 @@ export function parseGeneratedQuestions(content: string) {
   const valid: QuestionLike[] = [];
   for (const item of parsed.questions) {
     if (!item || typeof item !== "object") continue;
-    const q = item as Record<string, unknown>;
-    if (typeof q.question !== "string" || !q.question.trim()) continue;
-    if (
-      !Array.isArray(q.choices) ||
-      q.choices.length !== 4 ||
-      !q.choices.every((c) => typeof c === "string" && c.trim())
-    ) {
-      continue;
-    }
-    if (
-      typeof q.correctAnswer !== "string" ||
-      !(q.choices as string[]).includes(q.correctAnswer)
-    ) {
-      continue;
-    }
-    if (typeof q.explanation !== "string" || !q.explanation.trim()) continue;
-    valid.push({
-      question: q.question.trim(),
-      choices: (q.choices as string[]).map((c) => c.trim()),
-      correctAnswer: q.correctAnswer.trim(),
-      explanation: q.explanation.trim(),
-      difficulty: "prometric",
-    });
+    const normalized = normalizeGeneratedQuestion(
+      item as Record<string, unknown>
+    );
+    if (normalized) valid.push(normalized);
   }
 
   return valid;

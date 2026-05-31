@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import Providers from "@/components/Providers";
 import { SEO_DESCRIPTION, SEO_TITLE, SITE_URL } from "@/lib/branding";
 import "./globals.css";
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <GoogleAnalytics />
         <Providers>{children}</Providers>
       </body>
     </html>

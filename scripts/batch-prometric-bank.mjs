@@ -36,7 +36,11 @@ function parseArgs(argv) {
     else if (a === "--batch-id") flags.batchId = argv[++i];
     else if (a === "--dry-run") flags.dryRun = true;
     else if (a === "--no-auto-approve") flags.noAutoApprove = true;
+    else if (a === "--sequential") flags.spread = false;
+    else if (a === "--spread") flags.spread = true;
+    else if (a === "--max-per-blueprint") flags.maxPerBlueprint = Number(argv[++i]);
   }
+  const spread = flags.spread !== false;
   return {
     cmd,
     concepts: flags.concepts ?? 40,
@@ -46,11 +50,120 @@ function parseArgs(argv) {
     batchId: flags.batchId ?? "",
     dryRun: flags.dryRun ?? false,
     noAutoApprove: flags.noAutoApprove ?? false,
+    spread,
+    maxPerBlueprint: flags.maxPerBlueprint ?? (spread ? 1 : 0),
   };
 }
 
-function prometricFilter() {
-  return { difficulty: /^prometric$/i };
+function examWeightRank(weight) {
+  if (weight === "High") return 3;
+  if (weight === "Medium") return 2;
+  if (weight === "Low") return 1;
+  return 0;
+}
+
+/** Blueprint row id (md-lh-0001), not objective id (md-lh-0001-obj-4). */
+function blueprintConceptKey(doc) {
+  if (doc.blueprintConceptId) return doc.blueprintConceptId;
+  const m = String(doc.objectiveId ?? "").match(/^(md-lh-\d+)/);
+  return m ? m[1] : doc.objectiveId;
+}
+
+async function loadApprovedCountsByObjective(questionsCol) {
+  const rows = await questionsCol
+    .aggregate([
+      {
+        $match: {
+          status: "approved",
+          difficulty: { $in: ["prometric", "Prometric"] },
+        },
+      },
+      { $group: { _id: "$conceptId", count: { $sum: 1 } } },
+    ])
+    .toArray();
+  return new Map(rows.map((r) => [r._id, r.count]));
+}
+
+function selectSequential(candidates, countMap, opts) {
+  const selected = [];
+  for (const concept of candidates) {
+    if (selected.length >= opts.concepts) break;
+    const approved = countMap.get(concept.objectiveId) ?? 0;
+    if (approved >= opts.minApprovedSkip) continue;
+    selected.push(concept);
+  }
+  return selected;
+}
+
+/** Round-robin across blueprint concepts so each batch spans many topics. */
+function selectSpread(candidates, countMap, opts) {
+  const maxPer =
+    opts.maxPerBlueprint > 0 ? opts.maxPerBlueprint : Number.MAX_SAFE_INTEGER;
+
+  const eligible = candidates.filter((c) => {
+    const approved = countMap.get(c.objectiveId) ?? 0;
+    return approved < opts.minApprovedSkip;
+  });
+
+  const groups = new Map();
+  for (const c of eligible) {
+    const key = blueprintConceptKey(c);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(c);
+  }
+  for (const arr of groups.values()) {
+    arr.sort((a, b) => a.objectiveId.localeCompare(b.objectiveId));
+  }
+
+  const blueprintOrder = [...groups.keys()].sort((a, b) => {
+    const ca = groups.get(a)[0];
+    const cb = groups.get(b)[0];
+    const w =
+      examWeightRank(cb.examWeight) - examWeightRank(ca.examWeight);
+    if (w !== 0) return w;
+    return a.localeCompare(b);
+  });
+
+  const selected = [];
+  const perBlueprintPicked = new Map();
+
+  while (selected.length < opts.concepts) {
+    let addedThisRound = false;
+    for (const bpId of blueprintOrder) {
+      if (selected.length >= opts.concepts) break;
+      const used = perBlueprintPicked.get(bpId) ?? 0;
+      if (used >= maxPer) continue;
+      const next = groups.get(bpId)[used];
+      if (!next) continue;
+      selected.push(next);
+      perBlueprintPicked.set(bpId, used + 1);
+      addedThisRound = true;
+    }
+    if (!addedThisRound) break;
+  }
+
+  return selected;
+}
+
+function logSelectionSummary(concepts, opts) {
+  const blueprintIds = new Set(concepts.map(blueprintConceptKey));
+  const byDomain = {};
+  for (const c of concepts) {
+    byDomain[c.domain] = (byDomain[c.domain] ?? 0) + 1;
+  }
+  const mode = opts.spread
+    ? `spread (max ${opts.maxPerBlueprint} objective(s) per blueprint concept)`
+    : "sequential (first eligible by objectiveId)";
+  console.log(`Selection: ${mode}`);
+  console.log(
+    `  ${concepts.length} objectives across ${blueprintIds.size} blueprint concepts`
+  );
+  const domains = Object.entries(byDomain).sort((a, b) => b[1] - a[1]);
+  if (domains.length) {
+    console.log(
+      `  Domains: ${domains.map(([d, n]) => `${d} (${n})`).join(", ")}`
+    );
+  }
 }
 
 async function selectConcepts(db, opts) {
@@ -65,20 +178,12 @@ async function selectConcepts(db, opts) {
     .sort({ examWeight: -1, objectiveId: 1 })
     .toArray();
 
-  const selected = [];
-  for (const concept of candidates) {
-    if (selected.length >= opts.concepts) break;
+  const countMap = await loadApprovedCountsByObjective(questionsCol);
+  const selected = opts.spread
+    ? selectSpread(candidates, countMap, opts)
+    : selectSequential(candidates, countMap, opts);
 
-    const approved = await questionsCol.countDocuments({
-      conceptId: concept.objectiveId,
-      status: "approved",
-      difficulty: { $in: ["prometric", "Prometric"] },
-    });
-
-    if (approved >= opts.minApprovedSkip) continue;
-    selected.push(concept);
-  }
-
+  logSelectionSummary(selected, opts);
   return selected;
 }
 
@@ -152,7 +257,9 @@ async function cmdSubmit(opts) {
 
   if (opts.dryRun) {
     for (const c of concepts) {
-      console.log(`  ${c.objectiveId} | ${c.examWeight} | ${c.domain} > ${c.subdomain}`);
+      console.log(
+        `  ${c.objectiveId} | ${blueprintConceptKey(c)} | ${c.examWeight} | ${c.domain} > ${c.subdomain}`
+      );
     }
     console.log(`Would request ~${concepts.length * opts.perConcept} questions via Batch API.`);
     return;
@@ -387,8 +494,12 @@ Options:
   --batch-id ID          Use specific batch (process/status)
   --dry-run              List objectives only
   --no-auto-approve      Insert all as needs_review (test checklist)
+  --spread               Round-robin across blueprint concepts (default)
+  --sequential           First N objectives by sort order (old behavior)
+  --max-per-blueprint N  Cap objectives per blueprint concept per batch (default 1 with --spread)
 
 Examples:
+  npm run batch:prometric:submit -- --concepts 200 --per-concept 6 --exam-weight High
   npm run batch:prometric:submit -- --concepts 40 --per-concept 8 --exam-weight High
   npm run batch:prometric:status
   npm run batch:prometric:process
