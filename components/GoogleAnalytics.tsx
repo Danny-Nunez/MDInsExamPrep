@@ -3,7 +3,7 @@ import { GA_MEASUREMENT_ID } from "@/lib/branding";
 
 /** Google Analytics (gtag.js) — loaded on all pages via root layout. */
 export default function GoogleAnalytics() {
-  if (!GA_MEASUREMENT_ID || process.env.NODE_ENV !== "production") {
+  if (!GA_MEASUREMENT_ID || process.env.NEXT_PUBLIC_GA_DISABLED === "true") {
     return null;
   }
 
