@@ -20,7 +20,7 @@ export default function WeakestAreas({
   ).slice(0, 3);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4">
         <h2 className="font-semibold text-slate-900">Weakest Areas</h2>
       </div>

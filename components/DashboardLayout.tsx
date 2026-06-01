@@ -27,7 +27,7 @@ export default function DashboardLayout({
         <div className="sticky top-0 hidden h-screen shrink-0 self-start lg:block">
           <Sidebar />
         </div>
-        <main className="min-w-0 flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+        <main className="min-w-0 flex-1 overflow-x-hidden pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
           {children}
         </main>
       </div>

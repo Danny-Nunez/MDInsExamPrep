@@ -131,22 +131,22 @@ export default function RecentExams({
   return (
     <div
       id="upload"
-      className="rounded-xl border border-slate-200 bg-white shadow-sm scroll-mt-24"
+      className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm scroll-mt-24"
     >
-      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-        <h2 className="font-semibold text-slate-900">
+      <div className="flex flex-col gap-2 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <h2 className="min-w-0 text-base font-semibold leading-snug text-slate-900 sm:text-lg">
           Recent Practice Exam Results
         </h2>
         <Link
           href="/results"
-          className="link-accent text-sm"
+          className="link-accent shrink-0 text-sm"
         >
           View All
         </Link>
       </div>
       <div className="divide-y divide-slate-100">
         {recent.length === 0 ? (
-          <p className="px-5 py-8 text-center text-sm text-slate-500">
+          <p className="px-4 py-8 text-center text-sm text-slate-500 sm:px-5">
             No practice exams yet. Start a practice exam to see results here.
           </p>
         ) : (
@@ -160,23 +160,23 @@ export default function RecentExams({
             return (
               <div
                 key={attempt.id}
-                className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
+                className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-slate-500">{date}</p>
-                  <p className="font-medium text-slate-900">
+                  <p className="font-medium leading-snug text-slate-900">
                     Life &amp; Health Practice Exam #{attempts.length - i}
                   </p>
                   <p className="text-sm text-slate-500">
                     {attempt.totalQuestions} Questions
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold text-slate-900">
+                <div className="flex shrink-0 items-center gap-3 self-start sm:self-center">
+                  <span className="text-2xl font-bold tabular-nums text-slate-900">
                     {attempt.percentage}%
                   </span>
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}
                   >
                     {status.label}
                   </span>
@@ -186,12 +186,12 @@ export default function RecentExams({
           })
         )}
       </div>
-      <div className="border-t border-slate-100 px-5 py-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold text-slate-900">
+      <div className="border-t border-slate-100 px-4 py-4 sm:px-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <h3 className="min-w-0 text-sm font-semibold leading-snug text-slate-900">
             Official Exam Result Analysis (Uploaded)
           </h3>
-          <label className="btn-secondary inline-flex cursor-pointer items-center gap-2 px-3 py-2 text-xs">
+          <label className="btn-secondary inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 px-3 py-2 text-xs sm:w-auto">
             {uploading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -216,9 +216,9 @@ export default function RecentExams({
             />
           </label>
         </div>
-        <p className="mt-2 text-xs text-slate-500">
-          Upload a screenshot/photo of your actual exam result. AI will
-          identify weak areas and save the analysis to your account.
+        <p className="mt-2 break-words text-xs leading-relaxed text-slate-500">
+          Upload a screenshot/photo of your actual exam result. AI will identify
+          weak areas and save the analysis to your account.
         </p>
         {error && (
           <p className="mt-2 rounded-md bg-red-50 px-2 py-1 text-xs text-red-700">
@@ -237,17 +237,19 @@ export default function RecentExams({
             analyses.slice(0, 3).map((analysis) => (
               <div
                 key={analysis.id}
-                className="rounded-lg border border-slate-200 bg-slate-50 p-3"
+                className="min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-3"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-xs font-medium text-slate-800">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                  <p className="min-w-0 break-all text-xs font-medium text-slate-800">
                     {analysis.sourceImageName}
                   </p>
                   <span className="shrink-0 text-[11px] text-slate-500">
                     {new Date(analysis.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-slate-700">{analysis.summary}</p>
+                <p className="mt-1 break-words text-xs leading-relaxed text-slate-700">
+                  {analysis.summary}
+                </p>
                 {analysis.weakAreas.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {analysis.weakAreas.slice(0, 3).map((w) => (
@@ -264,7 +266,7 @@ export default function RecentExams({
                   <button
                     type="button"
                     onClick={() => void generateQuizFromAnalysis(analysis)}
-                    className="link-accent mt-2 text-xs"
+                    className="link-accent mt-2 text-left text-xs leading-snug"
                   >
                     Generate quiz from this analysis →
                   </button>
@@ -274,7 +276,7 @@ export default function RecentExams({
           )}
         </div>
       </div>
-      <div className="border-t border-slate-100 px-5 py-3">
+      <div className="border-t border-slate-100 px-4 py-3 sm:px-5">
         <Link
           href="/results"
           className="link-accent text-sm"
