@@ -31,14 +31,17 @@ export default function LandingHero({ sampleHref }: LandingHeroProps) {
             <div className="landing-hero-btn-row">
               <Link
                 href={sampleHref}
-                className="btn-primary inline-flex shrink-0 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm whitespace-nowrap sm:px-6 sm:py-3.5 sm:text-base"
+                className="btn-primary inline-flex shrink-0 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm sm:px-6 sm:py-3.5 sm:text-base"
+                aria-label="Start free 10-question exam"
               >
-                Start Free 10-Question Exam
+                <span className="sm:hidden">Start Free</span>
+                <span className="hidden sm:inline">Start Free 10-Question Exam</span>
                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
               </Link>
               <Link
                 href="/#how-it-works"
-                className="btn-secondary inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border-md-black px-5 py-3 text-sm whitespace-nowrap sm:gap-2.5 sm:px-6 sm:py-3.5 sm:text-base"
+                className="btn-secondary inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border-md-black px-4 py-3 text-sm sm:gap-2.5 sm:px-6 sm:py-3.5 sm:text-base"
+                aria-label="See how it works"
               >
                 <span
                   className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-md-black sm:h-7 sm:w-7"
@@ -46,7 +49,8 @@ export default function LandingHero({ sampleHref }: LandingHeroProps) {
                 >
                   <Play className="h-2.5 w-2.5 fill-md-black text-md-black sm:h-3 sm:w-3" />
                 </span>
-                See How It Works
+                <span className="sm:hidden">See How</span>
+                <span className="hidden sm:inline">See How It Works</span>
               </Link>
             </div>
 
@@ -54,7 +58,7 @@ export default function LandingHero({ sampleHref }: LandingHeroProps) {
               {trustItems.map((item) => (
                 <li
                   key={item}
-                  className="flex shrink-0 items-center gap-2 text-xs font-medium text-stone-700 sm:text-sm"
+                  className="flex min-w-0 items-center gap-2 text-xs font-medium text-stone-700 sm:shrink-0 sm:text-sm"
                 >
                   <span className="landing-trust-check" aria-hidden>
                     <Check className="h-3 w-3 stroke-[3] text-white" />

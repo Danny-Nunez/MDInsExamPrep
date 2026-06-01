@@ -15,8 +15,8 @@ export default function LandingDashboardSection() {
       id="how-it-works"
       className="border-b border-stone-200 bg-stone-50 py-16 sm:py-20"
     >
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
-        <div className="order-2 lg:order-1">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
+        <div className="order-2 min-w-0 w-full max-w-full overflow-hidden lg:order-1">
           <LandingHeroMockup />
         </div>
         <div className="order-1 lg:order-2">

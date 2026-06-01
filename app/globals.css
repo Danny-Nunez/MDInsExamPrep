@@ -164,11 +164,11 @@ body {
   }
 
   .landing-hero-btn-row {
-    @apply flex flex-nowrap items-center gap-2.5 sm:gap-3;
+    @apply flex flex-wrap items-center gap-2.5 sm:flex-nowrap sm:gap-3;
   }
 
   .landing-hero-trust-row {
-    @apply mt-5 flex flex-nowrap items-center gap-x-4 sm:mt-6 sm:gap-x-7;
+    @apply mt-5 flex flex-wrap items-center gap-x-3 gap-y-2.5 sm:mt-6 sm:flex-nowrap sm:gap-x-7 sm:gap-y-0;
   }
 
   /* Hero image: full column height; bleed left into column gap (no clip on desktop) */

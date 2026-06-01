@@ -1,7 +1,7 @@
 type ExamReadinessGaugeProps = {
   percentage: number;
   className?: string;
-  size?: "default" | "compact";
+  size?: "default" | "compact" | "mockup";
 };
 
 /** Continuous upward semicircle: red → gold → green */
@@ -12,9 +12,11 @@ export default function ExamReadinessGauge({
 }: ExamReadinessGaugeProps) {
   const value = Math.min(100, Math.max(0, percentage));
   const cx = 100;
-  const cy = 92;
-  const r = size === "compact" ? 58 : 72;
-  const stroke = size === "compact" ? 10 : 14;
+  const r =
+    size === "default" ? 60 : 50;
+  const stroke =
+    size === "default" ? 12 : 9;
+  const cy = size === "default" ? 80 : 74;
   const gradientId = `exam-readiness-gauge-${size}`;
 
   const polar = (pct: number) => {
@@ -32,10 +34,9 @@ export default function ExamReadinessGauge({
 
   return (
     <svg
-      viewBox="0 0 200 100"
-      className={`mx-auto h-auto w-full ${
-        size === "compact" ? "max-w-[200px]" : "max-w-[260px]"
-      } ${className}`}
+      viewBox={size === "default" ? "0 0 200 88" : "0 0 200 80"}
+      className={`mx-auto block h-auto w-full max-w-full ${className}`}
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
       <defs>

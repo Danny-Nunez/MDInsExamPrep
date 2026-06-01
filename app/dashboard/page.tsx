@@ -165,7 +165,8 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="min-w-0 w-full sm:col-span-2 lg:col-span-1">
           <ExamReadinessCard
             compact
             {...(readiness.unlocked
@@ -180,6 +181,7 @@ export default function DashboardPage() {
             trendText={readinessTrend.text}
             trendPositive={readinessTrend.positive}
           />
+          </div>
           <MetricTrendCard
             title="Correct Answer Rate"
             value={`${correctRate}%`}
