@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ExamReadinessCard from "@/components/ExamReadinessCard";
+import MetricTrendCard from "@/components/MetricTrendCard";
 
 const categories = [
   { name: "Annuities", pct: 78, color: "bg-green-500" },
@@ -31,22 +33,16 @@ export default function LandingHeroMockup() {
       </div>
 
       <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {[
-          { label: "Maryland Exam Readiness", value: "71%" },
-          { label: "Average Score", value: "66%" },
-          { label: "Exams Taken", value: "6" },
-          { label: "Weak Areas", value: "4" },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-lg border border-stone-100 bg-stone-50 px-2.5 py-2 text-center"
-          >
-            <p className="text-[10px] font-medium uppercase tracking-wide text-stone-500 sm:text-xs">
-              {stat.label}
-            </p>
-            <p className="mt-0.5 text-lg font-bold text-md-black">{stat.value}</p>
-          </div>
-        ))}
+        <ExamReadinessCard
+          compact
+          unlocked
+          percentage={72}
+          trendText="+12% from last week"
+          trendPositive
+        />
+        <MetricTrendCard compact title="Correct Answer Rate" value="68%" trend="+8%" />
+        <MetricTrendCard compact title="Quizzes Taken" value="24" trend="+6" />
+        <MetricTrendCard compact title="Avg. Score" value="72%" trend="+10%" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

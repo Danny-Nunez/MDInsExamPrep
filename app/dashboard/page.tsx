@@ -2,20 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Trophy,
-  Target,
-  FileText,
-  AlertTriangle,
-  Crosshair,
-} from "lucide-react";
+import { Crosshair } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
-import ScoreCard from "@/components/ScoreCard";
+import ExamReadinessCard from "@/components/ExamReadinessCard";
+import MetricTrendCard from "@/components/MetricTrendCard";
 import DomainProgress from "@/components/DomainProgress";
 import RecentExams from "@/components/RecentExams";
 import WeakestAreas from "@/components/WeakestAreas";
 import AIQuizGenerator from "@/components/AIQuizGenerator";
-import { DOMAINS, PASS_THRESHOLD } from "@/types/quiz";
+import { DOMAINS } from "@/types/quiz";
 import type {
   CategoryPerformance,
   ExamAttempt,
@@ -25,10 +20,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   getCategoryPerformance,
   getExamAttempts,
-  getWeakAreaCount,
 } from "@/lib/storage";
 import { APP_TAGLINE } from "@/lib/branding";
 import { getWeakestAreas } from "@/lib/domains";
+import {
+  averageScoreTrendText,
+  computeAverageScore,
+  computeCorrectAnswerRate,
+  correctRateTrendText,
+  getExamReadiness,
+  quizzesTakenCardContent,
+  readinessTrendText,
+} from "@/lib/dashboard-stats";
 
 function buildEmptyPerformance(): CategoryPerformance[] {
   return DOMAINS.map((domain) => ({
@@ -80,12 +83,13 @@ export default function DashboardPage() {
     load();
   }, [isLoggedIn, authLoading]);
 
-  const latest = attempts[0];
-  const previous = attempts[1];
-  const latestScore = latest?.percentage ?? 0;
-  const scoreDelta =
-    latest && previous ? latest.percentage - previous.percentage : 0;
-  const weakCount = getWeakAreaCount(performance);
+  const readiness = getExamReadiness(attempts);
+  const correctRate = computeCorrectAnswerRate(performance);
+  const avgScore = computeAverageScore(attempts);
+  const readinessTrend = readinessTrendText(attempts, readiness);
+  const correctTrend = correctRateTrendText(attempts, performance);
+  const quizzesCard = quizzesTakenCardContent(attempts, readiness);
+  const avgTrend = averageScoreTrendText(attempts);
   const weakest = getWeakestAreas(performance);
   const inferredDomains = Array.from(
     new Set(
@@ -95,8 +99,6 @@ export default function DashboardPage() {
         .map((w) => w.domain)
     )
   ).slice(0, 6);
-  const goalGap = Math.max(0, PASS_THRESHOLD - latestScore);
-
   const today = new Date().toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -163,38 +165,39 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <ScoreCard
-            title="Latest Score"
-            value={`${latestScore}%`}
-            subtitle={
-              previous
-                ? `${scoreDelta >= 0 ? "↑" : "↓"} ${Math.abs(scoreDelta)}% from last exam`
-                : "Take your first exam"
-            }
-            subtitleClassName={
-              scoreDelta >= 0 ? "text-green-600" : "text-red-600"
-            }
-            icon={<Trophy className="h-5 w-5 text-md-red" />}
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ExamReadinessCard
+            compact
+            {...(readiness.unlocked
+              ? {
+                  unlocked: true as const,
+                  percentage: readiness.percentage,
+                }
+              : {
+                  unlocked: false as const,
+                  previewPercentage: readiness.previewPercentage,
+                })}
+            trendText={readinessTrend.text}
+            trendPositive={readinessTrend.positive}
           />
-          <ScoreCard
-            title="Goal Score"
-            value={`${PASS_THRESHOLD}%`}
-            subtitle={goalGap > 0 ? `${goalGap}% to go!` : "Goal reached!"}
-            subtitleClassName="text-green-600"
-            icon={<Target className="h-5 w-5 text-green-600" />}
+          <MetricTrendCard
+            title="Correct Answer Rate"
+            value={`${correctRate}%`}
+            trend={correctTrend?.text}
+            trendPositive={correctTrend?.positive}
           />
-          <ScoreCard
-            title="Exams Taken"
-            value={String(attempts.length)}
-            subtitle="Keep it up!"
-            icon={<FileText className="h-5 w-5 text-purple-600" />}
+          <MetricTrendCard
+            title="Quizzes Taken"
+            value={quizzesCard.value}
+            subtitle={quizzesCard.subtitle}
+            trend={quizzesCard.trend}
+            trendPositive={quizzesCard.trendPositive}
           />
-          <ScoreCard
-            title="Weak Areas"
-            value={String(weakCount)}
-            subtitle="Focus your study"
-            icon={<AlertTriangle className="h-5 w-5 text-amber-600" />}
+          <MetricTrendCard
+            title="Avg. Score"
+            value={attempts.length > 0 ? `${avgScore}%` : "—"}
+            trend={avgTrend?.text}
+            trendPositive={avgTrend?.positive}
           />
         </div>
 

@@ -9,12 +9,23 @@ type ExamGuideDropdownProps = {
   /** Mobile accordion mode */
   variant?: "desktop" | "mobile";
   onNavigate?: () => void;
+  /** Match landing nav link colors (gray, not red hover) */
+  marketingNav?: boolean;
+  /** Black nav: white links */
+  darkNav?: boolean;
 };
 
 export default function ExamGuideDropdown({
   variant = "desktop",
   onNavigate,
+  marketingNav = false,
+  darkNav = false,
 }: ExamGuideDropdownProps) {
+  const triggerClass = darkNav
+    ? "landing-nav-link-dark inline-flex items-center gap-1"
+    : marketingNav
+      ? "landing-nav-link inline-flex items-center gap-1"
+      : "inline-flex items-center gap-1 text-sm font-medium text-stone-700 hover:text-md-red";
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -55,7 +66,13 @@ export default function ExamGuideDropdown({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100"
+          className={
+            darkNav
+              ? "landing-nav-link-dark flex w-full items-center justify-between rounded-md px-3 py-2.5 hover:bg-white/10"
+              : marketingNav
+                ? "landing-nav-link flex w-full items-center justify-between rounded-md px-3 py-2.5 hover:bg-neutral-50"
+                : "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100"
+          }
           aria-expanded={open}
         >
           Exam Guide
@@ -101,7 +118,7 @@ export default function ExamGuideDropdown({
       <button
         type="button"
         onClick={() => (open ? setOpen(false) : openMenu())}
-        className="inline-flex items-center gap-1 text-sm font-medium text-stone-700 hover:text-md-red"
+        className={triggerClass}
         aria-expanded={open}
         aria-haspopup="true"
       >

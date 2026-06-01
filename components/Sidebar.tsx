@@ -62,14 +62,9 @@ export default function Sidebar() {
   const allNavItems = isAdmin ? [...navItems, ...adminNavItems] : navItems;
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-slate-200 bg-white">
-      <div className="border-b border-slate-200 p-5">
-        <MarylandLogo
-          href="/dashboard"
-          size="sm"
-          showTagline
-          tagline="short"
-        />
+    <aside className="flex h-screen w-64 flex-col border-r border-stone-800 bg-md-black">
+      <div className="border-b border-stone-800 p-5">
+        <MarylandLogo href="/dashboard" size="sm" wordmark darkNav />
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -81,10 +76,8 @@ export default function Sidebar() {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? "nav-active"
-                  : "text-stone-600 hover:bg-stone-50 hover:text-md-black"
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${
+                isActive ? "sidebar-nav-active" : "sidebar-nav-link"
               }`}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -94,20 +87,20 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-slate-200 p-4">
+      <div className="border-t border-stone-800 p-4">
         {!loading && (
           <div className="rounded-lg px-2 py-2">
             {isLoggedIn && user ? (
               <>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-700">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-700 text-sm font-semibold text-md-gold">
                     {getInitials(user.name)}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">
+                    <p className="truncate text-sm font-medium text-white">
                       {user.name}
                     </p>
-                    <p className="truncate text-xs text-slate-500">
+                    <p className="truncate text-xs text-stone-400">
                       {user.email}
                     </p>
                   </div>
@@ -115,7 +108,7 @@ export default function Sidebar() {
                 <button
                   type="button"
                   onClick={() => logout()}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-stone-600 py-2 text-xs font-medium text-stone-300 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   Sign out
@@ -125,13 +118,13 @@ export default function Sidebar() {
               <div className="space-y-2">
                 <Link
                   href="/login"
-                  className="btn-primary block w-full py-2 text-center text-xs"
+                  className="landing-nav-cta block w-full py-2 text-center text-xs"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/register"
-                  className="block w-full rounded-lg border border-slate-200 py-2 text-center text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  className="landing-nav-login-dark block w-full py-2 text-center text-xs"
                 >
                   Create account
                 </Link>

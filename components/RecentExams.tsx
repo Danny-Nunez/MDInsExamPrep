@@ -129,7 +129,10 @@ export default function RecentExams({
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div
+      id="upload"
+      className="rounded-xl border border-slate-200 bg-white shadow-sm scroll-mt-24"
+    >
       <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
         <h2 className="font-semibold text-slate-900">
           Recent Practice Exam Results

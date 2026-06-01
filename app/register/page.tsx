@@ -53,7 +53,7 @@ function RegisterForm() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Subscribe after your free sample to unlock full exam prep"
+      subtitle="Create your account to unlock full Maryland exam prep"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

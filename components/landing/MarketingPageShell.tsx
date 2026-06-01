@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import LandingNav from "@/components/LandingNav";
-import LandingFooter from "@/components/landing/LandingFooter";
+import SiteFooter from "@/components/landing/SiteFooter";
 import { SEO_DESCRIPTION, SEO_TITLE } from "@/lib/branding";
 
 export function marketingMetadata(
@@ -21,12 +21,12 @@ export default function MarketingPageShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="flex min-h-screen flex-col bg-stone-50">
       <LandingNav />
-      <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 sm:px-6 lg:py-16">
         {children}
       </main>
-      <LandingFooter />
+      <SiteFooter />
     </div>
   );
 }

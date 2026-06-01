@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { APP_NAME, APP_TAGLINE_SHORT, LOGO_ALT, LOGO_PATH } from "@/lib/branding";
+import SiteFooter from "@/components/landing/SiteFooter";
 import LandingNav from "./LandingNav";
 
 export default function AuthLayout({
@@ -13,9 +14,9 @@ export default function AuthLayout({
   subtitle: string;
 }) {
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="flex min-h-screen flex-col bg-stone-50">
       <LandingNav />
-      <div className="flex flex-col items-center justify-center px-4 py-12 sm:py-16">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-12 sm:py-16">
         <div className="w-full max-w-md rounded-xl border border-stone-200 bg-white p-8 shadow-sm">
           <div className="mb-6 flex flex-col items-center text-center">
             <Link href="/" className="mb-4 inline-block">
@@ -36,6 +37,7 @@ export default function AuthLayout({
           {children}
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

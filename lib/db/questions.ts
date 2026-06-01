@@ -13,13 +13,17 @@ export type QuestionFilters = {
   status?: QuestionStatus;
   conceptId?: string;
   domain?: string;
+  domains?: string[];
   subdomain?: string;
+  subdomains?: string[];
   /** Partial match on blueprint concept name (topic). */
   concept?: string;
   difficulty?: string;
   limit?: number;
   skip?: number;
 };
+
+export const MAX_QUIZ_SAMPLE_SIZE = 60;
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -73,8 +77,16 @@ export async function listQuestions(filters: QuestionFilters = {}) {
 
   if (filters.status) query.status = filters.status;
   if (filters.conceptId) query.conceptId = filters.conceptId;
-  if (filters.domain) query.domain = filters.domain;
-  if (filters.subdomain) query.subdomain = filters.subdomain;
+  if (filters.subdomains?.length) {
+    query.subdomain = { $in: filters.subdomains };
+  } else if (filters.subdomain) {
+    query.subdomain = filters.subdomain;
+  }
+  if (filters.domains?.length) {
+    query.domain = { $in: filters.domains };
+  } else if (filters.domain) {
+    query.domain = filters.domain;
+  }
   if (filters.concept?.trim()) {
     query.concept = {
       $regex: escapeRegex(filters.concept.trim()),
@@ -152,6 +164,9 @@ export async function updateQuestion(
 
 export async function getApprovedQuizQuestions(options: {
   domain?: string;
+  domains?: string[];
+  subdomain?: string;
+  subdomains?: string[];
   difficulty?: string;
   conceptIds?: string[];
   limit?: number;
@@ -160,7 +175,16 @@ export async function getApprovedQuizQuestions(options: {
   const col = db.collection<QuestionDocument>(COLLECTIONS.questions);
   const query: Filter<QuestionDocument> = { status: "approved" };
 
-  if (options.domain) query.domain = options.domain;
+  if (options.subdomains?.length) {
+    query.subdomain = { $in: options.subdomains };
+  } else if (options.subdomain) {
+    query.subdomain = options.subdomain;
+  }
+  if (options.domains?.length) {
+    query.domain = { $in: options.domains };
+  } else if (options.domain) {
+    query.domain = options.domain;
+  }
   if (options.difficulty) {
     query.difficulty = options.difficulty;
   } else {
@@ -170,7 +194,7 @@ export async function getApprovedQuizQuestions(options: {
     query.conceptId = { $in: options.conceptIds };
   }
 
-  const limit = Math.min(options.limit ?? 20, 60);
+  const limit = Math.min(options.limit ?? 20, MAX_QUIZ_SAMPLE_SIZE);
   const docs = await col.aggregate<QuestionDocument>([
     { $match: query },
     { $sample: { size: limit } },

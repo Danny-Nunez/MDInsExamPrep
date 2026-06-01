@@ -7,7 +7,7 @@ import CommonExamMistakesBreakdown from "@/components/landing/CommonExamMistakes
 import ExamDayChecklist from "@/components/landing/ExamDayChecklist";
 import HardestTopicsBreakdown from "@/components/landing/HardestTopicsBreakdown";
 import OfficialResourcesCard from "@/components/landing/OfficialResourcesCard";
-import LandingFooter from "@/components/landing/LandingFooter";
+import SiteFooter from "@/components/landing/SiteFooter";
 import { FOOTER_DISCLAIMER, SITE_URL } from "@/lib/branding";
 import type { SeoGuidePage } from "@/lib/seo-guide-pages";
 
@@ -31,9 +31,9 @@ type SeoGuidePageLayoutProps = {
 
 export default function SeoGuidePageLayout({ page }: SeoGuidePageLayoutProps) {
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="flex min-h-screen flex-col bg-stone-50">
       <LandingNav />
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12 lg:py-16">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 sm:py-12 lg:py-16">
         <nav className="text-sm text-stone-500">
           <Link href="/" className="hover:text-md-red">
             Home
@@ -143,7 +143,7 @@ export default function SeoGuidePageLayout({ page }: SeoGuidePageLayoutProps) {
           the Maryland Insurance Administration and Prometric before you register.
         </p>
       </main>
-      <LandingFooter />
+      <SiteFooter />
     </div>
   );
 }

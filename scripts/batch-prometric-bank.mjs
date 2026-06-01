@@ -145,25 +145,157 @@ function selectSpread(candidates, countMap, opts) {
   return selected;
 }
 
-function logSelectionSummary(concepts, opts) {
-  const blueprintIds = new Set(concepts.map(blueprintConceptKey));
-  const byDomain = {};
-  for (const c of concepts) {
-    byDomain[c.domain] = (byDomain[c.domain] ?? 0) + 1;
+function countByField(items, field) {
+  const counts = {};
+  for (const item of items) {
+    const key = String(item[field] ?? "(unknown)").trim() || "(unknown)";
+    counts[key] = (counts[key] ?? 0) + 1;
   }
+  return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+}
+
+function buildCoverageStats(candidates, selected, countMap, opts) {
+  const selectedSet = new Set(selected.map((s) => s.objectiveId));
+  const skippedStocked = candidates.filter((c) => {
+    if (selectedSet.has(c.objectiveId)) return false;
+    return (countMap.get(c.objectiveId) ?? 0) >= opts.minApprovedSkip;
+  });
+  const stillEligible = candidates.filter((c) => {
+    if (selectedSet.has(c.objectiveId)) return false;
+    return (countMap.get(c.objectiveId) ?? 0) < opts.minApprovedSkip;
+  });
+
+  return {
+    totalCandidates: candidates.length,
+    target: opts.concepts,
+    selected: selected.length,
+    blueprintConcepts: new Set(selected.map(blueprintConceptKey)).size,
+    skippedStocked: skippedStocked.length,
+    stillEligibleNotRun: stillEligible.length,
+    selectedByDomain: countByField(selected, "domain"),
+    selectedBySubdomain: countByField(selected, "subdomain"),
+    selectedTopics: countByField(selected, "concept"),
+    skippedByDomain: countByField(skippedStocked, "domain"),
+    skippedBySubdomain: countByField(skippedStocked, "subdomain"),
+  };
+}
+
+function formatBreakdown(entries, max = 15) {
+  if (!entries.length) return "(none)";
+  const shown = entries.slice(0, max);
+  const rest = entries.length - shown.length;
+  const text = shown.map(([k, n]) => `${k} (${n})`).join(", ");
+  return rest > 0 ? `${text}, +${rest} more` : text;
+}
+
+function logCoverageReport(stats, opts, phase) {
   const mode = opts.spread
-    ? `spread (max ${opts.maxPerBlueprint} objective(s) per blueprint concept)`
-    : "sequential (first eligible by objectiveId)";
-  console.log(`Selection: ${mode}`);
+    ? `spread · max ${opts.maxPerBlueprint} objective(s) per blueprint concept`
+    : "sequential";
+  console.log(`\n=== ${phase} ===`);
+  console.log(`  Mode: ${mode}`);
+  const weightLabel = opts.examWeight ? ` · exam weight ${opts.examWeight}` : "";
   console.log(
-    `  ${concepts.length} objectives across ${blueprintIds.size} blueprint concepts`
+    `  Pool: ${stats.totalCandidates} Prometric objectives${weightLabel}`
   );
-  const domains = Object.entries(byDomain).sort((a, b) => b[1] - a[1]);
-  if (domains.length) {
+
+  if (stats.skippedStocked > 0) {
     console.log(
-      `  Domains: ${domains.map(([d, n]) => `${d} (${n})`).join(", ")}`
+      `  Skipped (already have ≥${opts.minApprovedSkip} approved Prometric questions): ${stats.skippedStocked}`
+    );
+    console.log(`  Skipped domains: ${formatBreakdown(stats.skippedByDomain)}`);
+    if (stats.skippedBySubdomain.length) {
+      console.log(
+        `  Skipped subdomains: ${formatBreakdown(stats.skippedBySubdomain, 20)}`
+      );
+    }
+  }
+
+  if (stats.stillEligibleNotRun > 0) {
+    console.log(
+      `  Still eligible but not in this batch: ${stats.stillEligibleNotRun} (raise --concepts or run again after process)`
     );
   }
+
+  console.log(
+    `  This batch: ${stats.selected} objectives · ${stats.blueprintConcepts} blueprint topics (target ${stats.target})`
+  );
+  if (stats.selected < stats.target && stats.stillEligibleNotRun === 0) {
+    console.log(
+      "  Note: Target not reached because most objectives in the pool are already stocked. Use --min-approved-skip 0 to force regeneration."
+    );
+  }
+
+  console.log(`  Selected domains: ${formatBreakdown(stats.selectedByDomain)}`);
+  console.log(
+    `  Selected subdomains: ${formatBreakdown(stats.selectedBySubdomain, 25)}`
+  );
+  if (stats.selectedTopics.length <= 40) {
+    console.log(
+      `  Selected topics: ${formatBreakdown(stats.selectedTopics, 40)}`
+    );
+  } else {
+    console.log(
+      `  Selected topics: ${stats.selectedTopics.length} unique concept names (run --dry-run to list all)`
+    );
+  }
+}
+
+function logProcessCoverage(rows, totals) {
+  const byDomain = {};
+  const bySubdomain = {};
+  const byTopic = {};
+
+  for (const row of rows) {
+    const d = row.domain ?? "(unknown)";
+    const s = row.subdomain ?? "(unknown)";
+    const t = row.concept ?? "(unknown)";
+    if (!byDomain[d]) byDomain[d] = { objectives: 0, approved: 0, review: 0 };
+    byDomain[d].objectives++;
+    byDomain[d].approved += row.approved;
+    byDomain[d].review += row.review;
+
+    if (!bySubdomain[s]) bySubdomain[s] = { objectives: 0, approved: 0 };
+    bySubdomain[s].objectives++;
+    bySubdomain[s].approved += row.approved;
+
+    if (!byTopic[t]) byTopic[t] = { objectives: 0, approved: 0 };
+    byTopic[t].objectives++;
+    byTopic[t].approved += row.approved;
+  }
+
+  const domainLines = Object.entries(byDomain)
+    .sort((a, b) => b[1].approved - a[1].approved)
+    .map(
+      ([name, v]) =>
+        `${name} (${v.objectives} objectives, ${v.approved} approved, ${v.review} review)`
+    );
+
+  const subdomainLines = Object.entries(bySubdomain)
+    .sort((a, b) => b[1].objectives - a[1].objectives)
+    .slice(0, 25)
+    .map(([name, v]) => `${name} (${v.objectives} objectives, ${v.approved} approved)`);
+
+  const topicLines = Object.entries(byTopic)
+    .sort((a, b) => b[1].approved - a[1].approved)
+    .slice(0, 30)
+    .map(([name, v]) => `${name} (${v.approved} approved)`);
+
+  console.log("\n=== Process — by domain ===");
+  for (const line of domainLines) console.log(`  ${line}`);
+
+  console.log("\n=== Process — by subdomain (top 25) ===");
+  for (const line of subdomainLines) console.log(`  ${line}`);
+
+  console.log("\n=== Process — by topic / concept (top 30) ===");
+  for (const line of topicLines) console.log(`  ${line}`);
+
+  console.log("\n=== Totals ===");
+  console.log(`  batch lines:     ${totals.lines}`);
+  console.log(`  questions:     ${totals.parsed}`);
+  console.log(`  auto-approved: ${totals.approved}`);
+  console.log(`  needs_review:  ${totals.review}`);
+  console.log(`  errors:        ${totals.errors}`);
 }
 
 async function selectConcepts(db, opts) {
@@ -183,8 +315,9 @@ async function selectConcepts(db, opts) {
     ? selectSpread(candidates, countMap, opts)
     : selectSequential(candidates, countMap, opts);
 
-  logSelectionSummary(selected, opts);
-  return selected;
+  const stats = buildCoverageStats(candidates, selected, countMap, opts);
+  logCoverageReport(stats, opts, "Submit selection");
+  return { selected, stats };
 }
 
 function questionDoc(concept, q, status, quality) {
@@ -246,10 +379,9 @@ async function cmdSubmit(opts) {
   const client = await connectMongo();
   const db = client.db("examprep");
 
-  const concepts = await selectConcepts(db, opts);
+  const { selected: concepts } = await selectConcepts(db, opts);
   await client.close();
 
-  console.log(`Selected ${concepts.length} Prometric objectives (target ${opts.concepts}).`);
   if (concepts.length === 0) {
     console.log("Nothing to generate. Lower --min-approved-skip or seed concepts.");
     return;
@@ -369,6 +501,7 @@ async function cmdProcess(opts) {
 
   let totals = { approved: 0, review: 0, parsed: 0, lines: 0, errors: 0 };
   const allFailures = {};
+  const processRows = [];
 
   for (const line of text.split("\n")) {
     if (!line.trim()) continue;
@@ -412,8 +545,16 @@ async function cmdProcess(opts) {
       for (const [k, v] of Object.entries(result.failuresByRule)) {
         allFailures[k] = (allFailures[k] ?? 0) + v;
       }
+      processRows.push({
+        objectiveId,
+        domain: concept.domain,
+        subdomain: concept.subdomain,
+        concept: concept.concept,
+        approved: result.approved,
+        review: result.review,
+      });
       console.log(
-        `  ${objectiveId}: ${result.approved} approved, ${result.review} needs_review (${result.parsed} parsed)`
+        `  ${objectiveId} | ${concept.domain} > ${concept.subdomain} | ${concept.concept}: ${result.approved} approved, ${result.review} needs_review`
       );
     } catch (err) {
       console.warn(`  ${objectiveId}: parse error — ${err.message}`);
@@ -423,14 +564,9 @@ async function cmdProcess(opts) {
 
   await client.close();
 
-  console.log("\n=== Summary ===");
-  console.log(`  batch lines:     ${totals.lines}`);
-  console.log(`  questions:     ${totals.parsed}`);
-  console.log(`  auto-approved: ${totals.approved}`);
-  console.log(`  needs_review:  ${totals.review}`);
-  console.log(`  errors:        ${totals.errors}`);
+  logProcessCoverage(processRows, totals);
   if (Object.keys(allFailures).length) {
-    console.log("  checklist failures:");
+    console.log("  Checklist failures:");
     for (const [k, v] of Object.entries(allFailures).sort((a, b) => b[1] - a[1])) {
       console.log(`    ${k}: ${v}`);
     }
@@ -443,9 +579,9 @@ async function cmdRunLocal(opts) {
 
   const client = await connectMongo();
   const db = client.db("examprep");
-  const concepts = await selectConcepts(db, opts);
+  const { selected: concepts } = await selectConcepts(db, opts);
 
-  console.log(`Local run: ${concepts.length} concepts × ${opts.perConcept} questions`);
+  console.log(`Local run: ${concepts.length} objectives × ${opts.perConcept} questions`);
   if (opts.dryRun) {
     await client.close();
     return cmdSubmit({ ...opts, dryRun: true });
@@ -467,12 +603,12 @@ async function cmdRunLocal(opts) {
     totals.approved += result.approved;
     totals.review += result.review;
     console.log(
-      `  ${concept.objectiveId}: ${result.approved} approved, ${result.review} needs_review`
+      `  ${concept.objectiveId} | ${concept.domain} > ${concept.subdomain} | ${concept.concept}: ${result.approved} approved, ${result.review} needs_review`
     );
   }
 
   await client.close();
-  console.log("\n=== Summary ===");
+  console.log("\n=== Local run totals ===");
   console.log(`  parsed: ${totals.parsed}, approved: ${totals.approved}, needs_review: ${totals.review}`);
 }
 

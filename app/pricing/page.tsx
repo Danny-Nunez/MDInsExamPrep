@@ -4,6 +4,8 @@ import MarketingPageShell, {
 } from "@/components/landing/MarketingPageShell";
 import {
   FREE_SAMPLE_QUESTION_COUNT,
+  SIGN_UP_CTA,
+  SUBSCRIPTION_PRICE_AMOUNT,
   SUBSCRIPTION_PRICE_LABEL,
 } from "@/lib/subscription";
 
@@ -17,8 +19,7 @@ export default function PricingPage() {
     <MarketingPageShell>
       <h1 className="text-3xl font-bold text-md-black">Pricing</h1>
       <p className="mt-4 text-lg leading-relaxed text-stone-600">
-        Try before you subscribe — then unlock the full prep platform when
-        you&apos;re ready.
+        Try the free sample — then sign up when you&apos;re ready for full access.
       </p>
       <div className="mt-8 grid gap-6 sm:grid-cols-2">
         <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
@@ -40,16 +41,20 @@ export default function PricingPage() {
             Full access
           </p>
           <p className="mt-2 text-3xl font-bold text-md-black">
-            {SUBSCRIPTION_PRICE_LABEL}
+            {SUBSCRIPTION_PRICE_AMOUNT}
           </p>
+          <p className="text-xs text-stone-500">Billed monthly · Cancel anytime</p>
           <ul className="mt-4 space-y-2 text-sm text-stone-700">
             <li>Unlimited practice & timed exams</li>
             <li>Maryland blueprint performance tracking</li>
             <li>AI quizzes on weak subdomains</li>
             <li>Cancel anytime</li>
           </ul>
-          <Link href="/subscribe" className="btn-primary mt-6 inline-block px-6 py-3">
-            Subscribe
+          <Link
+            href="/register?next=/subscribe"
+            className="btn-primary btn-shimmer mt-6 inline-block px-6 py-3"
+          >
+            {SIGN_UP_CTA}
           </Link>
         </div>
       </div>

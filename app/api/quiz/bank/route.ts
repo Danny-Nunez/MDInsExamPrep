@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   const domain = searchParams.get("domain") ?? undefined;
   const difficulty = searchParams.get("difficulty") ?? undefined;
   const weakOnly = searchParams.get("weakOnly") === "1";
+  const subdomains = searchParams.getAll("subdomain").filter(Boolean);
   const limit = Math.min(Number(searchParams.get("limit")) || 20, 60);
 
   let conceptIds: string[] | undefined;
@@ -28,6 +29,7 @@ export async function GET(request: Request) {
 
   const questions = await getApprovedQuizQuestions({
     domain,
+    subdomains: subdomains.length ? subdomains : undefined,
     difficulty,
     conceptIds,
     limit,

@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { getSessionUser } from "@/lib/auth";
+import { canAccessFullApp } from "@/lib/access";
 import { getRecentLearningContext, saveGeneratedQuiz } from "@/lib/db/exams";
+import { buildQuizFromApprovedBank } from "@/lib/quiz-from-bank";
 import { ALL_SUBDOMAINS } from "@/lib/marylandBlueprint";
 import { DOMAINS, MARYLAND_EXAM } from "@/types/quiz";
 import {
@@ -64,8 +66,8 @@ Return JSON only:
       "difficulty": "hard",
       "isStateLaw": false,
       "question": "scenario stem...",
-      "choices": ["a","b","c","d"],
-      "correctAnswer": "exact choice text",
+      "choices": ["Full answer A text", "Full answer B text", "Full answer C text", "Full answer D text"],
+      "correctAnswer": "Full answer B text",
       "explanation": {
         "correct": "why correct",
         "wrongAnswers": { "other choice text": "why wrong" }
@@ -242,16 +244,47 @@ function parseQuestions(content: string): QuizQuestion[] {
   return valid;
 }
 
+async function generateViaOpenAI(
+  apiKey: string,
+  weakAreas: string[],
+  subdomains: string[],
+  questionCount: number,
+  difficulty: Difficulty,
+  historyContext: string
+): Promise<QuizQuestion[]> {
+  const openai = new OpenAI({ apiKey });
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You write Maryland insurance licensing exam items in Prometric style. JSON only.",
+      },
+      {
+        role: "user",
+        content: buildPrompt(
+          weakAreas,
+          subdomains,
+          questionCount,
+          difficulty,
+          historyContext
+        ),
+      },
+    ],
+    temperature: 0.55,
+    response_format: { type: "json_object" },
+  });
+
+  const content = completion.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error("No response from OpenAI");
+  }
+  return parseQuestions(content);
+}
+
 export async function POST(request: Request) {
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "OpenAI API key is not configured on the server." },
-        { status: 500 }
-      );
-    }
-
     let body: GenerateQuizBody;
     try {
       body = (await request.json()) as GenerateQuizBody;
@@ -295,39 +328,62 @@ export async function POST(request: Request) {
       }
     }
 
-    const openai = new OpenAI({ apiKey });
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You write Maryland insurance licensing exam items in Prometric style. JSON only.",
-        },
-        {
-          role: "user",
-          content: buildPrompt(
+    let questions: QuizQuestion[] = [];
+    let source: "bank" | "ai" | "mixed" = "ai";
+
+    if (user && canAccessFullApp(user)) {
+      const bankQuestions = await buildQuizFromApprovedBank({
+        limit: questionCount,
+        weakAreas,
+        subdomains,
+        difficulty,
+      });
+
+      if (bankQuestions.length >= questionCount) {
+        questions = bankQuestions.slice(0, questionCount);
+        source = "bank";
+      } else if (bankQuestions.length > 0) {
+        const apiKey = process.env.OPENAI_API_KEY;
+        const remainder = questionCount - bankQuestions.length;
+        if (apiKey && remainder > 0) {
+          const aiQuestions = await generateViaOpenAI(
+            apiKey,
             weakAreas,
             subdomains,
-            questionCount,
+            remainder,
             difficulty,
             historyContext
-          ),
-        },
-      ],
-      temperature: 0.55,
-      response_format: { type: "json_object" },
-    });
-
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
-      return NextResponse.json(
-        { error: "No response from OpenAI. Please try again." },
-        { status: 502 }
-      );
+          );
+          questions = [...bankQuestions, ...aiQuestions].slice(0, questionCount);
+          source = "mixed";
+        } else {
+          questions = bankQuestions;
+          source = "bank";
+        }
+      }
     }
 
-    const questions = parseQuestions(content);
+    if (questions.length === 0) {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        return NextResponse.json(
+          {
+            error:
+              "No approved bank questions matched and OpenAI is not configured.",
+          },
+          { status: 500 }
+        );
+      }
+      questions = await generateViaOpenAI(
+        apiKey,
+        weakAreas,
+        subdomains,
+        questionCount,
+        difficulty,
+        historyContext
+      );
+      source = "ai";
+    }
 
     let quizId: string | undefined;
     if (user) {
@@ -343,7 +399,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ questions, quizId });
+    return NextResponse.json({ questions, quizId, source });
   } catch (err) {
     console.error("generate-quiz error:", err);
     const message =

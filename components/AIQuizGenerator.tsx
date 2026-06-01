@@ -201,8 +201,14 @@ export default function AIQuizGenerator({
 
       const questions = data.questions as QuizQuestion[];
       const quizId = data.quizId as string | undefined;
+      const source = data.source as string | undefined;
       setActiveQuiz(questions, quizId);
-      router.push("/practice?mode=ai");
+      if (source === "bank") {
+        setError(null);
+      }
+      router.push(
+        source === "bank" ? "/practice?mode=ai&source=bank" : "/practice?mode=ai"
+      );
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -217,7 +223,7 @@ export default function AIQuizGenerator({
     >
       <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
         <Sparkles className="h-5 w-5 text-md-red" />
-        <h2 className="font-semibold text-slate-900">AI Quiz Generator</h2>
+        <h2 className="font-semibold text-slate-900">Quiz Generator</h2>
       </div>
 
       <div className="space-y-5 p-5">
@@ -328,11 +334,11 @@ export default function AIQuizGenerator({
         </button>
 
         <div className="rounded-lg border border-md-gold/30 bg-md-gold-light px-4 py-3 text-xs text-stone-800">
-          AI generates Prometric-style scenario questions for your selected
-          topics.
+          Uses your approved question bank first (1,400+ items — no API cost).
+          OpenAI is only called if not enough bank questions match your topics.
           {isLoggedIn
             ? " Quizzes and results are saved to your account."
-            : " Sign in to save generated quizzes and exam results to the database."}
+            : " Sign in to use the full bank and save results."}
         </div>
       </div>
     </div>

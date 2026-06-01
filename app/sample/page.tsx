@@ -4,14 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LandingNav from "@/components/LandingNav";
-import LandingFooter from "@/components/landing/LandingFooter";
+import SiteFooter from "@/components/landing/SiteFooter";
 import QuestionCard from "@/components/QuestionCard";
 import { getSampleExamQuestions } from "@/lib/quizSeed";
 import { buildExamAttempt } from "@/lib/scoring";
 import { markSampleCompleted } from "@/lib/sample-storage";
 import {
   FREE_SAMPLE_QUESTION_COUNT,
-  SUBSCRIPTION_PRICE_LABEL,
+  SIGN_UP_CTA,
 } from "@/lib/subscription";
 import type { QuizQuestion } from "@/types/quiz";
 import { PASS_THRESHOLD } from "@/types/quiz";
@@ -72,9 +72,9 @@ export default function SampleExamPage() {
   if (finished) {
     const passed = scorePercent >= PASS_THRESHOLD;
     return (
-      <div className="min-h-screen bg-stone-50">
+      <div className="flex min-h-screen flex-col bg-stone-50">
         <LandingNav />
-        <main className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+        <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-16 sm:px-6">
           <h1 className="text-3xl font-bold text-md-black">Sample complete</h1>
           <p className="mt-3 text-lg text-stone-600">
             You answered {FREE_SAMPLE_QUESTION_COUNT} questions with instant
@@ -94,19 +94,21 @@ export default function SampleExamPage() {
           </div>
           <p className="mt-6 text-stone-600">
             Unlock unlimited practice exams, AI weak-area quizzes, performance
-            tracking, and timed Prometric-style simulations for{" "}
-            {SUBSCRIPTION_PRICE_LABEL}.
+            tracking, and timed Prometric-style simulations.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/subscribe" className="btn-primary px-6 py-3">
-              Subscribe — {SUBSCRIPTION_PRICE_LABEL}
+            <Link
+              href="/register?next=/subscribe"
+              className="btn-primary btn-shimmer px-6 py-3"
+            >
+              {SIGN_UP_CTA}
             </Link>
             <Link href="/" className="btn-secondary px-6 py-3">
               Back to home
             </Link>
           </div>
         </main>
-        <LandingFooter />
+        <SiteFooter />
       </div>
     );
   }
@@ -115,9 +117,9 @@ export default function SampleExamPage() {
     currentQuestion && selectedAnswers[currentQuestion.id] !== undefined;
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="flex min-h-screen flex-col bg-stone-50">
       <LandingNav />
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:py-12">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 lg:py-12">
         <Link href="/" className="link-accent text-sm">
           ← Back to home
         </Link>
@@ -198,7 +200,7 @@ export default function SampleExamPage() {
           </div>
         </div>
       </main>
-      <LandingFooter />
+      <SiteFooter />
     </div>
   );
 }

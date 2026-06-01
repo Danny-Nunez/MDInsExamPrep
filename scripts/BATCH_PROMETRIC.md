@@ -67,6 +67,10 @@ npm run batch:prometric:submit -- --concepts 978 --per-concept 6
 
 Prefer chunked runs (`--concepts 200`) and repeat after `process`; see README.
 
+## Coverage report (domains & topics)
+
+`submit` and `process` print summaries by **domain**, **subdomain**, and **concept (topic)**. If you request `--concepts 676` but only ~312 run, check **Skipped domains** — those topics already have ≥3 approved Prometric questions (`--min-approved-skip 3`).
+
 ## Breadth across blueprint concepts (default)
 
 Submit uses **`--spread`** by default: round-robin across blueprint concept ids (`md-lh-0001`, …) with **`--max-per-blueprint 1`**, so `--concepts 200` picks ~200 different topics. Use `--dry-run` to see domain breakdown before spending on the batch.

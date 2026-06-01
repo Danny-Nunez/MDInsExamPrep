@@ -15,6 +15,10 @@ type MarylandLogoProps = {
   /** Show tagline under the app name (off by default in nav) */
   showTagline?: boolean;
   tagline?: "short" | "full";
+  /** Uppercase wordmark for marketing nav (matches landing mockup) */
+  wordmark?: boolean;
+  /** Gold MARYLAND + white INSURANCE EXAM on dark nav */
+  darkNav?: boolean;
   className?: string;
 };
 
@@ -30,6 +34,8 @@ export default function MarylandLogo({
   showAppName = true,
   showTagline = false,
   tagline = "short",
+  wordmark = false,
+  darkNav = false,
   className = "",
 }: MarylandLogoProps) {
   const { width, height, imgClass, appText } = sizes[size];
@@ -49,12 +55,29 @@ export default function MarylandLogo({
         <div
           className={`min-w-0 ${showTagline ? "max-w-[10rem] sm:max-w-[12rem]" : ""}`}
         >
-          <p
-            className={`font-bold leading-tight text-md-black ${showTagline ? "truncate" : ""} ${appText}`}
-          >
-            {APP_NAME}
-          </p>
-          {showTagline && (
+          {wordmark && darkNav ? (
+            <div className="inline-grid grid-cols-1 leading-tight">
+              <span className="landing-wordmark-stretch text-md-gold">
+                MARYLAND
+              </span>
+              <span className="text-[11px] font-bold uppercase text-white sm:text-xs">
+                INSURANCE EXAM
+              </span>
+            </div>
+          ) : wordmark && !darkNav ? (
+            <p
+              className={`font-bold leading-tight text-neutral-900 ${showTagline ? "truncate" : ""} text-[11px] uppercase tracking-[0.12em] sm:text-xs`}
+            >
+              {APP_NAME.replace(/ Exam$/, " EXAM")}
+            </p>
+          ) : (
+            <p
+              className={`font-bold leading-tight text-neutral-900 ${showTagline ? "truncate" : ""} ${appText}`}
+            >
+              {APP_NAME}
+            </p>
+          )}
+          {showTagline && !darkNav && (
             <p className="truncate text-xs text-stone-500">{taglineText}</p>
           )}
         </div>

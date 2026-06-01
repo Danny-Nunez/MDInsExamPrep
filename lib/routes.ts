@@ -14,9 +14,15 @@ export const PROTECTED_APP_PATHS = [
   "/admin",
 ] as const;
 
+/** Path without hash or query — used for route guards */
+export function normalizeAppPath(path: string): string {
+  return path.split("#")[0].split("?")[0];
+}
+
 export function isProtectedAppPath(pathname: string): boolean {
+  const base = normalizeAppPath(pathname);
   return PROTECTED_APP_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`)
+    (p) => base === p || base.startsWith(`${p}/`)
   );
 }
 
@@ -49,5 +55,8 @@ export function afterAuthRedirect(
     return path;
   }
   if (isProtectedAppPath(path)) return "/subscribe";
+  if (path === "/subscribe") return "/subscribe";
+  // New accounts: subscribe after signup (default next is /dashboard)
+  if (!next || normalizeAppPath(path) === "/dashboard") return "/subscribe";
   return path;
 }

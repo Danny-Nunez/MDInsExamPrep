@@ -56,30 +56,74 @@ function PracticeExamContent() {
   const [secondsLeft, setSecondsLeft] = useState(EXAM_MINUTES * 60);
   const [timerRunning, setTimerRunning] = useState(false);
   const [startedAt, setStartedAt] = useState<number | null>(null);
+  const [quizSource, setQuizSource] = useState<"bank" | "seed" | "ai" | null>(
+    null
+  );
 
   const studyMode = sessionMode === "study";
   const bankStats = useMemo(() => getBankStats(), []);
 
   useEffect(() => {
-    const aiQuiz = getActiveQuiz();
-    if (isAiMode && aiQuiz && aiQuiz.length > 0) {
-      setQuestions(aiQuiz);
-    } else if (isPrometricPreset) {
-      const exam = getPrometricExamQuestions(PROMETRIC_EXAM_LENGTH);
-      setQuestions(exam);
-      setActiveQuiz(exam);
-    } else {
-      const count = Number(searchParams.get("count")) || DEFAULT_PRACTICE_LENGTH;
-      const seed = getPracticeExamQuestions(count);
-      setQuestions(seed);
-      setActiveQuiz(seed);
+    let cancelled = false;
+
+    async function loadQuestions() {
+      const aiQuiz = getActiveQuiz();
+      if (isAiMode && aiQuiz && aiQuiz.length > 0) {
+        if (!cancelled) {
+          setQuestions(aiQuiz);
+          setQuizSource("ai");
+          setMounted(true);
+        }
+        return;
+      }
+
+      const count = isPrometricPreset
+        ? PROMETRIC_EXAM_LENGTH
+        : Number(searchParams.get("count")) || DEFAULT_PRACTICE_LENGTH;
+
+      if (isLoggedIn) {
+        const params = new URLSearchParams({ count: String(count) });
+        if (isPrometricPreset) params.set("prometric", "1");
+        const res = await fetch(`/api/quiz/practice?${params}`, {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const fromBank = (data.questions ?? []) as QuizQuestion[];
+          if (!cancelled && fromBank.length > 0) {
+            setQuestions(fromBank);
+            setActiveQuiz(fromBank);
+            setQuizSource(data.source === "bank" ? "bank" : "seed");
+            setMounted(true);
+            if (sessionMode === "exam") {
+              setTimerRunning(true);
+              setStartedAt(Date.now());
+            }
+            return;
+          }
+        }
+      }
+
+      const fallback = isPrometricPreset
+        ? getPrometricExamQuestions(PROMETRIC_EXAM_LENGTH)
+        : getPracticeExamQuestions(count);
+      if (!cancelled) {
+        setQuestions(fallback);
+        setActiveQuiz(fallback);
+        setQuizSource("seed");
+        setMounted(true);
+        if (sessionMode === "exam") {
+          setTimerRunning(true);
+          setStartedAt(Date.now());
+        }
+      }
     }
-    setMounted(true);
-    if (sessionMode === "exam") {
-      setTimerRunning(true);
-      setStartedAt(Date.now());
-    }
-  }, [isAiMode, isPrometricPreset, searchParams, sessionMode]);
+
+    void loadQuestions();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAiMode, isPrometricPreset, searchParams, sessionMode, isLoggedIn]);
 
   useEffect(() => {
     if (!timerRunning || sessionMode !== "exam") return;
@@ -222,14 +266,23 @@ function PracticeExamContent() {
             </Link>
             <h1 className="mt-2 text-2xl font-bold text-slate-900">
               {isAiMode
-                ? "AI Focused Quiz"
+                ? searchParams.get("source") === "bank"
+                  ? "Focused Quiz"
+                  : "AI Focused Quiz"
                 : sessionMode === "exam"
                   ? "Exam Simulation"
                   : "Study Practice"}
             </h1>
             <p className="text-sm text-slate-500">
-              {questions.length} questions · Pass {PASS_THRESHOLD}% · Bank:{" "}
-              {bankStats.total} curated ·{" "}
+              {questions.length} questions · Pass {PASS_THRESHOLD}% ·{" "}
+              {quizSource === "bank"
+                ? "From approved question bank"
+                : quizSource === "seed"
+                  ? "Built-in seed bank"
+                  : isAiMode
+                    ? "AI-generated"
+                    : `Local bank: ${bankStats.total} curated`}{" "}
+              ·{" "}
               {sessionMode === "exam"
                 ? "No feedback until submit"
                 : "Instant feedback"}

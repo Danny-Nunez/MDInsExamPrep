@@ -54,7 +54,137 @@ body {
     @apply bg-md-red-light text-md-red-dark;
   }
 
+  .sidebar-nav-link {
+    @apply text-white/80 transition-colors hover:bg-white/10 hover:text-white;
+  }
+
+  .sidebar-nav-active {
+    @apply bg-md-red text-white;
+  }
+
+  /* Dashboard — mobile bottom tab bar */
+  .mobile-bottom-nav {
+    @apply fixed inset-x-0 bottom-0 z-50 border-t border-stone-800 bg-md-black pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden;
+  }
+
+  .mobile-bottom-nav-inner {
+    @apply mx-auto flex max-w-lg items-stretch justify-around px-1 pt-2;
+  }
+
+  .mobile-bottom-nav-item {
+    @apply flex min-w-0 flex-1 flex-col items-center gap-1 px-1 py-1.5 text-[10px] font-medium text-stone-400 transition-colors;
+  }
+
+  .mobile-bottom-nav-item-active {
+    @apply flex min-w-0 flex-1 flex-col items-center gap-1 px-1 py-1.5 text-[10px] font-medium text-md-gold;
+  }
+
   .input-focus {
     @apply focus:border-md-red focus:outline-none focus:ring-1 focus:ring-md-red;
+  }
+
+  /* Marketing landing nav — light hero (optional) */
+  .landing-nav-link {
+    @apply text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900;
+  }
+
+  .landing-nav-login {
+    @apply inline-flex items-center justify-center rounded-md border border-neutral-300 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-800 transition-colors hover:border-neutral-400 hover:bg-neutral-50;
+  }
+
+  .landing-nav-cta {
+    @apply inline-flex items-center justify-center rounded-md bg-md-red px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-md-red-dark;
+  }
+
+  /* Looping shine on primary signup CTAs — single glide, hidden between loops */
+  @keyframes btn-shimmer-glide {
+    0%,
+    78% {
+      transform: translateX(-120%) skewX(-20deg);
+      opacity: 0;
+    }
+    79% {
+      opacity: 1;
+    }
+    91% {
+      transform: translateX(220%) skewX(-20deg);
+      opacity: 1;
+    }
+    92%,
+    100% {
+      transform: translateX(220%) skewX(-20deg);
+      opacity: 0;
+    }
+  }
+
+  .btn-shimmer {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-shimmer::after {
+    content: "";
+    position: absolute;
+    top: -10%;
+    left: 0;
+    width: 45%;
+    height: 120%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 40%,
+      rgba(255, 255, 255, 0.35) 50%,
+      rgba(255, 255, 255, 0.15) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    animation: btn-shimmer-glide 6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-shimmer::after {
+      display: none;
+    }
+  }
+
+  /* Marketing landing nav — black bar (webapp mockup) */
+  .landing-nav-link-dark {
+    @apply text-sm font-medium text-white/90 transition-colors hover:text-white;
+  }
+
+  .landing-nav-login-dark {
+    @apply inline-flex items-center justify-center rounded-md border border-white/70 bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white/10;
+  }
+
+  .landing-shell {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .landing-trust-check {
+    @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-md-gold;
+  }
+
+  .landing-hero-btn-row {
+    @apply flex flex-nowrap items-center gap-2.5 sm:gap-3;
+  }
+
+  .landing-hero-trust-row {
+    @apply mt-5 flex flex-nowrap items-center gap-x-4 sm:mt-6 sm:gap-x-7;
+  }
+
+  /* Hero image: full column height; bleed left into column gap (no clip on desktop) */
+  .landing-hero-media {
+    @apply relative z-0 overflow-hidden lg:overflow-visible;
+  }
+
+  .landing-hero-media img {
+    @apply absolute top-0 right-0 block h-full min-h-[220px] w-auto max-w-none sm:min-h-[280px] lg:min-h-0;
+  }
+
+  /* Nav wordmark: stretch MARYLAND to match INSURANCE EXAM width */
+  .landing-wordmark-stretch {
+    @apply block w-full text-[11px] font-bold uppercase tracking-normal sm:text-xs;
+    text-align: justify;
+    text-align-last: justify;
+    text-justify: inter-character;
   }
 }

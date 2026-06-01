@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import LandingNav from "@/components/LandingNav";
-import LandingFooter from "@/components/landing/LandingFooter";
+import SiteFooter from "@/components/landing/SiteFooter";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   confirmStripeCheckout,
@@ -21,8 +21,10 @@ import {
 import { canAccessFullApp } from "@/lib/access";
 import { getSampleScore } from "@/lib/sample-storage";
 import {
+  CHECKOUT_CTA,
   FREE_SAMPLE_QUESTION_COUNT,
-  SUBSCRIPTION_PRICE_LABEL,
+  SIGN_UP_CTA,
+  SUBSCRIPTION_PRICE_AMOUNT,
 } from "@/lib/subscription";
 
 const features = [
@@ -136,17 +138,17 @@ function SubscribeContent() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="flex min-h-screen flex-col bg-stone-50">
       <LandingNav />
-      <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 sm:px-6 lg:py-16">
         <div className="max-w-3xl">
           <h1 className="text-3xl font-bold text-md-black sm:text-4xl">
             Unlock full Maryland exam prep
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-stone-600">
             You&apos;ve tried the free {FREE_SAMPLE_QUESTION_COUNT}-question
-            sample. Subscribe for unlimited practice, AI quizzes, and performance
-            tracking — {SUBSCRIPTION_PRICE_LABEL}, cancel anytime.
+            sample. Sign up for unlimited practice, AI quizzes, and performance
+            tracking — cancel anytime.
           </p>
         </div>
 
@@ -169,7 +171,7 @@ function SubscribeContent() {
         )}
         {canceled && (
           <p className="mt-6 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Checkout canceled. You can subscribe whenever you&apos;re ready.
+            Checkout canceled. You can sign up whenever you&apos;re ready.
           </p>
         )}
         {error && (
@@ -199,7 +201,10 @@ function SubscribeContent() {
               Full access
             </p>
             <p className="mt-2 text-4xl font-bold text-md-black">
-              {SUBSCRIPTION_PRICE_LABEL}
+              {SUBSCRIPTION_PRICE_AMOUNT}
+            </p>
+            <p className="mt-1 text-xs text-stone-500">
+              Billed monthly. Cancel anytime.
             </p>
             <ul className="mt-6 space-y-2 text-sm text-stone-700">
               {[
@@ -218,13 +223,13 @@ function SubscribeContent() {
               type="button"
               onClick={handleSubscribe}
               disabled={checkoutLoading || loading}
-              className="btn-primary mt-8 w-full py-3 disabled:opacity-60"
+              className="btn-primary btn-shimmer mt-8 w-full py-3 disabled:opacity-60 disabled:animate-none"
             >
               {checkoutLoading
                 ? "Redirecting to checkout…"
                 : isLoggedIn
-                  ? `Subscribe — ${SUBSCRIPTION_PRICE_LABEL}`
-                  : "Create account & subscribe"}
+                  ? CHECKOUT_CTA
+                  : SIGN_UP_CTA}
             </button>
             {!isLoggedIn && !loading && (
               <p className="mt-4 text-center text-sm text-stone-600">
@@ -242,7 +247,7 @@ function SubscribeContent() {
           </div>
         </div>
       </main>
-      <LandingFooter />
+      <SiteFooter />
     </div>
   );
 }

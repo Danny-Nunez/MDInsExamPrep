@@ -156,6 +156,12 @@ npm run batch:prometric:submit -- --concepts 200 --per-concept 6 --exam-weight H
 
 Old “first 200 in sort order” behavior: add `--sequential`.
 
+### Why fewer objectives than `--concepts`?
+
+The blueprint has **676** High Prometric objectives, but a run may select fewer (e.g. **312**) because **`--min-approved-skip 3`** skips objectives that already have 3+ approved Prometric questions from an earlier batch. Submit and process now print **skipped vs selected** counts by **domain**, **subdomain**, and **topic (concept name)**.
+
+Domains that “don’t exist” in a batch were usually **already stocked** in a previous run—not missing from the blueprint.
+
 ### Continuing after a partial run
 
 By default, **`--min-approved-skip 3`** skips objectives that already have 3+ approved Prometric questions. A follow-up submit only fills gaps:
