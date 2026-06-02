@@ -5,11 +5,13 @@ import type { CategoryPerformance } from "@/types/quiz";
 type WeakestAreasProps = {
   areas: CategoryPerformance[];
   inferredDomains?: string[];
+  compact?: boolean;
 };
 
 export default function WeakestAreas({
   areas,
   inferredDomains = [],
+  compact = false,
 }: WeakestAreasProps) {
   const weak = areas.filter((a) => a.total > 0 && a.percentage < 75);
   const planDomains = Array.from(
@@ -20,11 +22,16 @@ export default function WeakestAreas({
   ).slice(0, 3);
 
   return (
-    <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 px-5 py-4">
-        <h2 className="font-semibold text-slate-900">Weakest Areas</h2>
+    <div className="flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 sm:px-5">
+        <h2 className="font-semibold text-slate-900">
+          {compact ? "Weak Areas" : "Weakest Areas"}
+        </h2>
+        <Link href="/study-areas" className="link-accent text-sm">
+          {compact ? "See All" : "View All Weak Areas →"}
+        </Link>
       </div>
-      <div className="p-5">
+      <div className="flex-1 p-4 sm:p-5">
         {weak.length === 0 ? (
           <p className="text-sm text-slate-500">
             Complete a practice exam to identify weak areas.
@@ -33,7 +40,7 @@ export default function WeakestAreas({
           <DomainProgress items={weak} compact />
         )}
 
-        {inferredDomains.length > 0 && (
+        {inferredDomains.length > 0 && !compact && (
           <div className="mt-4 border-t border-slate-100 pt-3">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
               AI-inferred from uploaded results
@@ -51,7 +58,7 @@ export default function WeakestAreas({
           </div>
         )}
 
-        {planDomains.length > 0 && (
+        {planDomains.length > 0 && !compact && (
           <div className="mt-4 border-t border-slate-100 pt-3">
             <p className="mb-2 text-sm font-semibold text-slate-900">
               Personalized Study Plan
@@ -69,7 +76,7 @@ export default function WeakestAreas({
               ))}
             </ol>
             <div className="mt-3 flex flex-wrap gap-3 text-xs">
-              <Link href="/ai-quiz" className="link-accent">
+              <Link href="/practice#focused-practice" className="link-accent">
                 Start Focused AI Quiz →
               </Link>
               <Link href="/flashcards" className="link-accent">
@@ -78,11 +85,6 @@ export default function WeakestAreas({
             </div>
           </div>
         )}
-      </div>
-      <div className="border-t border-slate-100 px-5 py-3">
-        <Link href="/study-areas" className="link-accent text-sm">
-          View All Weak Areas →
-        </Link>
       </div>
     </div>
   );

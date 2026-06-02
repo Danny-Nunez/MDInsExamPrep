@@ -140,8 +140,11 @@ export default function StudyAreasPage() {
                     ))}
                 </ul>
               )}
-              <Link href="/ai-quiz" className="link-accent mt-3 inline-block text-sm">
-                Generate focused quiz →
+              <Link
+                href="/practice#focused-practice"
+                className="link-accent mt-3 inline-block text-sm"
+              >
+                Start focused practice →
               </Link>
             </div>
 

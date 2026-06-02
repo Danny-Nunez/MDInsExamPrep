@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Crosshair } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
+import DashboardWelcomeHeader from "@/components/DashboardWelcomeHeader";
 import ExamReadinessCard from "@/components/ExamReadinessCard";
 import MetricTrendCard from "@/components/MetricTrendCard";
-import DomainProgress from "@/components/DomainProgress";
-import RecentExams from "@/components/RecentExams";
 import WeakestAreas from "@/components/WeakestAreas";
-import AIQuizGenerator from "@/components/AIQuizGenerator";
+import DashboardFocusedPracticeCard from "@/components/dashboard/DashboardFocusedPracticeCard";
+import DashboardProgressOverview from "@/components/dashboard/DashboardProgressOverview";
+import DashboardQuickLinks from "@/components/dashboard/DashboardQuickLinks";
+import DashboardRecentActivity from "@/components/dashboard/DashboardRecentActivity";
+import DashboardStudyPlanPreview from "@/components/dashboard/DashboardStudyPlanPreview";
+import DashboardUpcomingStudy from "@/components/dashboard/DashboardUpcomingStudy";
+import DashboardUploadCard from "@/components/dashboard/DashboardUploadCard";
 import { DOMAINS } from "@/types/quiz";
 import type {
   CategoryPerformance,
@@ -21,8 +25,12 @@ import {
   getCategoryPerformance,
   getExamAttempts,
 } from "@/lib/storage";
-import { APP_TAGLINE } from "@/lib/branding";
 import { getWeakestAreas } from "@/lib/domains";
+import {
+  computePracticeStreak,
+  shouldShowPracticeStreak,
+} from "@/lib/practice-streak";
+import { aggregateSubdomainPerformance } from "@/lib/studyAreas";
 import {
   averageScoreTrendText,
   computeAverageScore,
@@ -43,11 +51,14 @@ function buildEmptyPerformance(): CategoryPerformance[] {
 }
 
 export default function DashboardPage() {
-  const { isLoggedIn, loading: authLoading } = useAuth();
+  const { user, isLoggedIn, loading: authLoading } = useAuth();
   const [attempts, setAttempts] = useState<ExamAttempt[]>([]);
   const [performance, setPerformance] = useState<CategoryPerformance[]>(
     buildEmptyPerformance()
   );
+  const [subdomainPerformance, setSubdomainPerformance] = useState<
+    CategoryPerformance[]
+  >([]);
   const [imageAnalyses, setImageAnalyses] = useState<ExamImageAnalysis[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -63,6 +74,7 @@ export default function DashboardPage() {
       setPerformance(
         perfData.length > 0 ? perfData : buildEmptyPerformance()
       );
+      setSubdomainPerformance(aggregateSubdomainPerformance(examData));
 
       if (isLoggedIn) {
         try {
@@ -74,13 +86,13 @@ export default function DashboardPage() {
             setImageAnalyses((data.analyses as ExamImageAnalysis[]) ?? []);
           }
         } catch {
-          // no-op; dashboard still works without this data
+          // optional
         }
       }
       setMounted(true);
     }
 
-    load();
+    void load();
   }, [isLoggedIn, authLoading]);
 
   const readiness = getExamReadiness(attempts);
@@ -99,11 +111,29 @@ export default function DashboardPage() {
         .map((w) => w.domain)
     )
   ).slice(0, 6);
-  const today = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+
+  const upcomingStudyItems = useMemo(
+    () =>
+      [...subdomainPerformance]
+        .filter((a) => a.total > 0 && a.percentage < 75)
+        .sort((a, b) => a.percentage - b.percentage),
+    [subdomainPerformance]
+  );
+
+  const studyPlanAreas = useMemo(
+    () =>
+      upcomingStudyItems.length > 0
+        ? upcomingStudyItems
+        : [...weakest].filter((a) => a.total > 0),
+    [upcomingStudyItems, weakest]
+  );
+
+  const practiceStreak = computePracticeStreak(attempts);
+  const showStreak = shouldShowPracticeStreak(practiceStreak, isLoggedIn);
+
+  const handleAnalysisComplete = (analysis: ExamImageAnalysis) => {
+    setImageAnalyses((prev) => [analysis, ...prev].slice(0, 10));
+  };
 
   if (!mounted || authLoading) {
     return (
@@ -118,15 +148,13 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <div className="mx-auto min-w-0 max-w-7xl overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-        <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-              Practice Exam Dashboard
-            </h1>
-            <p className="mt-1 text-slate-600">{APP_TAGLINE}</p>
-          </div>
-          <p className="text-sm text-slate-500">{today}</p>
-        </header>
+        <DashboardWelcomeHeader
+          userName={user?.name}
+          userEmail={user?.email}
+          userId={user?.userId ?? null}
+          streak={practiceStreak}
+          showStreak={showStreak}
+        />
 
         {!isLoggedIn && (
           <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
@@ -138,125 +166,80 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="mb-6 flex flex-wrap gap-3">
-          <Link
-            href="/practice?session=study"
-            className="btn-primary px-5 py-2.5 text-sm"
-          >
-            Study Mode
-          </Link>
-          <Link
-            href="/practice?session=exam"
-            className="rounded-lg border border-md-red bg-md-red px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90"
-          >
-            Exam Simulation
-          </Link>
-          <Link
-            href="/practice?session=exam&prometric=1"
-            className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-          >
-            Prometric (60 Q)
-          </Link>
-          <Link
-            href="/ai-quiz"
-            className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-          >
-            Generate AI Quiz
-          </Link>
-        </div>
-
-        <div className="mb-6 grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="min-w-0 w-full sm:col-span-2 lg:col-span-1">
-          <ExamReadinessCard
-            compact
-            {...(readiness.unlocked
-              ? {
-                  unlocked: true as const,
-                  percentage: readiness.percentage,
-                }
-              : {
-                  unlocked: false as const,
-                  previewPercentage: readiness.previewPercentage,
-                })}
-            trendText={readinessTrend.text}
-            trendPositive={readinessTrend.positive}
-          />
-          </div>
-          <MetricTrendCard
-            title="Correct Answer Rate"
-            value={`${correctRate}%`}
-            trend={correctTrend?.text}
-            trendPositive={correctTrend?.positive}
-          />
-          <MetricTrendCard
-            title="Quizzes Taken"
-            value={quizzesCard.value}
-            subtitle={quizzesCard.subtitle}
-            trend={quizzesCard.trend}
-            trendPositive={quizzesCard.trendPositive}
-          />
-          <MetricTrendCard
-            title="Avg. Score"
-            value={attempts.length > 0 ? `${avgScore}%` : "—"}
-            trend={avgTrend?.text}
-            trendPositive={avgTrend?.positive}
-          />
-        </div>
-
-        <div className="mb-6 grid min-w-0 gap-6 lg:grid-cols-2">
-          <div className="min-w-0">
-            <RecentExams
-              attempts={attempts}
-              isLoggedIn={isLoggedIn}
-              onAnalysesChange={setImageAnalyses}
+        {/* Row 1 — readiness, metrics, focused practice */}
+        <div className="mb-6 grid grid-cols-1 items-stretch gap-4 lg:grid-cols-12">
+          <div className="flex h-full min-w-0 lg:col-span-3">
+            <ExamReadinessCard
+              compact
+              className="w-full"
+              {...(readiness.unlocked
+                ? {
+                    unlocked: true as const,
+                    percentage: readiness.percentage,
+                  }
+                : {
+                    unlocked: false as const,
+                    previewPercentage: readiness.previewPercentage,
+                  })}
+              trendText={readinessTrend.text}
+              trendPositive={readinessTrend.positive}
             />
           </div>
-          <div className="min-w-0">
-            <WeakestAreas areas={weakest} inferredDomains={inferredDomains} />
+          <div className="grid min-w-0 auto-rows-fr grid-cols-1 gap-4 min-[420px]:grid-cols-3 lg:col-span-5">
+            <MetricTrendCard
+              compact
+              title="Correct Answer Rate"
+              value={`${correctRate}%`}
+              trend={correctTrend?.text}
+              trendPositive={correctTrend?.positive}
+            />
+            <MetricTrendCard
+              compact
+              title="Quizzes Taken"
+              value={quizzesCard.value}
+              trend={quizzesCard.trend}
+              trendPositive={quizzesCard.trendPositive}
+            />
+            <MetricTrendCard
+              compact
+              title="Avg. Score"
+              value={attempts.length > 0 ? `${avgScore}%` : "—"}
+              trend={avgTrend?.text}
+              trendPositive={avgTrend?.positive}
+            />
+          </div>
+          <div className="flex h-full min-w-0 lg:col-span-4">
+            <DashboardFocusedPracticeCard className="w-full" />
           </div>
         </div>
 
-        <div className="mb-6 grid gap-6 lg:grid-cols-2">
-          <div
-            id="categories"
-            className="rounded-xl border border-slate-200 bg-white shadow-sm"
-          >
-            <div className="border-b border-slate-100 px-5 py-4">
-              <h2 className="font-semibold text-slate-900">Category Progress</h2>
-            </div>
-            <div className="p-5">
-              <DomainProgress items={performance} />
-            </div>
-            <div className="border-t border-slate-100 px-5 py-3">
-              <Link href="/performance" className="text-sm font-medium text-md-red">
-                View Detailed Performance →
-              </Link>
-            </div>
-          </div>
-          <AIQuizGenerator
-            weakAreas={performance}
-            suggestedDomains={inferredDomains}
+        {/* Row 2 — weak areas, activity, upcoming study */}
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <WeakestAreas
+            compact
+            areas={weakest}
+            inferredDomains={inferredDomains}
           />
+          <DashboardRecentActivity attempts={attempts} />
+          <div className="md:col-span-2 xl:col-span-1">
+            <DashboardUpcomingStudy items={upcomingStudyItems} />
+          </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <Crosshair className="mt-0.5 h-5 w-5 shrink-0 text-md-red" />
-              <div>
-                <p className="font-semibold text-slate-900">Study Tip</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  Focus on your weakest areas first. Consistent practice and
-                  review are the keys to passing your exam!
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/practice"
-              className="shrink-0 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-            >
-              View Study Plan
-            </Link>
+        {/* Row 3 — study plan, progress, upload + links */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <div className="lg:col-span-3">
+            <DashboardStudyPlanPreview weakAreas={studyPlanAreas} />
+          </div>
+          <div className="lg:col-span-5">
+            <DashboardProgressOverview
+              attempts={attempts}
+              performance={performance}
+            />
+          </div>
+          <div className="flex flex-col gap-4 lg:col-span-4">
+            <DashboardUploadCard onAnalysisComplete={handleAnalysisComplete} />
+            <DashboardQuickLinks />
           </div>
         </div>
       </div>

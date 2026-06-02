@@ -12,11 +12,10 @@ export default function ExamReadinessGauge({
 }: ExamReadinessGaugeProps) {
   const value = Math.min(100, Math.max(0, percentage));
   const cx = 100;
-  const r =
-    size === "default" ? 60 : 50;
-  const stroke =
-    size === "default" ? 12 : 9;
-  const cy = size === "default" ? 80 : 74;
+  const isLarge = size === "default";
+  const r = isLarge ? 60 : 58;
+  const stroke = isLarge ? 12 : 13;
+  const cy = isLarge ? 80 : 78;
   const gradientId = `exam-readiness-gauge-${size}`;
 
   const polar = (pct: number) => {
@@ -34,22 +33,22 @@ export default function ExamReadinessGauge({
 
   return (
     <svg
-      viewBox={size === "default" ? "0 0 200 88" : "0 0 200 80"}
-      className={`mx-auto block h-auto w-full max-w-full ${className}`}
+      viewBox={isLarge ? "0 0 200 88" : "0 0 200 86"}
+      className={`mx-auto block h-full w-full max-w-full ${className}`}
       preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#c8102e" />
-          <stop offset="50%" stopColor="#ffd200" />
+          <stop offset="40%" stopColor="#f59e0b" />
           <stop offset="100%" stopColor="#22c55e" />
         </linearGradient>
       </defs>
       <path
         d={track}
         fill="none"
-        stroke="#e7e5e4"
+        stroke="#ececec"
         strokeWidth={stroke}
         strokeLinecap="round"
       />
@@ -63,7 +62,7 @@ export default function ExamReadinessGauge({
       <circle
         cx={marker.x}
         cy={marker.y}
-        r={size === "compact" ? 5 : 6}
+        r={isLarge ? 6 : 5.5}
         fill="white"
         stroke="#1a1a1a"
         strokeWidth={2}

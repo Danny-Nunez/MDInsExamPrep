@@ -6,46 +6,79 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
-  Sparkles,
   BookOpen,
   Layers,
   History,
   BarChart3,
-  LogOut,
-  ClipboardList,
   Shield,
 } from "lucide-react";
 import MarylandLogo from "@/components/MarylandLogo";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/practice", label: "Practice Exams", icon: FileText },
-  { href: "/quiz", label: "Question Bank Quiz", icon: ClipboardList },
-  { href: "/ai-quiz", label: "AI Quiz Generator", icon: Sparkles },
-  { href: "/study-areas", label: "Study Areas", icon: BookOpen },
-  { href: "/flashcards", label: "Flashcards", icon: Layers },
-  { href: "/results", label: "Exam History", icon: History },
-  { href: "/performance", label: "Performance", icon: BarChart3 },
+  {
+    href: "/dashboard",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    isActive: (pathname: string) => pathname === "/dashboard",
+  },
+  {
+    href: "/practice",
+    label: "Practice Exams",
+    icon: FileText,
+    isActive: (pathname: string) =>
+      pathname === "/practice" ||
+      pathname === "/quiz" ||
+      pathname === "/ai-quiz",
+  },
+  {
+    href: "/study-areas",
+    label: "Study Areas",
+    icon: BookOpen,
+    isActive: (pathname: string) =>
+      pathname === "/study-areas" || pathname.startsWith("/study-areas/"),
+  },
+  {
+    href: "/flashcards",
+    label: "Flashcards",
+    icon: Layers,
+    isActive: (pathname: string) =>
+      pathname === "/flashcards" || pathname.startsWith("/flashcards/"),
+  },
+  {
+    href: "/results",
+    label: "Exam History",
+    icon: History,
+    isActive: (pathname: string) =>
+      pathname === "/results" || pathname.startsWith("/results/"),
+  },
+  {
+    href: "/performance",
+    label: "Performance",
+    icon: BarChart3,
+    isActive: (pathname: string) =>
+      pathname === "/performance" || pathname.startsWith("/performance/"),
+  },
 ];
 
 const adminNavItems = [
-  { href: "/admin/concepts", label: "Admin · Concepts", icon: Shield },
-  { href: "/admin/review", label: "Admin · Review", icon: Shield },
+  {
+    href: "/admin/concepts",
+    label: "Admin · Concepts",
+    icon: Shield,
+    isActive: (pathname: string) => pathname.startsWith("/admin/concepts"),
+  },
+  {
+    href: "/admin/review",
+    label: "Admin · Review",
+    icon: Shield,
+    isActive: (pathname: string) => pathname.startsWith("/admin/review"),
+  },
 ];
-
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { user, isLoggedIn, logout, loading } = useAuth();
+  const { isLoggedIn, loading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -70,7 +103,7 @@ export default function Sidebar() {
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {allNavItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = item.isActive(pathname);
 
           return (
             <Link
@@ -87,52 +120,24 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-stone-800 p-4">
-        {!loading && (
-          <div className="rounded-lg px-2 py-2">
-            {isLoggedIn && user ? (
-              <>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-700 text-sm font-semibold text-md-gold">
-                    {getInitials(user.name)}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white">
-                      {user.name}
-                    </p>
-                    <p className="truncate text-xs text-stone-400">
-                      {user.email}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => logout()}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-stone-600 py-2 text-xs font-medium text-stone-300 transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  Sign out
-                </button>
-              </>
-            ) : (
-              <div className="space-y-2">
-                <Link
-                  href="/login"
-                  className="landing-nav-cta block w-full py-2 text-center text-xs"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/register"
-                  className="landing-nav-login-dark block w-full py-2 text-center text-xs"
-                >
-                  Create account
-                </Link>
-              </div>
-            )}
+      {!loading && !isLoggedIn && (
+        <div className="border-t border-stone-800 p-4">
+          <div className="space-y-2">
+            <Link
+              href="/login"
+              className="landing-nav-cta block w-full py-2 text-center text-xs"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/register"
+              className="landing-nav-login-dark block w-full py-2 text-center text-xs"
+            >
+              Create account
+            </Link>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </aside>
   );
 }

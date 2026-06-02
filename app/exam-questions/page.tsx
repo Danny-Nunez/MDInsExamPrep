@@ -22,8 +22,8 @@ export default function ExamQuestionsPage() {
         domain and subdomain.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link href={loginWithRedirect("/quiz")} className="btn-primary px-6 py-3">
-          Question bank quiz
+        <Link href={loginWithRedirect("/practice")} className="btn-primary px-6 py-3">
+          Start practicing
         </Link>
         <Link href="/#features" className="btn-secondary px-6 py-3">
           See features

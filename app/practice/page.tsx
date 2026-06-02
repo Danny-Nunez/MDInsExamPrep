@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
+import PracticeHub from "@/components/PracticeHub";
 import QuestionCard from "@/components/QuestionCard";
 import {
   DEFAULT_PRACTICE_LENGTH,
@@ -11,7 +12,6 @@ import {
   getPrometricExamQuestions,
   PROMETRIC_EXAM_LENGTH,
 } from "@/lib/quizSeed";
-import { getBankStats } from "@/lib/questionBank";
 import { buildExamAttempt } from "@/lib/scoring";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -61,7 +61,6 @@ function PracticeExamContent() {
   );
 
   const studyMode = sessionMode === "study";
-  const bankStats = useMemo(() => getBankStats(), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,6 +83,11 @@ function PracticeExamContent() {
       if (isLoggedIn) {
         const params = new URLSearchParams({ count: String(count) });
         if (isPrometricPreset) params.set("prometric", "1");
+        const domain = searchParams.get("domain");
+        const difficulty = searchParams.get("difficulty");
+        if (domain) params.set("domain", domain);
+        if (difficulty) params.set("difficulty", difficulty);
+        if (searchParams.get("weakOnly") === "1") params.set("weakOnly", "1");
         const res = await fetch(`/api/quiz/practice?${params}`, {
           credentials: "include",
         });
@@ -261,31 +265,23 @@ function PracticeExamContent() {
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <Link href="/dashboard" className="link-accent text-sm">
-              ← Back to Dashboard
+            <Link href="/practice" className="link-accent text-sm">
+              ← Practice Exams
             </Link>
             <h1 className="mt-2 text-2xl font-bold text-slate-900">
               {isAiMode
-                ? searchParams.get("source") === "bank"
-                  ? "Focused Quiz"
-                  : "AI Focused Quiz"
+                ? "Focused Practice"
                 : sessionMode === "exam"
-                  ? "Exam Simulation"
-                  : "Study Practice"}
+                  ? isPrometricPreset
+                    ? "Prometric Simulation"
+                    : "Exam Simulation"
+                  : "Study Mode"}
             </h1>
             <p className="text-sm text-slate-500">
               {questions.length} questions · Pass {PASS_THRESHOLD}% ·{" "}
-              {quizSource === "bank"
-                ? "From approved question bank"
-                : quizSource === "seed"
-                  ? "Built-in seed bank"
-                  : isAiMode
-                    ? "AI-generated"
-                    : `Local bank: ${bankStats.total} curated`}{" "}
-              ·{" "}
               {sessionMode === "exam"
                 ? "No feedback until submit"
-                : "Instant feedback"}
+                : "Instant feedback after each answer"}
             </p>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -460,6 +456,26 @@ function PracticeExamContent() {
   );
 }
 
+function PracticePageRouter() {
+  const searchParams = useSearchParams();
+  const session = searchParams.get("session");
+  const isAiMode = searchParams.get("mode") === "ai";
+
+  if (!session && !isAiMode) {
+    return (
+      <DashboardLayout>
+        <PracticeHub
+          selectedDomain={searchParams.get("domain") ?? ""}
+          selectedDifficulty={searchParams.get("difficulty") ?? ""}
+          weakOnly={searchParams.get("weakOnly") === "1"}
+        />
+      </DashboardLayout>
+    );
+  }
+
+  return <PracticeExamContent />;
+}
+
 export default function PracticePage() {
   return (
     <Suspense
@@ -471,7 +487,7 @@ export default function PracticePage() {
         </DashboardLayout>
       }
     >
-      <PracticeExamContent />
+      <PracticePageRouter />
     </Suspense>
   );
 }

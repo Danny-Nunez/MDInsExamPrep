@@ -20,7 +20,7 @@ export default function StudyWeakAreasCard() {
           View study areas
         </Link>
         <Link
-          href="/ai-quiz"
+          href="/practice#focused-practice"
           className="btn-primary inline-flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm"
         >
           <Sparkles className="h-4 w-4" />

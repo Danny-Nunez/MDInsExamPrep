@@ -56,6 +56,37 @@ export async function refreshSession(): Promise<SessionUser | null> {
   return data.user ?? null;
 }
 
+export async function cancelSubscription(): Promise<{
+  cancelAtPeriodEnd?: boolean;
+  accessEndsAt?: string | null;
+  error?: string;
+}> {
+  const res = await fetch("/api/account/subscription/cancel", {
+    method: "POST",
+    credentials: "include",
+  });
+  const data = await res.json();
+  if (!res.ok) return { error: data.error ?? "Could not cancel subscription." };
+  return {
+    cancelAtPeriodEnd: data.cancelAtPeriodEnd,
+    accessEndsAt: data.accessEndsAt ?? null,
+  };
+}
+
+export async function updateProfileName(
+  name: string
+): Promise<{ user?: SessionUser; error?: string }> {
+  const res = await fetch("/api/account/profile", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ name }),
+  });
+  const data = await res.json();
+  if (!res.ok) return { error: data.error ?? "Could not update name." };
+  return { user: data.user };
+}
+
 export async function startStripeCheckout(): Promise<{
   url?: string;
   error?: string;

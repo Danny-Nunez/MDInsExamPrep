@@ -302,7 +302,7 @@ export async function POST(request: Request) {
       VALID_SUBDOMAINS.has(s)
     );
     const questionCount = Math.min(
-      25,
+      50,
       Math.max(1, Number(body.questionCount) || 10)
     );
     const difficulty: Difficulty =

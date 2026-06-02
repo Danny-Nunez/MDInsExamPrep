@@ -186,13 +186,12 @@ export function quizzesTakenCardContent(
       readiness.quizzesRequired - readiness.quizzesCompleted;
     return {
       value: String(readiness.quizzesCompleted),
-      subtitle: `${readiness.quizzesCompleted}/${readiness.quizzesRequired} quizzes to unlock readiness`,
       trend:
         remaining <= 0
           ? null
           : remaining === 1
-            ? "1 more quiz to unlock"
-            : `${remaining} more quizzes to unlock`,
+            ? "1 more to unlock"
+            : `${remaining} more to unlock`,
       trendPositive: true,
     };
   }

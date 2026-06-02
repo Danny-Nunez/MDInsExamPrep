@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth";
 import { COLLECTIONS } from "@/lib/db/collections";
 import { toSessionUser } from "@/lib/db/users";
+import { normalizeFullName } from "@/lib/format-display-name";
 import type { UserDocument } from "@/types/user";
 
 export async function POST(request: Request) {
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
     const email = String(body.email ?? "")
       .trim()
       .toLowerCase();
-    const name = String(body.name ?? "").trim();
+    const rawName = String(body.name ?? "").trim();
     const password = String(body.password ?? "");
 
     if (!email || !email.includes("@")) {
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    const name = normalizeFullName(rawName) || rawName;
     if (!name) {
       return NextResponse.json(
         { error: "Name is required." },

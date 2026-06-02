@@ -50,3 +50,16 @@ export async function updateUserSubscription(
   );
   return true;
 }
+
+export async function updateUserName(
+  userId: string,
+  name: string
+): Promise<boolean> {
+  const db = await getDb();
+  if (!ObjectId.isValid(userId)) return false;
+  const result = await db.collection<UserDocument>(COLLECTIONS.users).updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: { name } }
+  );
+  return result.matchedCount === 1;
+}

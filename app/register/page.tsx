@@ -68,6 +68,7 @@ function RegisterForm() {
             type="text"
             required
             autoComplete="name"
+            placeholder="First Last"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="input-focus w-full rounded-lg border border-stone-200 px-3 py-2.5 text-md-black"

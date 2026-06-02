@@ -12,6 +12,7 @@ import {
   fetchCurrentUser,
   loginUser,
   logoutUser,
+  refreshSession,
   registerUser,
 } from "@/lib/api-client";
 import type { SessionUser } from "@/types/user";
@@ -40,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    const current = await fetchCurrentUser();
+    const current = (await refreshSession()) ?? (await fetchCurrentUser());
     setUser(current);
   }, []);
 

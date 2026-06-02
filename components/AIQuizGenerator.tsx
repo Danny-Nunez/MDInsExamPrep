@@ -18,7 +18,7 @@ type AIQuizGeneratorProps = {
   suggestedDomains?: string[];
 };
 
-const QUESTION_OPTIONS = [10, 15, 20, 25];
+const QUESTION_OPTIONS = [10, 15, 20, 25, 50];
 const STORAGE_KEY = "examPrep_aiQuizSelections";
 const ALL_SUBDOMAIN_NAMES = MARYLAND_BLUEPRINT.map((b) => b.subdomain);
 
@@ -223,7 +223,7 @@ export default function AIQuizGenerator({
     >
       <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
         <Sparkles className="h-5 w-5 text-md-red" />
-        <h2 className="font-semibold text-slate-900">Quiz Generator</h2>
+        <h2 className="font-semibold text-slate-900">Focused Practice</h2>
       </div>
 
       <div className="space-y-5 p-5">
@@ -330,15 +330,15 @@ export default function AIQuizGenerator({
           className="btn-primary flex w-full items-center justify-center gap-2 px-4 py-3 text-sm disabled:opacity-60"
         >
           <Sparkles className="h-4 w-4" />
-          {loading ? "Generating..." : "Generate Focused Quiz"}
+          {loading ? "Building your set..." : "Start Focused Practice"}
         </button>
 
         <div className="rounded-lg border border-md-gold/30 bg-md-gold-light px-4 py-3 text-xs text-stone-800">
-          Uses your approved question bank first (1,400+ items — no API cost).
-          OpenAI is only called if not enough bank questions match your topics.
+          Pulls from your full practice library first, then generates new items only
+          when needed.
           {isLoggedIn
             ? " Quizzes and results are saved to your account."
-            : " Sign in to use the full bank and save results."}
+            : " Sign in to save progress and unlock the full library."}
         </div>
       </div>
     </div>
