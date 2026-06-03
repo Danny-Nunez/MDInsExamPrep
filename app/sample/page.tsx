@@ -11,10 +11,10 @@ import { buildExamAttempt } from "@/lib/scoring";
 import { markSampleCompleted } from "@/lib/sample-storage";
 import {
   FREE_SAMPLE_QUESTION_COUNT,
+  SAMPLE_READY_THRESHOLD,
   SIGN_UP_CTA,
 } from "@/lib/subscription";
 import type { QuizQuestion } from "@/types/quiz";
-import { PASS_THRESHOLD } from "@/types/quiz";
 
 export default function SampleExamPage() {
   const router = useRouter();
@@ -70,18 +70,38 @@ export default function SampleExamPage() {
   }
 
   if (finished) {
-    const passed = scorePercent >= PASS_THRESHOLD;
+    const examReady = scorePercent >= SAMPLE_READY_THRESHOLD;
     return (
       <div className="flex min-h-screen flex-col bg-stone-50">
         <LandingNav />
         <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-16 sm:px-6">
-          <h1 className="text-3xl font-bold text-md-black">Sample complete</h1>
-          <p className="mt-3 text-lg text-stone-600">
-            You answered {FREE_SAMPLE_QUESTION_COUNT} questions with instant
-            feedback — the same study mode you get with a full subscription.
-          </p>
-          <div className="mt-8 rounded-xl border border-stone-200 bg-white p-8 text-center shadow-sm">
-            <p className="text-sm font-semibold uppercase tracking-wide text-md-red">
+          <h1 className="text-3xl font-bold text-md-black">
+            {examReady ? "Sample complete" : "You're not quite ready yet"}
+          </h1>
+
+          {examReady ? (
+            <p className="mt-3 text-lg text-stone-600">
+              You answered {FREE_SAMPLE_QUESTION_COUNT} questions with instant
+              feedback — the same study mode you get with a full subscription.
+            </p>
+          ) : (
+            <p className="mt-3 text-lg text-stone-600">
+              Sorry — based on this {FREE_SAMPLE_QUESTION_COUNT}-question trial,
+              you&apos;re not ready for the exam yet. That&apos;s normal; most
+              candidates need structured practice before test day.
+            </p>
+          )}
+
+          <div
+            className={`mt-8 rounded-xl border bg-white p-8 text-center shadow-sm ${
+              examReady ? "border-stone-200" : "border-amber-200"
+            }`}
+          >
+            <p
+              className={`text-sm font-semibold uppercase tracking-wide ${
+                examReady ? "text-md-red" : "text-amber-700"
+              }`}
+            >
               Your score
             </p>
             <p className="mt-2 text-5xl font-bold text-md-black">
@@ -89,13 +109,30 @@ export default function SampleExamPage() {
             </p>
             <p className="mt-2 text-sm text-stone-600">
               {correctCount} of {questions.length} correct
-              {passed ? " — at or above the 75% pass target." : "."}
+              {examReady
+                ? ` — at or above our ${SAMPLE_READY_THRESHOLD}% readiness benchmark.`
+                : ` — below the ${SAMPLE_READY_THRESHOLD}% benchmark for exam readiness.`}
             </p>
           </div>
-          <p className="mt-6 text-stone-600">
-            Unlock unlimited practice exams, AI weak-area quizzes, performance
-            tracking, and timed Prometric-style simulations.
-          </p>
+
+          {examReady ? (
+            <p className="mt-6 text-stone-600">
+              Unlock unlimited practice exams, AI weak-area quizzes, performance
+              tracking, and timed Prometric-style simulations.
+            </p>
+          ) : (
+            <div className="mt-6 rounded-xl border border-stone-200 bg-white p-6">
+              <p className="font-semibold text-slate-900">
+                {SIGN_UP_CTA} to build your path to passing
+              </p>
+              <p className="mt-2 text-stone-600">
+                Start a personalized study plan, track your progress over time,
+                and get unlimited practice tests — including full timed exams and
+                AI quizzes on your weak areas.
+              </p>
+            </div>
+          )}
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/register?next=/subscribe"

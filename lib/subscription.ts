@@ -1,6 +1,8 @@
 import type { UserDocument } from "@/types/user";
 
 export const FREE_SAMPLE_QUESTION_COUNT = 10;
+/** Score on the free sample that suggests the user is exam-ready */
+export const SAMPLE_READY_THRESHOLD = 90;
 /** Shown on pricing cards and checkout (billing interval in fine print only) */
 export const SUBSCRIPTION_PRICE_AMOUNT = "$20";
 export const SUBSCRIPTION_PRICE_LABEL = "$20/month";
