@@ -14,6 +14,7 @@ const footerNavLinks = [
   { label: "Features", href: "/#features" },
   { label: "Exam Guide", href: "/maryland-life-health-insurance-exam-requirements" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Sitemap", href: "/sitemap" },
   { label: "Create account", href: "/register" },
 ];
 

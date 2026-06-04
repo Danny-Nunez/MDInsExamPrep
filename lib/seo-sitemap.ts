@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/branding";
+import { EXAM_GUIDE_GROUPS } from "@/lib/exam-guide-nav";
+import { getAllSeoGuideSlugs } from "@/lib/seo-guide-pages";
 
 /** Canonical origin for sitemap.xml and robots.txt (production URL unless a public env override is set). */
 export function getSiteOrigin(): string {
@@ -30,19 +32,100 @@ type ChangeFrequency = NonNullable<
 
 export type PublicSitemapPage = {
   path: string;
+  label: string;
   changeFrequency: ChangeFrequency;
   priority: number;
 };
 
-/** Marketing and funnel pages to include in sitemap.xml */
+/** Marketing and funnel pages included in sitemap.xml and the HTML sitemap. */
 export const PUBLIC_SITEMAP_PAGES: PublicSitemapPage[] = [
-  { path: "/", changeFrequency: "weekly", priority: 1 },
-  { path: "/sample", changeFrequency: "weekly", priority: 0.9 },
-  { path: "/pricing", changeFrequency: "monthly", priority: 0.9 },
-  { path: "/register", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/life-health", changeFrequency: "monthly", priority: 0.85 },
-  { path: "/exam-questions", changeFrequency: "monthly", priority: 0.85 },
+  { path: "/", label: "Home", changeFrequency: "weekly", priority: 1 },
+  {
+    path: "/sample",
+    label: "Free 10-question sample",
+    changeFrequency: "weekly",
+    priority: 0.9,
+  },
+  {
+    path: "/practice-test",
+    label: "Maryland practice test",
+    changeFrequency: "weekly",
+    priority: 0.9,
+  },
+  { path: "/pricing", label: "Pricing", changeFrequency: "monthly", priority: 0.9 },
+  {
+    path: "/register",
+    label: "Create account",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/life-health",
+    label: "Life & Health exam prep",
+    changeFrequency: "monthly",
+    priority: 0.85,
+  },
+  {
+    path: "/exam-questions",
+    label: "Exam questions overview",
+    changeFrequency: "monthly",
+    priority: 0.85,
+  },
 ];
+
+export type HtmlSitemapSection = {
+  title: string;
+  links: { label: string; href: string }[];
+};
+
+/** Sections for the public HTML sitemap page (matches sitemap.xml URLs). */
+export function getHtmlSitemapSections(): HtmlSitemapSection[] {
+  const marketing: HtmlSitemapSection = {
+    title: "Main pages",
+    links: PUBLIC_SITEMAP_PAGES.map((p) => ({
+      label: p.label,
+      href: p.path,
+    })),
+  };
+
+  const guides: HtmlSitemapSection[] = EXAM_GUIDE_GROUPS.map((group) => ({
+    title: group.title,
+    links: group.links.map((link) => ({
+      label: link.label,
+      href: link.href,
+    })),
+  }));
+
+  return [marketing, ...guides];
+}
+
+/** Total indexable URLs (marketing + exam guides). */
+export function getPublicSitemapUrlCount(): number {
+  return PUBLIC_SITEMAP_PAGES.length + getAllSeoGuideSlugs().length;
+}
+
+/** Build entries for Next.js MetadataRoute.Sitemap (sitemap.xml). */
+export function buildMetadataSitemap(): MetadataRoute.Sitemap {
+  const lastModified = new Date();
+
+  const marketing = PUBLIC_SITEMAP_PAGES.map(
+    ({ path, changeFrequency, priority }) => ({
+      url: absoluteUrl(path),
+      lastModified,
+      changeFrequency,
+      priority,
+    })
+  );
+
+  const guides = getAllSeoGuideSlugs().map((slug) => ({
+    url: absoluteUrl(`/${slug}`),
+    lastModified,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...marketing, ...guides];
+}
 
 /** App, auth, checkout, and API paths — crawlable links may exist, but omit from index. */
 export const ROBOTS_DISALLOW_PATHS = [
@@ -52,9 +135,10 @@ export const ROBOTS_DISALLOW_PATHS = [
   "/account",
   "/subscribe",
   "/login",
+  "/forgot-password",
+  "/reset-password",
   "/quiz",
   "/results",
-  "/practice-test",
   "/practice",
   "/ai-quiz",
   "/flashcards",

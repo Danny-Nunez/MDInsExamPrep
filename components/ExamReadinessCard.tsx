@@ -63,8 +63,8 @@ export default function ExamReadinessCard(props: ExamReadinessCardProps) {
             className="absolute inset-x-0 top-0 h-[68px]"
           />
           <div className="relative h-[108px]">
-            <div className="absolute inset-x-0 top-10 bottom-7 flex flex-col items-center justify-center px-1 text-center leading-none">
-              <p className="text-2xl font-bold text-md-black">
+            <div className="absolute inset-x-0 top-14 bottom-7 flex flex-col items-center justify-center px-1 text-center leading-none">
+              <p className="text-xl font-bold text-md-black">
                 {hasScore ? `${percentage}%` : "—"}
               </p>
               <p className={`mt-0.5 text-sm font-semibold leading-tight ${labelColor}`}>

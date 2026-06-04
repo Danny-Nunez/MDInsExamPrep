@@ -5,14 +5,21 @@ import CTAExamCard from "@/components/landing/CTAExamCard";
 import ExamCostBreakdown from "@/components/landing/ExamCostBreakdown";
 import CommonExamMistakesBreakdown from "@/components/landing/CommonExamMistakesBreakdown";
 import ExamDayChecklist from "@/components/landing/ExamDayChecklist";
+import ExamGuideHero from "@/components/landing/ExamGuideHero";
+import ExamGuideRelatedCarousel from "@/components/landing/ExamGuideRelatedCarousel";
 import HardestTopicsBreakdown from "@/components/landing/HardestTopicsBreakdown";
 import OfficialResourcesCard from "@/components/landing/OfficialResourcesCard";
 import SiteFooter from "@/components/landing/SiteFooter";
 import { FOOTER_DISCLAIMER, SITE_URL } from "@/lib/branding";
+import {
+  getExamGuideCarouselItems,
+  getExamGuideFeatureImage,
+} from "@/lib/exam-guide-images";
 import type { SeoGuidePage } from "@/lib/seo-guide-pages";
 
 export function seoGuideMetadata(page: SeoGuidePage): Metadata {
   const canonical = `${SITE_URL}/${page.slug}`;
+  const featureImage = getExamGuideFeatureImage(page.slug);
   return {
     title: `${page.seoTitle} | Maryland Insurance Exam`,
     description: page.seoDescription,
@@ -21,6 +28,9 @@ export function seoGuideMetadata(page: SeoGuidePage): Metadata {
       title: page.seoTitle,
       description: page.seoDescription,
       url: canonical,
+      ...(featureImage
+        ? { images: [{ url: `${SITE_URL}${featureImage}` }] }
+        : {}),
     },
   };
 }
@@ -30,6 +40,8 @@ type SeoGuidePageLayoutProps = {
 };
 
 export default function SeoGuidePageLayout({ page }: SeoGuidePageLayoutProps) {
+  const carouselItems = getExamGuideCarouselItems(page.slug);
+
   return (
     <div className="flex min-h-screen flex-col bg-stone-50">
       <LandingNav />
@@ -42,10 +54,7 @@ export default function SeoGuidePageLayout({ page }: SeoGuidePageLayoutProps) {
           <span className="text-stone-700">Exam Guide</span>
         </nav>
 
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-md-black sm:text-4xl">
-          {page.h1}
-        </h1>
-        <p className="mt-4 text-lg leading-relaxed text-stone-600">{page.intro}</p>
+        <ExamGuideHero page={page} />
 
         {page.officialLinks &&
           page.officialLinks.length > 0 &&
@@ -135,6 +144,8 @@ export default function SeoGuidePageLayout({ page }: SeoGuidePageLayoutProps) {
             <HardestTopicsBreakdown />
           </>
         )}
+
+        <ExamGuideRelatedCarousel items={carouselItems} />
 
         <CTAExamCard className="mt-10" />
 
