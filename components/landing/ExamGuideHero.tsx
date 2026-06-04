@@ -12,7 +12,7 @@ export default function ExamGuideHero({ page }: ExamGuideHeroProps) {
   return (
     <div className="mt-6 flex flex-col gap-6 sm:mt-8 lg:flex-row lg:items-center lg:gap-10">
       {imageSrc && (
-        <div className="relative mx-auto aspect-[16/10] w-full max-w-md shrink-0 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md sm:max-w-lg lg:mx-0 lg:max-w-none lg:w-[min(40%,420px)] xl:w-[min(42%,460px)]">
+        <div className="relative mx-auto aspect-[416/226] w-full max-w-md shrink-0 overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-md sm:max-w-lg lg:mx-0 lg:max-w-none lg:w-[min(40%,420px)] xl:w-[min(42%,460px)]">
           <Image
             src={imageSrc}
             alt={page.h1}

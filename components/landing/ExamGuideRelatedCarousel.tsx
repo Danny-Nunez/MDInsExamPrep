@@ -71,7 +71,7 @@ export default function ExamGuideRelatedCarousel({
             href={item.href}
             className="group w-[280px] shrink-0 snap-start sm:w-[300px] lg:w-[320px]"
           >
-            <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-stone-200 bg-stone-100 shadow-sm transition-shadow group-hover:border-md-red/30 group-hover:shadow-md">
+            <div className="relative aspect-[416/226] overflow-hidden rounded-xl border border-stone-200 bg-stone-100 shadow-sm transition-shadow group-hover:border-md-red/30 group-hover:shadow-md">
               {item.imageSrc ? (
                 <Image
                   src={item.imageSrc}
