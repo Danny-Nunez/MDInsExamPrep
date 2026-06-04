@@ -9,6 +9,7 @@ import {
 import { COLLECTIONS } from "@/lib/db/collections";
 import { toSessionUser } from "@/lib/db/users";
 import { normalizeFullName } from "@/lib/format-display-name";
+import { sendWelcomeEmail } from "@/lib/email/send-transactional";
 import type { UserDocument } from "@/types/user";
 
 export async function POST(request: Request) {
@@ -77,6 +78,13 @@ export async function POST(request: Request) {
       doc as UserDocument & { _id: ObjectId }
     );
     const token = await createSessionToken(sessionUser);
+
+    try {
+      await sendWelcomeEmail({ email, name });
+    } catch (err) {
+      console.error("welcome email error:", err);
+    }
+
     return withSessionCookie(
       NextResponse.json({ user: sessionUser }),
       token

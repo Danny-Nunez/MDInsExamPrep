@@ -8,6 +8,7 @@ import {
 import { getUserById, toSessionUser } from "@/lib/db/users";
 import { getStripe } from "@/lib/stripe";
 import { activateFromCheckoutSession } from "@/lib/stripe-subscription";
+import { sendSubscriptionConfirmationEmail } from "@/lib/email/after-subscription";
 import type { UserDocument } from "@/types/user";
 
 export async function POST(request: Request) {
@@ -43,6 +44,15 @@ export async function POST(request: Request) {
         },
         { status: 400 }
       );
+    }
+
+    const subscriptionId =
+      typeof checkoutSession.subscription === "string"
+        ? checkoutSession.subscription
+        : checkoutSession.subscription?.id;
+    if (subscriptionId) {
+      const sub = await stripe.subscriptions.retrieve(subscriptionId);
+      await sendSubscriptionConfirmationEmail(sessionUser.userId, sub);
     }
 
     const doc = await getUserById(sessionUser.userId);

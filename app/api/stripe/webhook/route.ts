@@ -6,6 +6,7 @@ import {
   activateFromCheckoutSession,
   applySubscriptionFromStripe,
 } from "@/lib/stripe-subscription";
+import { sendSubscriptionConfirmationEmail } from "@/lib/email/after-subscription";
 
 export const runtime = "nodejs";
 
@@ -41,7 +42,21 @@ export async function POST(request: Request) {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.userId;
         if (userId && ObjectId.isValid(userId)) {
-          await activateFromCheckoutSession(stripe, userId, session);
+          const activated = await activateFromCheckoutSession(
+            stripe,
+            userId,
+            session
+          );
+          if (activated) {
+            const subscriptionId =
+              typeof session.subscription === "string"
+                ? session.subscription
+                : session.subscription?.id;
+            if (subscriptionId) {
+              const sub = await stripe.subscriptions.retrieve(subscriptionId);
+              await sendSubscriptionConfirmationEmail(userId, sub);
+            }
+          }
         }
         break;
       }

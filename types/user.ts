@@ -22,4 +22,6 @@ export type UserDocument = {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   subscriptionCurrentPeriodEnd?: Date;
+  /** Avoid duplicate subscription confirmation emails */
+  subscriptionConfirmationEmailSubId?: string;
 };
