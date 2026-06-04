@@ -18,6 +18,14 @@ export const EXAM_GUIDE_FEATURE_IMAGES: Record<string, string> = {
     "/exam-guides/exam-format-and-passing-score.jpg",
   "prometric-testing-centers-maryland":
     "/exam-guides/prometric-testing-center-in-marlyand.jpg",
+  "maryland-insurance-practice-test":
+    "/exam-guides/maryland-insurance-practice-test.jpg",
+  "maryland-insurance-exam-questions":
+    "/exam-guides/maryland-insurance-exam-questions.jpg",
+  "maryland-life-health-study-guide":
+    "/exam-guides/maryland-life-health-study-guide.jpg",
+  "maryland-insurance-exam-readiness-calculator":
+    "/exam-guides/maryland-insurance-exam-readiness-calculator.jpg",
   "common-maryland-insurance-exam-mistakes":
     "/exam-guides/most-common-exam-mistakes.jpg",
   "hardest-maryland-insurance-exam-topics":
