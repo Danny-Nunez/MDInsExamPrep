@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import LandingNav from "@/components/LandingNav";
 import SiteFooter from "@/components/landing/SiteFooter";
 import QuestionCard from "@/components/QuestionCard";
+import SampleTopicBreakdown from "@/components/SampleTopicBreakdown";
 import { getSampleExamQuestions } from "@/lib/quizSeed";
 import { buildExamAttempt } from "@/lib/scoring";
 import { markSampleCompleted } from "@/lib/sample-storage";
@@ -14,7 +15,7 @@ import {
   SAMPLE_READY_THRESHOLD,
   SIGN_UP_CTA,
 } from "@/lib/subscription";
-import type { QuizQuestion } from "@/types/quiz";
+import type { ExamAttempt, QuizQuestion } from "@/types/quiz";
 
 export default function SampleExamPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function SampleExamPage() {
     Record<string, string>
   >({});
   const [finished, setFinished] = useState(false);
-  const [scorePercent, setScorePercent] = useState(0);
+  const [attempt, setAttempt] = useState<ExamAttempt | null>(null);
 
   const currentQuestion = questions[currentIndex];
   const answeredCount = Object.keys(selectedAnswers).length;
@@ -47,11 +48,11 @@ export default function SampleExamPage() {
   }, []);
 
   const handleFinish = () => {
-    const attempt = buildExamAttempt(questions, selectedAnswers, {
+    const result = buildExamAttempt(questions, selectedAnswers, {
       mode: "study",
     });
-    setScorePercent(attempt.percentage);
-    markSampleCompleted(attempt.percentage);
+    setAttempt(result);
+    markSampleCompleted(result.percentage);
     setFinished(true);
   };
 
@@ -69,12 +70,12 @@ export default function SampleExamPage() {
     );
   }
 
-  if (finished) {
-    const examReady = scorePercent >= SAMPLE_READY_THRESHOLD;
+  if (finished && attempt) {
+    const examReady = attempt.percentage >= SAMPLE_READY_THRESHOLD;
     return (
       <div className="flex min-h-screen flex-col bg-stone-50">
         <LandingNav />
-        <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-16 sm:px-6">
+        <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-16 sm:px-6">
           <h1 className="text-3xl font-bold text-md-black">
             {examReady ? "Sample complete" : "You're not quite ready yet"}
           </h1>
@@ -82,13 +83,14 @@ export default function SampleExamPage() {
           {examReady ? (
             <p className="mt-3 text-lg text-stone-600">
               You answered {FREE_SAMPLE_QUESTION_COUNT} questions with instant
-              feedback — the same study mode you get with a full subscription.
+              feedback. Here&apos;s your score and a breakdown of your strengths
+              and weaknesses by topic.
             </p>
           ) : (
             <p className="mt-3 text-lg text-stone-600">
               Sorry — based on this {FREE_SAMPLE_QUESTION_COUNT}-question trial,
-              you&apos;re not ready for the exam yet. That&apos;s normal; most
-              candidates need structured practice before test day.
+              you&apos;re not ready for the exam yet. Review your topic breakdown
+              below to see where to focus next.
             </p>
           )}
 
@@ -105,15 +107,17 @@ export default function SampleExamPage() {
               Your score
             </p>
             <p className="mt-2 text-5xl font-bold text-md-black">
-              {scorePercent}%
+              {attempt.percentage}%
             </p>
             <p className="mt-2 text-sm text-stone-600">
-              {correctCount} of {questions.length} correct
+              {attempt.score} of {questions.length} correct
               {examReady
                 ? ` — at or above our ${SAMPLE_READY_THRESHOLD}% readiness benchmark.`
                 : ` — below the ${SAMPLE_READY_THRESHOLD}% benchmark for exam readiness.`}
             </p>
           </div>
+
+          <SampleTopicBreakdown domainScores={attempt.domainScores} />
 
           {examReady ? (
             <p className="mt-6 text-stone-600">
@@ -164,7 +168,8 @@ export default function SampleExamPage() {
           Free {FREE_SAMPLE_QUESTION_COUNT}-question sample
         </h1>
         <p className="mt-1 text-sm text-stone-600">
-          Study mode · Instant explanations · No account required
+          Study mode · Instant explanations · Score and topic breakdown at the end
+          · No account required
         </p>
 
         <div className="mb-6 mt-6 h-2 overflow-hidden rounded-full bg-stone-200">
@@ -187,7 +192,20 @@ export default function SampleExamPage() {
           />
         )}
 
-        <div className="mt-6 flex justify-between">
+        <p className="mt-4 text-center text-sm text-stone-500">
+          Question {currentIndex + 1} of {questions.length}
+          {answeredCount > 0 && (
+            <>
+              {" "}
+              ·{" "}
+              <span className="text-green-700">
+                {correctCount} correct so far
+              </span>
+            </>
+          )}
+        </p>
+
+        <div className="mt-6 flex justify-between gap-3">
           <button
             type="button"
             disabled={currentIndex === 0}
@@ -196,7 +214,15 @@ export default function SampleExamPage() {
           >
             Previous
           </button>
-          {currentIndex < questions.length - 1 ? (
+          {allAnswered ? (
+            <button
+              type="button"
+              onClick={handleFinish}
+              className="btn-primary px-6 py-2 text-sm"
+            >
+              See my results
+            </button>
+          ) : currentIndex < questions.length - 1 ? (
             <button
               type="button"
               disabled={!currentAnswered}
@@ -208,33 +234,12 @@ export default function SampleExamPage() {
               Next question
             </button>
           ) : (
-            <span className="text-sm text-stone-500">Last question</span>
-          )}
-        </div>
-
-        <div className="sticky bottom-0 mt-8 rounded-xl border border-stone-200 bg-white p-4 shadow-lg">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="text-sm text-stone-600">
-              Answered {answeredCount} of {questions.length}
-              {answeredCount > 0 && (
-                <>
-                  {" "}
-                  ·{" "}
-                  <span className="text-green-700">
-                    {correctCount} correct so far
-                  </span>
-                </>
-              )}
+            <p className="max-w-48 text-right text-sm text-stone-500 sm:max-w-none">
+              {currentAnswered
+                ? "Review earlier questions to finish the assessment."
+                : "Answer this question to continue."}
             </p>
-            <button
-              type="button"
-              onClick={handleFinish}
-              disabled={!allAnswered}
-              className="btn-primary px-6 py-2.5 text-sm disabled:opacity-50"
-            >
-              See my score
-            </button>
-          </div>
+          )}
         </div>
       </main>
       <SiteFooter />

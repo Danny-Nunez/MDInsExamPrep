@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, Play } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+import LandingHowItWorksButton from "@/components/landing/LandingHowItWorksButton";
 
 type LandingHeroProps = {
   sampleHref: string;
@@ -38,20 +39,7 @@ export default function LandingHero({ sampleHref }: LandingHeroProps) {
                 <span className="hidden sm:inline">Start Free 10-Question Exam</span>
                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
               </Link>
-              <Link
-                href="/#how-it-works"
-                className="btn-secondary inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border-md-black px-4 py-3 text-sm sm:gap-2.5 sm:px-6 sm:py-3.5 sm:text-base"
-                aria-label="See how it works"
-              >
-                <span
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-md-black sm:h-7 sm:w-7"
-                  aria-hidden
-                >
-                  <Play className="h-2.5 w-2.5 fill-md-black text-md-black sm:h-3 sm:w-3" />
-                </span>
-                <span className="sm:hidden">See How</span>
-                <span className="hidden sm:inline">See How It Works</span>
-              </Link>
+              <LandingHowItWorksButton />
             </div>
 
             <ul className="landing-hero-trust-row">
