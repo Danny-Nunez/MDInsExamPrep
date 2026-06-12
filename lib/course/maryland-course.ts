@@ -196,7 +196,9 @@ export const MARYLAND_COURSE: MarylandCourse = {
         { id: "6.7", title: "Medical Plans Review" },
         { id: "6.8", title: "Module Quiz", isQuiz: true },
       ],
-      "One of the weakest areas on many Maryland exam score reports."
+      {
+        note: "One of the weakest areas on many Maryland exam score reports.",
+      }
     ),
     module(7, "disability-income-insurance", "Disability Income Insurance", [
       { id: "7.1", title: "Disability Income Basics" },
@@ -265,7 +267,9 @@ export const MARYLAND_COURSE: MarylandCourse = {
         { id: "12.8", title: "Early Withdrawal Rules" },
         { id: "12.9", title: "Module Quiz", isQuiz: true },
       ],
-      "A common low-scoring area on Maryland Life & Health practice reports."
+      {
+        note: "A common low-scoring area on Maryland Life & Health practice reports.",
+      }
     ),
     module(13, "federal-tax-considerations", "Federal Tax Considerations", [
       { id: "13.1", title: "Life Insurance Taxation" },
