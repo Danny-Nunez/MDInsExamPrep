@@ -5,6 +5,7 @@ import {
   getCourseHtmlSitemapLinks,
   getCourseLessonHtmlSitemapLinks,
   getCourseSitemapPaths,
+  isCourseModuleSitemapPath,
 } from "@/lib/course";
 import { getAllSeoGuideSlugs } from "@/lib/seo-guide-pages";
 
@@ -82,6 +83,12 @@ export const PUBLIC_SITEMAP_PAGES: PublicSitemapPage[] = [
     changeFrequency: "weekly",
     priority: 0.9,
   },
+  {
+    path: "/sitemap",
+    label: "Sitemap",
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
 ];
 
 export type HtmlSitemapSection = {
@@ -143,7 +150,7 @@ export function buildMetadataSitemap(): MetadataRoute.Sitemap {
   );
 
   const course = getCourseSitemapPaths().map((path) => {
-    const isModule = path.split("/").length === 3;
+    const isModule = isCourseModuleSitemapPath(path);
     return {
       url: absoluteUrl(path),
       lastModified,

@@ -137,3 +137,12 @@ export function getCourseSitemapPaths(): string[] {
   }
   return paths;
 }
+
+/** True when a sitemap path is a course module (not a lesson). */
+export function isCourseModuleSitemapPath(path: string): boolean {
+  const segments = path.split("/").filter(Boolean);
+  return (
+    segments.length === 2 &&
+    segments[0] === "free-maryland-insurance-course"
+  );
+}

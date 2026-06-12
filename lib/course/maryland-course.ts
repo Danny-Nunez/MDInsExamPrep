@@ -1,5 +1,10 @@
 import { COURSE_BASE_PATH } from "@/lib/course/constants";
 import { LESSON_4_1_TRANSCRIPT } from "@/lib/course/lessons/lesson-4-1";
+import { LESSON_4_3_KNOWLEDGE_CHECK } from "@/lib/course/lessons/lesson-4-3-knowledge-check";
+import {
+  LESSON_4_3_DESCRIPTION,
+  LESSON_4_3_TRANSCRIPT,
+} from "@/lib/course/lessons/lesson-4-3";
 import { LESSON_4_2_KNOWLEDGE_CHECK } from "@/lib/course/lessons/lesson-4-2-knowledge-check";
 import {
   LESSON_4_2_DESCRIPTION,
@@ -44,12 +49,17 @@ function buildLessons(moduleId: string, items: LessonInput[]): CourseLesson[] {
   }));
 }
 
+type ModuleMeta = {
+  note?: string;
+  description?: string;
+};
+
 function module(
   number: number,
   slug: string,
   title: string,
   lessons: LessonInput[],
-  note?: string
+  meta?: ModuleMeta
 ): CourseModule {
   const id = String(number);
   return {
@@ -57,7 +67,8 @@ function module(
     number,
     slug,
     title,
-    note,
+    description: meta?.description,
+    note: meta?.note,
     lessons: buildLessons(id, lessons),
   };
 }
@@ -69,35 +80,62 @@ export const MARYLAND_COURSE: MarylandCourse = {
     "A structured free course for the Maryland Life, Accident, Health & Sickness Producer exam — 15 modules, 100+ lessons, and practice quizzes aligned to the licensing blueprint.",
   basePath: COURSE_BASE_PATH,
   modules: [
-    module(1, "insurance-fundamentals", "Insurance Fundamentals", [
-      { id: "1.1", title: "Risk Management and Purpose of Insurance" },
-      { id: "1.2", title: "Perils, Hazards, Exposure, and Loss" },
-      { id: "1.3", title: "Insurable Interest and Indemnity" },
-      { id: "1.4", title: "Insurance Contracts and Legal Concepts" },
-      { id: "1.5", title: "Law of Large Numbers" },
-      { id: "1.6", title: "General Insurance Concepts Review" },
-      { id: "1.7", title: "Module Quiz", isQuiz: true },
-    ]),
-    module(2, "life-insurance-basics", "Life Insurance Basics", [
-      { id: "2.1", title: "What Is Life Insurance?" },
-      { id: "2.2", title: "Term Life Insurance" },
-      { id: "2.3", title: "Whole Life Insurance" },
-      { id: "2.4", title: "Universal Life Insurance" },
-      { id: "2.5", title: "Variable Life Insurance" },
-      { id: "2.6", title: "Life Insurance Premiums and Cash Value" },
-      { id: "2.7", title: "Life Insurance Basics Review" },
-      { id: "2.8", title: "Module Quiz", isQuiz: true },
-    ]),
-    module(3, "life-insurance-policies", "Life Insurance Policies", [
-      { id: "3.1", title: "Policy Ownership" },
-      { id: "3.2", title: "Beneficiaries" },
-      { id: "3.3", title: "Policy Provisions" },
-      { id: "3.4", title: "Settlement Options" },
-      { id: "3.5", title: "Nonforfeiture Options" },
-      { id: "3.6", title: "Life Insurance Riders" },
-      { id: "3.7", title: "Policy Loans" },
-      { id: "3.8", title: "Module Quiz", isQuiz: true },
-    ]),
+    module(
+      1,
+      "insurance-fundamentals",
+      "Insurance Fundamentals",
+      [
+        { id: "1.1", title: "Risk Management and Purpose of Insurance" },
+        { id: "1.2", title: "Perils, Hazards, Exposure, and Loss" },
+        { id: "1.3", title: "Insurable Interest and Indemnity" },
+        { id: "1.4", title: "Insurance Contracts and Legal Concepts" },
+        { id: "1.5", title: "Law of Large Numbers" },
+        { id: "1.6", title: "General Insurance Concepts Review" },
+        { id: "1.7", title: "Module Quiz", isQuiz: true },
+      ],
+      {
+        description:
+          "Master the building blocks of insurance — risk management, perils and hazards, insurable interest, contract principles, and the law of large numbers.",
+      }
+    ),
+    module(
+      2,
+      "life-insurance-basics",
+      "Life Insurance Basics",
+      [
+        { id: "2.1", title: "What Is Life Insurance?" },
+        { id: "2.2", title: "Term Life Insurance" },
+        { id: "2.3", title: "Whole Life Insurance" },
+        { id: "2.4", title: "Universal Life Insurance" },
+        { id: "2.5", title: "Variable Life Insurance" },
+        { id: "2.6", title: "Life Insurance Premiums and Cash Value" },
+        { id: "2.7", title: "Life Insurance Basics Review" },
+        { id: "2.8", title: "Module Quiz", isQuiz: true },
+      ],
+      {
+        description:
+          "Understand term, whole, universal, and variable life products, plus premiums and cash value — core life insurance knowledge for the Maryland exam.",
+      }
+    ),
+    module(
+      3,
+      "life-insurance-policies",
+      "Life Insurance Policies",
+      [
+        { id: "3.1", title: "Policy Ownership" },
+        { id: "3.2", title: "Beneficiaries" },
+        { id: "3.3", title: "Policy Provisions" },
+        { id: "3.4", title: "Settlement Options" },
+        { id: "3.5", title: "Nonforfeiture Options" },
+        { id: "3.6", title: "Life Insurance Riders" },
+        { id: "3.7", title: "Policy Loans" },
+        { id: "3.8", title: "Module Quiz", isQuiz: true },
+      ],
+      {
+        description:
+          "Learn policy ownership, beneficiaries, key provisions, settlement and nonforfeiture options, riders, and policy loans.",
+      }
+    ),
     module(4, "annuities", "Annuities", [
       {
         id: "4.1",
@@ -115,7 +153,15 @@ export const MARYLAND_COURSE: MarylandCourse = {
         knowledgeCheck: LESSON_4_2_KNOWLEDGE_CHECK,
         estimatedMinutes: 9,
       },
-      { id: "4.3", title: "Annuity Taxation" },
+      {
+        id: "4.3",
+        title: "Annuity Taxation",
+        youtubeId: "yuKpPK3wA1w",
+        description: LESSON_4_3_DESCRIPTION,
+        transcript: LESSON_4_3_TRANSCRIPT,
+        knowledgeCheck: LESSON_4_3_KNOWLEDGE_CHECK,
+        estimatedMinutes: 4,
+      },
       { id: "4.4", title: "Fixed vs Variable Annuities Deep Dive" },
       { id: "4.5", title: "Immediate vs Deferred Annuities Deep Dive" },
       { id: "4.6", title: "Accumulation vs Annuitization" },

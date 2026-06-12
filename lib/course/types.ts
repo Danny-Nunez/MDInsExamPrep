@@ -42,6 +42,7 @@ export type CourseModule = {
   number: number;
   slug: string;
   title: string;
+  description?: string;
   note?: string;
   lessons: CourseLesson[];
 };
