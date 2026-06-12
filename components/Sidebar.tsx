@@ -11,9 +11,11 @@ import {
   History,
   BarChart3,
   Shield,
+  GraduationCap,
 } from "lucide-react";
 import MarylandLogo from "@/components/MarylandLogo";
 import { useAuth } from "@/contexts/AuthContext";
+import { DASHBOARD_COURSE_BASE_PATH } from "@/lib/course/constants";
 
 const navItems = [
   {
@@ -21,6 +23,14 @@ const navItems = [
     label: "Dashboard",
     icon: LayoutDashboard,
     isActive: (pathname: string) => pathname === "/dashboard",
+  },
+  {
+    href: DASHBOARD_COURSE_BASE_PATH,
+    label: "Free Course",
+    icon: GraduationCap,
+    isActive: (pathname: string) =>
+      pathname === DASHBOARD_COURSE_BASE_PATH ||
+      pathname.startsWith(`${DASHBOARD_COURSE_BASE_PATH}/`),
   },
   {
     href: "/practice",

@@ -15,6 +15,7 @@ import {
   refreshSession,
   registerUser,
 } from "@/lib/api-client";
+import { syncCourseProgressToAccount } from "@/lib/course/lesson-progress-client";
 import type { SessionUser } from "@/types/user";
 
 type AuthContextValue = {
@@ -54,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (result.error) return result.error;
     const sessionUser = result.user!;
     setUser(sessionUser);
+    void syncCourseProgressToAccount();
     return sessionUser;
   }, []);
 
@@ -63,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (result.error) return result.error;
       const sessionUser = result.user!;
       setUser(sessionUser);
+      void syncCourseProgressToAccount();
       return sessionUser;
     },
     []

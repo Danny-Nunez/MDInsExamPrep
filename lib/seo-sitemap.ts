@@ -1,6 +1,11 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/branding";
 import { EXAM_GUIDE_GROUPS } from "@/lib/exam-guide-nav";
+import {
+  getCourseHtmlSitemapLinks,
+  getCourseLessonHtmlSitemapLinks,
+  getCourseSitemapPaths,
+} from "@/lib/course";
 import { getAllSeoGuideSlugs } from "@/lib/seo-guide-pages";
 
 /** Canonical origin for sitemap.xml and robots.txt (production URL unless a public env override is set). */
@@ -71,6 +76,12 @@ export const PUBLIC_SITEMAP_PAGES: PublicSitemapPage[] = [
     changeFrequency: "monthly",
     priority: 0.85,
   },
+  {
+    path: "/free-maryland-insurance-course",
+    label: "Free Maryland Insurance Course",
+    changeFrequency: "weekly",
+    priority: 0.9,
+  },
 ];
 
 export type HtmlSitemapSection = {
@@ -88,6 +99,16 @@ export function getHtmlSitemapSections(): HtmlSitemapSection[] {
     })),
   };
 
+  const courseModules: HtmlSitemapSection = {
+    title: "Free Maryland Insurance Course — modules",
+    links: getCourseHtmlSitemapLinks(),
+  };
+
+  const courseLessons: HtmlSitemapSection = {
+    title: "Free Maryland Insurance Course — lessons",
+    links: getCourseLessonHtmlSitemapLinks(),
+  };
+
   const guides: HtmlSitemapSection[] = EXAM_GUIDE_GROUPS.map((group) => ({
     title: group.title,
     links: group.links.map((link) => ({
@@ -96,12 +117,16 @@ export function getHtmlSitemapSections(): HtmlSitemapSection[] {
     })),
   }));
 
-  return [marketing, ...guides];
+  return [marketing, courseModules, courseLessons, ...guides];
 }
 
-/** Total indexable URLs (marketing + exam guides). */
+/** Total indexable URLs (marketing + course + exam guides). */
 export function getPublicSitemapUrlCount(): number {
-  return PUBLIC_SITEMAP_PAGES.length + getAllSeoGuideSlugs().length;
+  return (
+    PUBLIC_SITEMAP_PAGES.length +
+    getCourseSitemapPaths().length +
+    getAllSeoGuideSlugs().length
+  );
 }
 
 /** Build entries for Next.js MetadataRoute.Sitemap (sitemap.xml). */
@@ -117,6 +142,16 @@ export function buildMetadataSitemap(): MetadataRoute.Sitemap {
     })
   );
 
+  const course = getCourseSitemapPaths().map((path) => {
+    const isModule = path.split("/").length === 3;
+    return {
+      url: absoluteUrl(path),
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: isModule ? 0.75 : 0.65,
+    };
+  });
+
   const guides = getAllSeoGuideSlugs().map((slug) => ({
     url: absoluteUrl(`/${slug}`),
     lastModified,
@@ -124,7 +159,7 @@ export function buildMetadataSitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...marketing, ...guides];
+  return [...marketing, ...course, ...guides];
 }
 
 /** App, auth, checkout, and API paths — crawlable links may exist, but omit from index. */

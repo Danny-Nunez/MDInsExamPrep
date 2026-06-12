@@ -1,0 +1,34 @@
+export const LESSON_4_2_DESCRIPTION =
+  "Learn how qualified and non-qualified annuities differ, how each is funded and taxed, what tax-deferred growth means on the exam, and when the 10% early-withdrawal penalty applies — one of the most tested annuity topics on the Maryland Life & Health licensing exam.";
+
+export const LESSON_4_2_TRANSCRIPT = `Welcome back. In this lesson, we're going to learn the difference between qualified and non-qualified annuities, how annuities are taxed, and several key concepts that frequently appear on the Maryland insurance exam. Understanding these rules will help you answer some of the most commonly missed annuity questions on the exam.
+
+Let's talk about qualified annuities. A qualified annuity is funded using pre-tax dollars through a qualified retirement plan. In simple terms, the money goes into the plan before taxes are taken out. Some common examples include a traditional IRA, a 401(k), and a SEP IRA. Because these contributions have not yet been taxed, both the original contributions and any earnings are generally taxable when money is withdrawn. Think of it this way: the government allows the money to grow first and collects taxes later. This tax-deferred treatment is one of the primary advantages of qualified retirement plans.
+
+Here's an important exam tip. If a question mentions pre-tax contributions, a traditional IRA, a 401(k), or a SEP IRA, there's a good chance the correct answer involves a qualified plan or qualified annuity. Remember this simple memory trick: qualified means taxes come later.
+
+Let's talk about non-qualified annuities. A non-qualified annuity is funded with after-tax dollars. In other words, the money used to purchase the annuity has already been taxed before it is invested. Because taxes have already been paid on the original contribution, that principal is not taxed again when money is withdrawn. However, any earnings that accumulate inside the annuity are generally taxable when withdrawn.
+
+Here's a simple way to remember it for the exam. With a non-qualified annuity, only the earnings are taxed later because the original money has already been taxed. Exam tip: non-qualified means already taxed. If a question mentions after-tax dollars, the correct answer is often a non-qualified annuity.
+
+Let's compare qualified and non-qualified annuities side by side. A qualified annuity is funded with pre-tax dollars through a qualified retirement plan. Common examples include a traditional IRA, a 401(k), and a SEP IRA. Because the money has not yet been taxed, both the contributions and the earnings are generally taxable when withdrawn.
+
+A non-qualified annuity is different. It is funded with after-tax dollars, which means the money has already been taxed before it goes into the annuity. When money is withdrawn from a non-qualified annuity, only the earnings portion is generally taxable. The original principal is not taxed again.
+
+Here's the key difference for the exam. Qualified means taxes come later on both contributions and earnings. Non-qualified means the money was already taxed, so only the earnings are taxed later. A simple memory trick: qualified equals taxes later; non-qualified equals already taxed. If the question mentions pre-tax dollars, retirement plan, traditional IRA, 401(k), or SEP IRA, think qualified annuity. If the question mentions after-tax dollars or personal savings, think non-qualified annuity.
+
+Let's talk about one of the biggest advantages of annuities: tax-deferred growth. Tax-deferred growth means that the money inside the annuity can grow over time without being taxed each year. Instead of paying taxes annually on interest, dividends, or investment gains, those earnings continue to accumulate inside the annuity. Taxes are generally postponed until money is withdrawn. This allows more of your money to remain invested and continue growing over time.
+
+Both qualified and non-qualified annuities offer tax-deferred growth. However, the taxation of withdrawals is different. With a qualified annuity, both the contributions and the earnings are generally taxable when withdrawn. With a non-qualified annuity, only the earnings portion is generally taxable because the original contribution was already taxed.
+
+For the Maryland insurance exam, remember this important point. The primary tax advantage of an annuity is tax-deferred growth. If you see a question asking about the main tax benefit of an annuity, the answer is usually tax-deferred growth. Exam tip: tax deferred means taxes are paid later, not avoided completely. The money grows first and taxes are generally paid when withdrawals occur. Memory trick: tax-deferred growth means grow now, pay taxes later.
+
+Let's talk about early withdrawals. This is a topic that frequently appears on the Maryland insurance exam. One of the biggest advantages of an annuity is tax-deferred growth. However, there can be consequences if money is withdrawn too early. In general, if funds are withdrawn before age 59½, the earnings portion may be subject to an additional 10% federal tax penalty. This penalty is in addition to any ordinary income taxes that may already be due.
+
+The government encourages people to use annuities for long-term retirement planning. When money is taken out too early, a penalty may apply. For exam purposes, focus on two important facts. First, the age threshold is 59½. Second, the 10% federal tax penalty generally applies to the earnings portion of the withdrawal.
+
+Here's a simple memory trick: early withdrawal often equals penalty. Exam tip: if you see a question involving an annuity withdrawal before age 59½, always consider whether a 10% federal tax penalty applies. Remember: before age 59½, 10% penalty — a combination you'll see often on the exam.
+
+Congratulations on completing lesson 4.2, qualified versus non-qualified annuities. You've taken another important step toward mastering annuity concepts for the Maryland insurance exam. In this lesson, you learned the key differences between qualified and non-qualified annuities, how each type is funded, and how taxation works when money is withdrawn. You also learned that qualified annuities are funded with pre-tax dollars and are generally taxed when withdrawn, while non-qualified annuities are funded with after-tax dollars and only the earnings portion is generally taxable.
+
+Most importantly, you learned one of the most tested concepts on the exam: tax-deferred growth. Take a moment to review the key takeaways and make sure you understand the difference between pre-tax and after-tax funding. The better you understand these concepts, the more confident you'll be when answering annuity questions on exam day. Great job completing this lesson. When you're ready, continue to the knowledge check to test your understanding and reinforce what you've learned.`;

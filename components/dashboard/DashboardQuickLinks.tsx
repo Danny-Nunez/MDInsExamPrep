@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { DASHBOARD_COURSE_BASE_PATH } from "@/lib/course/constants";
 
 const links = [
+  { label: "Free Course", href: DASHBOARD_COURSE_BASE_PATH },
   { label: "Exam Guide", href: "/how-to-get-a-maryland-insurance-license" },
   {
     label: "License Requirements",

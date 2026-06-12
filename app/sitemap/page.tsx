@@ -11,7 +11,7 @@ import {
 export const metadata: Metadata = {
   title: "Sitemap",
   description:
-    "Browse all public pages on Maryland Insurance Exam — free sample, pricing, Life & Health prep, and Maryland licensing exam guides.",
+    "Browse all public pages on Maryland Insurance Exam — free Maryland insurance course, sample exam, pricing, Life & Health prep, and licensing exam guides.",
   alternates: {
     canonical: absoluteUrl("/sitemap"),
   },

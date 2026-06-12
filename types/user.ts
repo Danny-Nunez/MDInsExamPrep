@@ -24,4 +24,6 @@ export type UserDocument = {
   subscriptionCurrentPeriodEnd?: Date;
   /** Avoid duplicate subscription confirmation emails */
   subscriptionConfirmationEmailSubId?: string;
+  /** Free course lesson IDs the user has completed (no subscription required). */
+  courseWatchedLessonIds?: string[];
 };

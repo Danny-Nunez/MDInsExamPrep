@@ -7,6 +7,7 @@ import DashboardWelcomeHeader from "@/components/DashboardWelcomeHeader";
 import ExamReadinessCard from "@/components/ExamReadinessCard";
 import MetricTrendCard from "@/components/MetricTrendCard";
 import WeakestAreas from "@/components/WeakestAreas";
+import DashboardFreeCourseCard from "@/components/dashboard/DashboardFreeCourseCard";
 import DashboardFocusedPracticeCard from "@/components/dashboard/DashboardFocusedPracticeCard";
 import DashboardProgressOverview from "@/components/dashboard/DashboardProgressOverview";
 import DashboardQuickLinks from "@/components/dashboard/DashboardQuickLinks";
@@ -165,6 +166,8 @@ export default function DashboardPage() {
             browser only.
           </div>
         )}
+
+        {isLoggedIn && <DashboardFreeCourseCard />}
 
         {/* Row 1 — readiness, metrics, focused practice */}
         <div className="mb-6 grid grid-cols-1 items-stretch gap-4 lg:grid-cols-12">

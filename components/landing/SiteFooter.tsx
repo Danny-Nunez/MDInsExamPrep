@@ -11,6 +11,7 @@ import { Facebook, Instagram, Mail } from "lucide-react";
 const footerNavLinks = [
   { label: "Practice Test", href: "/practice-test" },
   { label: "Free sample", href: "/sample" },
+  { label: "Free course", href: "/free-maryland-insurance-course" },
   { label: "Features", href: "/#features" },
   { label: "Exam Guide", href: "/maryland-life-health-insurance-exam-requirements" },
   { label: "Pricing", href: "/pricing" },

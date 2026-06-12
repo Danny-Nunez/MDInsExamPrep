@@ -2,8 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
-
-export const HOW_TO_VIDEO_SRC = "/how-to-mdIns.mp4";
+import {
+  HOW_IT_WORKS_VIDEO_TITLE,
+  HOW_TO_VIDEO_SRC,
+} from "@/lib/how-it-works-video";
 
 type HowItWorksVideoModalProps = {
   open: boolean;
@@ -51,7 +53,7 @@ export default function HowItWorksVideoModal({
           id="how-it-works-video-title"
           className="text-base font-bold text-md-black sm:text-lg"
         >
-          How Maryland Insurance Exam works
+          {HOW_IT_WORKS_VIDEO_TITLE}
         </h2>
         <button
           type="button"

@@ -6,21 +6,27 @@ import MarylandLogo from "@/components/MarylandLogo";
 import ExamGuideDropdown from "@/components/landing/ExamGuideDropdown";
 import { useAuth } from "@/contexts/AuthContext";
 import { canAccessFullApp } from "@/lib/access";
-import { CHECKOUT_CTA, SIGN_UP_CTA } from "@/lib/subscription";
+import { SIGN_UP_CTA } from "@/lib/subscription";
 
 const mainNavLinks = [
   { href: "/practice-test", label: "Practice Test" },
+  { href: "/free-maryland-insurance-course", label: "Free Course" },
   { href: "/#features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#upload-score-report", label: "Upload Results" },
 ];
 
 export default function LandingNav() {
-  const { isLoggedIn, loading, user } = useAuth();
+  const { isLoggedIn, loading, user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const hasFullAccess = canAccessFullApp(user);
 
   const closeMobile = () => setMobileOpen(false);
+
+  const handleLogout = async () => {
+    closeMobile();
+    await logout();
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-md-black">
@@ -76,29 +82,38 @@ export default function LandingNav() {
           </button>
           {!loading && isLoggedIn ? (
             hasFullAccess ? (
-              <Link
-                href="/dashboard"
-                onClick={closeMobile}
-                className="landing-nav-cta hidden sm:inline-flex"
-              >
-                Dashboard
-              </Link>
-            ) : (
               <>
                 <Link
-                  href="/sample"
+                  href="/dashboard"
                   onClick={closeMobile}
                   className="landing-nav-login-dark hidden sm:inline-flex"
                 >
-                  Free sample
+                  Dashboard
                 </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="landing-nav-login-dark hidden sm:inline-flex"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
                 <Link
                   href="/subscribe"
                   onClick={closeMobile}
                   className="landing-nav-cta hidden sm:inline-flex"
                 >
-                  {CHECKOUT_CTA}
+                  Subscribe
                 </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="landing-nav-login-dark hidden sm:inline-flex"
+                >
+                  Log out
+                </button>
               </>
             )
           ) : (
@@ -148,29 +163,38 @@ export default function LandingNav() {
         <div className="mt-3 grid grid-cols-1 gap-2 border-t border-stone-800 pt-3 sm:grid-cols-2">
           {!loading && isLoggedIn ? (
             hasFullAccess ? (
-              <Link
-                href="/dashboard"
-                onClick={closeMobile}
-                className="landing-nav-cta col-span-full inline-flex items-center justify-center sm:col-span-2"
-              >
-                Dashboard
-              </Link>
-            ) : (
               <>
                 <Link
-                  href="/sample"
+                  href="/dashboard"
                   onClick={closeMobile}
                   className="landing-nav-login-dark inline-flex items-center justify-center"
                 >
-                  Free sample
+                  Dashboard
                 </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="landing-nav-login-dark inline-flex items-center justify-center"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
                 <Link
                   href="/subscribe"
                   onClick={closeMobile}
                   className="landing-nav-cta inline-flex items-center justify-center"
                 >
-                  {CHECKOUT_CTA}
+                  Subscribe
                 </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="landing-nav-login-dark inline-flex items-center justify-center"
+                >
+                  Log out
+                </button>
               </>
             )
           ) : (
