@@ -9,13 +9,16 @@ import {
 } from "@/lib/course";
 import { getAllSeoGuideSlugs } from "@/lib/seo-guide-pages";
 
-/** Canonical origin for sitemap.xml and robots.txt (production URL unless a public env override is set). */
+/** Canonical origin for sitemap.xml and robots.txt (always www in production). */
 export function getSiteOrigin(): string {
   const raw = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (raw) {
     try {
       const url = new URL(raw);
       if (url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
+        if (url.hostname === "marylandinsuranceexam.com") {
+          url.hostname = "www.marylandinsuranceexam.com";
+        }
         return url.origin;
       }
     } catch {

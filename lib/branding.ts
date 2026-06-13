@@ -13,7 +13,7 @@ export const APP_TAGLINE_SHORT = "Maryland Life & Health exam prep";
 export const APP_DESCRIPTION =
   "Maryland Life, Accident, Health & Sickness Producer licensing practice with Prometric-style questions, adaptive quizzes, and AI weak-area tracking.";
 
-export const SITE_URL = "https://marylandinsuranceexam.com";
+export const SITE_URL = "https://www.marylandinsuranceexam.com";
 
 /** Google Analytics measurement ID (gtag.js). Override via NEXT_PUBLIC_GA_MEASUREMENT_ID. */
 export const GA_MEASUREMENT_ID =
