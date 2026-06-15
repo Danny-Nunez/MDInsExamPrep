@@ -32,3 +32,8 @@ export const FOOTER_DISCLAIMER =
   "Maryland Insurance Exam is an independent exam prep platform and is not affiliated with Prometric or the Maryland Insurance Administration.";
 
 export const COPYRIGHT_YEAR = 2026;
+
+export const SUPPORT_EMAIL = "support@marylandinsuranceexam.com";
+
+export const YOUTUBE_CHANNEL_URL =
+  "https://www.youtube.com/@MarylandInsuranceExam";

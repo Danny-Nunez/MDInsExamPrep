@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { getSessionUser } from "@/lib/auth";
 import { canAccessFullApp } from "@/lib/access";
 import { getRecentLearningContext, saveGeneratedQuiz } from "@/lib/db/exams";
+import { buildHistoryContext } from "@/lib/learning-context";
 import { buildQuizFromApprovedBank } from "@/lib/quiz-from-bank";
 import { ALL_SUBDOMAINS } from "@/lib/marylandBlueprint";
 import { DOMAINS, MARYLAND_EXAM } from "@/types/quiz";
@@ -76,59 +77,6 @@ Return JSON only:
     }
   ]
 }`;
-}
-
-function buildHistoryContext(
-  data: Awaited<ReturnType<typeof getRecentLearningContext>>
-): string {
-  const missedByDomain = new Map<string, number>();
-
-  for (const attempt of data.recentAttempts) {
-    for (const ans of attempt.answers) {
-      if (!ans.isCorrect) {
-        missedByDomain.set(
-          ans.domain,
-          (missedByDomain.get(ans.domain) ?? 0) + 1
-        );
-      }
-    }
-  }
-
-  const repeatedMissDomains = [...missedByDomain.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([domain, misses]) => `${domain} (${misses} misses)`);
-
-  const attemptSummaries = data.recentAttempts.map((a, i) => {
-    const weakest = [...a.domainScores]
-      .sort((x, y) => x.percentage - y.percentage)
-      .slice(0, 3)
-      .map((d) => `${d.domain} ${d.percentage}%`)
-      .join(", ");
-    return `Attempt ${i + 1}: score ${a.percentage}%, weakest: ${weakest || "n/a"}`;
-  });
-
-  const imageInferred = data.recentImageAnalyses
-    .flatMap((a) =>
-      a.weakAreas.map(
-        (w) => `${w.domain} (${Math.round(w.confidence * 100)}%)`
-      )
-    )
-    .slice(0, 8);
-
-  const parts = [
-    attemptSummaries.length > 0
-      ? `Recent attempts: ${attemptSummaries.join(" | ")}`
-      : "",
-    repeatedMissDomains.length > 0
-      ? `Repeated misses by domain: ${repeatedMissDomains.join(", ")}`
-      : "",
-    imageInferred.length > 0
-      ? `Uploaded exam-image inferred weaknesses: ${imageInferred.join(", ")}`
-      : "",
-  ].filter(Boolean);
-
-  return parts.join("\n");
 }
 
 function normalizeAiQuestion(
@@ -327,7 +275,6 @@ export async function POST(request: Request) {
         console.error("Failed to load learning context:", contextErr);
       }
     }
-
     let questions: QuizQuestion[] = [];
     let source: "bank" | "ai" | "mixed" = "ai";
 

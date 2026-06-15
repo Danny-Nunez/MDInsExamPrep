@@ -5,19 +5,23 @@ import {
   APP_NAME,
   COPYRIGHT_YEAR,
   FOOTER_DISCLAIMER,
+  SUPPORT_EMAIL,
+  YOUTUBE_CHANNEL_URL,
 } from "@/lib/branding";
-import { Facebook, Instagram, Mail } from "lucide-react";
+import { Mail, Youtube } from "lucide-react";
 
 const footerNavLinks = [
   { label: "Practice Test", href: "/practice-test" },
   { label: "Free sample", href: "/sample" },
   { label: "Free course", href: "/free-maryland-insurance-course" },
-  { label: "Features", href: "/#features" },
   { label: "Exam Guide", href: "/maryland-life-health-insurance-exam-requirements" },
   { label: "Pricing", href: "/pricing" },
   { label: "Sitemap", href: "/sitemap" },
   { label: "Create account", href: "/register" },
 ];
+
+const socialIconClass =
+  "flex h-9 w-9 items-center justify-center rounded-full border border-stone-600 text-stone-400 transition-colors hover:border-md-gold hover:text-md-gold";
 
 export default function SiteFooter() {
   return (
@@ -44,19 +48,22 @@ export default function SiteFooter() {
           </nav>
 
           <div className="flex gap-3 lg:justify-end">
-            {[
-              { Icon: Facebook, label: "Facebook" },
-              { Icon: Instagram, label: "Instagram" },
-              { Icon: Mail, label: "Email" },
-            ].map(({ Icon, label }) => (
-              <span
-                key={label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-stone-600 text-stone-400"
-                aria-label={label}
-              >
-                <Icon className="h-4 w-4" />
-              </span>
-            ))}
+            <a
+              href={YOUTUBE_CHANNEL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={socialIconClass}
+              aria-label="YouTube channel"
+            >
+              <Youtube className="h-4 w-4" />
+            </a>
+            <Link
+              href="/contact"
+              className={socialIconClass}
+              aria-label={`Contact support at ${SUPPORT_EMAIL}`}
+            >
+              <Mail className="h-4 w-4" />
+            </Link>
           </div>
         </div>
 

@@ -11,7 +11,6 @@ import { SIGN_UP_CTA } from "@/lib/subscription";
 const mainNavLinks = [
   { href: "/practice-test", label: "Practice Test" },
   { href: "/free-maryland-insurance-course", label: "Free Course" },
-  { href: "/#features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#upload-score-report", label: "Upload Results" },
 ];

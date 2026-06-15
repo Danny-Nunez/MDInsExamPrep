@@ -1,7 +1,9 @@
 import { formatDisplayName } from "@/lib/format-display-name";
 import { getAppUrl } from "@/lib/stripe";
-import { sendMailerSendEmail } from "@/lib/email/mailersend";
+import { contactFormUsesReplyTo, getContactToEmail, sendMailerSendEmail } from "@/lib/email/mailersend";
 import {
+  contactFormEmailHtml,
+  contactFormEmailText,
   passwordResetEmailHtml,
   passwordResetEmailText,
   subscriptionActiveEmailHtml,
@@ -62,6 +64,25 @@ export async function sendPasswordResetEmail(params: {
     subject: "Reset your Maryland Insurance Exam password",
     html: passwordResetEmailHtml({ name: displayName, resetUrl }),
     text: passwordResetEmailText({ name: displayName, resetUrl }),
+  });
+
+  return { sent: result.ok, error: result.error };
+}
+
+export async function sendContactFormEmail(params: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<{ sent: boolean; error?: string }> {
+  const result = await sendMailerSendEmail({
+    to: { email: getContactToEmail(), name: "Maryland Insurance Exam Support" },
+    ...(contactFormUsesReplyTo()
+      ? { replyTo: { email: params.email, name: params.name } }
+      : {}),
+    subject: `Contact form: ${params.subject}`,
+    html: contactFormEmailHtml(params),
+    text: contactFormEmailText(params),
   });
 
   return { sent: result.ok, error: result.error };

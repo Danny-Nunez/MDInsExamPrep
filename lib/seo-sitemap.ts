@@ -63,6 +63,12 @@ export const PUBLIC_SITEMAP_PAGES: PublicSitemapPage[] = [
   },
   { path: "/pricing", label: "Pricing", changeFrequency: "monthly", priority: 0.9 },
   {
+    path: "/contact",
+    label: "Contact",
+    changeFrequency: "monthly",
+    priority: 0.6,
+  },
+  {
     path: "/register",
     label: "Create account",
     changeFrequency: "monthly",

@@ -148,3 +148,52 @@ Status: Active
 Open your dashboard: ${params.dashboardUrl}
 `;
 }
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+export function contactFormEmailHtml(params: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): string {
+  const safeName = escapeHtml(params.name);
+  const safeEmail = escapeHtml(params.email);
+  const safeSubject = escapeHtml(params.subject);
+  const safeMessage = escapeHtml(params.message).replace(/\n/g, "<br/>");
+
+  return layout(`
+    <h1 style="margin:0 0 12px;font-size:22px;color:#1c1917;">New contact form message</h1>
+    <p style="margin:0 0 20px;color:#57534e;">Someone submitted the website contact form.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #f5f5f4;">
+      ${detailRow("Name", safeName)}
+      ${detailRow("Email", `<a href="mailto:${safeEmail}" style="color:#c8102e;">${safeEmail}</a>`)}
+      ${detailRow("Subject", safeSubject)}
+    </table>
+    <p style="margin:20px 0 8px;font-size:13px;font-weight:600;color:#78716c;text-transform:uppercase;letter-spacing:0.04em;">Message</p>
+    <p style="margin:0;color:#1c1917;font-size:15px;line-height:1.6;white-space:pre-wrap;">${safeMessage}</p>
+  `);
+}
+
+export function contactFormEmailText(params: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): string {
+  return `New contact form message
+
+Name: ${params.name}
+Email: ${params.email}
+Subject: ${params.subject}
+
+Message:
+${params.message}
+`;
+}

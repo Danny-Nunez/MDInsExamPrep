@@ -2,6 +2,7 @@
 
 import MarylandLogo from "@/components/MarylandLogo";
 import DashboardHeaderActions from "@/components/DashboardHeaderActions";
+import AITutorChat from "@/components/dashboard/AITutorChat";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import SiteFooter from "@/components/landing/SiteFooter";
 import Sidebar from "./Sidebar";
@@ -28,6 +29,8 @@ export default function DashboardLayout({
       </div>
 
       <MobileBottomNav />
+
+      <AITutorChat />
 
       <div className="hidden lg:block">
         <SiteFooter />
