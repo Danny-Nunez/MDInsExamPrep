@@ -30,7 +30,14 @@ export default function LandingNav() {
   return (
     <header className="sticky top-0 z-50 bg-md-black">
       <div className="landing-shell flex items-center justify-between gap-6 py-4">
-        <MarylandLogo href="/" size="md" wordmark darkNav />
+        <MarylandLogo
+          href="/"
+          size="sm"
+          wordmark
+          darkNav
+          imageClassName="translate-y-1"
+          imgClassName="max-lg:h-7 max-lg:w-7"
+        />
 
         <nav className="hidden items-center gap-8 lg:flex">
           <Link href={mainNavLinks[0].href} className="landing-nav-link-dark">

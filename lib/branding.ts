@@ -1,5 +1,5 @@
 /** Maryland coat of arms (decorative; not an official government endorsement) */
-export const LOGO_PATH = "/logo-no-title.png";
+export const LOGO_PATH = "/logov2.png";
 export const LOGO_ALT =
   "Maryland state seal used as a decorative brand mark";
 

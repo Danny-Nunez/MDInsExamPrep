@@ -20,6 +20,10 @@ type MarylandLogoProps = {
   /** Gold MARYLAND + white INSURANCE EXAM on dark nav */
   darkNav?: boolean;
   className?: string;
+  /** Extra classes on the logo image wrapper (e.g. vertical nudge) */
+  imageClassName?: string;
+  /** Extra classes on the logo image (e.g. responsive size) */
+  imgClassName?: string;
 };
 
 const sizes = {
@@ -37,20 +41,24 @@ export default function MarylandLogo({
   wordmark = false,
   darkNav = false,
   className = "",
+  imageClassName = "",
+  imgClassName = "",
 }: MarylandLogoProps) {
   const { width, height, imgClass, appText } = sizes[size];
   const taglineText = tagline === "full" ? APP_TAGLINE : APP_TAGLINE_SHORT;
 
   const content = (
     <div className={`flex min-w-0 items-center gap-2.5 ${className}`}>
-      <Image
-        src={LOGO_PATH}
-        alt={LOGO_ALT}
-        width={width}
-        height={height}
-        className={`shrink-0 object-contain ${imgClass}`}
-        priority={size === "lg"}
-      />
+      <span className={`inline-flex shrink-0 ${imageClassName}`}>
+        <Image
+          src={LOGO_PATH}
+          alt={LOGO_ALT}
+          width={width}
+          height={height}
+          className={`object-contain ${imgClass} ${imgClassName}`}
+          priority={size === "lg"}
+        />
+      </span>
       {showAppName && (
         <div
           className={`min-w-0 ${showTagline ? "max-w-[10rem] sm:max-w-[12rem]" : ""}`}
