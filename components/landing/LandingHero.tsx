@@ -11,7 +11,7 @@ type LandingHeroProps = {
 const trustItems = [
   "No Credit Card Required",
   "Instant Results",
-  "Trusted by Future Agents",
+  "Maryland-Specific Curriculum",
 ];
 
 export default function LandingHero({ sampleHref }: LandingHeroProps) {
@@ -29,6 +29,14 @@ export default function LandingHero({ sampleHref }: LandingHeroProps) {
               className="h-full w-auto max-w-none"
               sizes="(max-width: 1024px) 100vw, 42vw"
             />
+            <span className="absolute left-[8%] top-[42%] z-10 inline-flex items-center gap-1.5 rounded-full border border-md-gold/20 bg-white px-4 py-2.5 text-sm font-semibold text-md-black shadow-[0_8px_24px_rgba(0,0,0,0.08),0_0_20px_rgba(255,210,0,0.25)] xl:left-[10%] xl:top-[36%]">
+              <Check
+                className="h-3.5 w-3.5 shrink-0 text-md-gold"
+                strokeWidth={2.5}
+                aria-hidden
+              />
+              Maryland Licensed
+            </span>
           </div>
         </div>
       </div>
