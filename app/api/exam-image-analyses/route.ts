@@ -5,90 +5,16 @@ import {
   getExamImageAnalysesForUser,
   saveExamImageAnalysis,
 } from "@/lib/db/exams";
-import { DOMAINS } from "@/types/quiz";
+import {
+  buildPrometricScoreReportPrompt,
+  parsePrometricScoreReportResponse,
+} from "@/lib/prometric-score-report";
 import type { ExamImageWeakArea } from "@/types/quiz";
-
-const VALID_DOMAINS = new Set<string>(DOMAINS);
 
 type AnalyzeBody = {
   imageDataUrl?: string;
   fileName?: string;
 };
-
-type AiResponse = {
-  summary: string;
-  weakAreas: {
-    domain: string;
-    confidence: number;
-    issue: string;
-    recommendation: string;
-  }[];
-};
-
-function buildPrompt(): string {
-  return `You are analyzing a screenshot/photo of an insurance licensing exam result report for Maryland Life, Accident, Health, and Sickness producer prep.
-
-Extract likely weak areas from the visible result details.
-Use ONLY these domains:
-${DOMAINS.join(", ")}
-
-Return strict JSON only with this shape:
-{
-  "summary": "short paragraph",
-  "weakAreas": [
-    {
-      "domain": "string",
-      "confidence": 0.0,
-      "issue": "string",
-      "recommendation": "string"
-    }
-  ]
-}
-
-Rules:
-- confidence must be 0 to 1
-- include up to 5 weak areas
-- if no clear weak areas are visible, still return summary and an empty weakAreas array
-- do not include markdown`;
-}
-
-function parseAiResponse(content: string): AiResponse {
-  const trimmed = content.trim();
-  const jsonStr = trimmed.startsWith("```")
-    ? trimmed.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "")
-    : trimmed;
-
-  const parsed = JSON.parse(jsonStr) as Partial<AiResponse>;
-  if (!parsed.summary || typeof parsed.summary !== "string") {
-    throw new Error("Invalid summary in AI response");
-  }
-
-  const weakAreas = Array.isArray(parsed.weakAreas) ? parsed.weakAreas : [];
-  const validated = weakAreas
-    .filter((w) => w && typeof w === "object")
-    .map((w) => ({
-      domain: String(w.domain ?? ""),
-      confidence: Number(w.confidence ?? 0),
-      issue: String(w.issue ?? ""),
-      recommendation: String(w.recommendation ?? ""),
-    }))
-    .filter(
-      (w) =>
-        VALID_DOMAINS.has(w.domain) &&
-        w.issue.length > 0 &&
-        w.recommendation.length > 0
-    )
-    .map((w) => ({
-      ...w,
-      confidence: Math.max(0, Math.min(1, w.confidence)),
-    }))
-    .slice(0, 5);
-
-  return {
-    summary: parsed.summary.trim(),
-    weakAreas: validated,
-  };
-}
 
 export async function GET() {
   const auth = await requireUser();
@@ -133,19 +59,19 @@ export async function POST(request: Request) {
     const openai = new OpenAI({ apiKey });
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      temperature: 0.2,
+      temperature: 0.1,
       response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
           content:
-            "You analyze exam result screenshots and return only valid JSON.",
+            "You read Prometric/Maryland insurance exam score reports and return only valid JSON. Transcribe domain names exactly as printed.",
         },
         {
           role: "user",
           content: [
-            { type: "text", text: buildPrompt() },
-            { type: "image_url", image_url: { url: imageDataUrl } },
+            { type: "text", text: buildPrometricScoreReportPrompt() },
+            { type: "image_url", image_url: { url: imageDataUrl, detail: "high" } },
           ],
         },
       ],
@@ -159,7 +85,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const parsed = parseAiResponse(content);
+    const parsed = parsePrometricScoreReportResponse(content);
     const analysisId = await saveExamImageAnalysis(auth.userId, {
       sourceImageName: fileName,
       summary: parsed.summary,

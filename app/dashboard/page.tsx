@@ -108,10 +108,16 @@ export default function DashboardPage() {
     new Set(
       imageAnalyses
         .flatMap((a) => a.weakAreas)
-        .sort((a, b) => b.confidence - a.confidence)
-        .map((w) => w.domain)
+        .sort((a, b) => (a.scorePercent ?? 100) - (b.scorePercent ?? 100))
+        .map((w) =>
+          w.reportDomain
+            ? w.scorePercent != null
+              ? `${w.reportDomain} (${w.scorePercent}%)`
+              : w.reportDomain
+            : w.domain
+        )
     )
-  ).slice(0, 6);
+  ).slice(0, 10);
 
   const upcomingStudyItems = useMemo(
     () =>
@@ -121,19 +127,51 @@ export default function DashboardPage() {
     [subdomainPerformance]
   );
 
-  const studyPlanAreas = useMemo(
-    () =>
-      upcomingStudyItems.length > 0
-        ? upcomingStudyItems
-        : [...weakest].filter((a) => a.total > 0),
-    [upcomingStudyItems, weakest]
-  );
+  const inferredStudyAreas = useMemo(() => {
+    const seen = new Set<string>();
+    const areas: CategoryPerformance[] = [];
+    for (const analysis of imageAnalyses) {
+      for (const w of analysis.weakAreas) {
+        const key = w.reportDomain ?? w.domain;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        areas.push({
+          domain: w.domain,
+          subdomain: w.reportDomain,
+          correct: 0,
+          total: 1,
+          percentage:
+            w.scorePercent ?? Math.round((1 - w.confidence) * 100),
+        });
+      }
+    }
+    return areas.sort((a, b) => a.percentage - b.percentage);
+  }, [imageAnalyses]);
+
+  const studyPlanAreas = useMemo(() => {
+    if (upcomingStudyItems.length > 0) return upcomingStudyItems;
+    const fromPractice = [...weakest].filter((a) => a.total > 0);
+    const merged = [...fromPractice];
+    for (const area of inferredStudyAreas) {
+      if (!merged.some((a) => a.domain === area.domain)) {
+        merged.push(area);
+      }
+    }
+    return merged.sort((a, b) => a.percentage - b.percentage);
+  }, [upcomingStudyItems, weakest, inferredStudyAreas]);
 
   const practiceStreak = computePracticeStreak(attempts);
   const showStreak = shouldShowPracticeStreak(practiceStreak, isLoggedIn);
 
   const handleAnalysisComplete = (analysis: ExamImageAnalysis) => {
-    setImageAnalyses((prev) => [analysis, ...prev].slice(0, 10));
+    setImageAnalyses((prev) => {
+      const withoutDup = prev.filter((a) => a.id !== analysis.id);
+      return [analysis, ...withoutDup].slice(0, 10);
+    });
+  };
+
+  const handleAnalysisDeleted = (analysisId: string) => {
+    setImageAnalyses((prev) => prev.filter((a) => a.id !== analysisId));
   };
 
   if (!mounted || authLoading) {
@@ -241,7 +279,11 @@ export default function DashboardPage() {
             />
           </div>
           <div className="flex flex-col gap-4 lg:col-span-4">
-            <DashboardUploadCard onAnalysisComplete={handleAnalysisComplete} />
+            <DashboardUploadCard
+              analyses={imageAnalyses}
+              onAnalysisComplete={handleAnalysisComplete}
+              onAnalysisDeleted={handleAnalysisDeleted}
+            />
             <DashboardQuickLinks />
           </div>
         </div>

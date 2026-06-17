@@ -219,6 +219,23 @@ export async function getExamImageAnalysesForUser(
   }));
 }
 
+export async function deleteExamImageAnalysis(
+  userId: string,
+  analysisId: string
+): Promise<boolean> {
+  if (!ObjectId.isValid(analysisId)) return false;
+
+  const db = await getDb();
+  const result = await db
+    .collection<ExamImageAnalysisDocument>(COLLECTIONS.examImageAnalyses)
+    .deleteOne({
+      _id: new ObjectId(analysisId),
+      userId: new ObjectId(userId),
+    });
+
+  return result.deletedCount === 1;
+}
+
 export async function getRecentLearningContext(userId: string): Promise<{
   recentAttempts: Pick<ExamAttempt, "date" | "percentage" | "domainScores" | "answers">[];
   recentImageAnalyses: Pick<ExamImageAnalysis, "createdAt" | "weakAreas" | "summary">[];

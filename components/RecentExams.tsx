@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Upload, Loader2 } from "lucide-react";
 import { getStatusLabel } from "@/lib/domains";
+import { weakAreaDisplayLabel } from "@/lib/prometric-score-report";
 import { setActiveQuiz } from "@/lib/storage";
 import type { ExamAttempt, ExamImageAnalysis } from "@/types/quiz";
 
@@ -254,10 +255,11 @@ export default function RecentExams({
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {analysis.weakAreas.slice(0, 3).map((w) => (
                       <span
-                        key={`${analysis.id}-${w.domain}`}
+                        key={`${analysis.id}-${w.reportDomain ?? w.domain}`}
                         className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800"
+                        title={w.issue}
                       >
-                        {w.domain}
+                        {weakAreaDisplayLabel(w)}
                       </span>
                     ))}
                   </div>

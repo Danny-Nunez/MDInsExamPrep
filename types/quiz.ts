@@ -76,7 +76,12 @@ export type CategoryPerformance = {
 };
 
 export type ExamImageWeakArea = {
+  /** Study domain used for quiz generation */
   domain: string;
+  /** Exact label from the Prometric score report, when available */
+  reportDomain?: string;
+  /** Section score from the report (0–100) */
+  scorePercent?: number;
   confidence: number;
   issue: string;
   recommendation: string;

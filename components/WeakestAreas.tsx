@@ -32,18 +32,19 @@ export default function WeakestAreas({
         </Link>
       </div>
       <div className="flex-1 p-4 sm:p-5">
-        {weak.length === 0 ? (
+        {weak.length === 0 && inferredDomains.length === 0 ? (
           <p className="text-sm text-slate-500">
-            Complete a practice exam to identify weak areas.
+            Complete a practice exam or upload a score report to identify weak
+            areas.
           </p>
-        ) : (
+        ) : weak.length === 0 ? null : (
           <DomainProgress items={weak} compact />
         )}
 
-        {inferredDomains.length > 0 && !compact && (
-          <div className="mt-4 border-t border-slate-100 pt-3">
+        {inferredDomains.length > 0 && (
+          <div className={`${weak.length > 0 ? "mt-4 border-t border-slate-100 pt-3" : ""}`}>
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              AI-inferred from uploaded results
+              From uploaded exam
             </p>
             <div className="flex flex-wrap gap-1.5">
               {inferredDomains.map((domain) => (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
 import DomainProgress from "@/components/DomainProgress";
 import StudyAreaGroups from "@/components/StudyAreaGroups";
+import StudyAreasPrometricPanel from "@/components/StudyAreasPrometricPanel";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   aggregateSubdomainPerformance,
@@ -12,7 +13,7 @@ import {
 } from "@/lib/studyAreas";
 import { getCategoryPerformance, getExamAttempts } from "@/lib/storage";
 import { DOMAINS } from "@/types/quiz";
-import type { CategoryPerformance } from "@/types/quiz";
+import type { CategoryPerformance, ExamImageAnalysis } from "@/types/quiz";
 
 function buildEmptyPerformance(): CategoryPerformance[] {
   return DOMAINS.map((domain) => ({
@@ -31,19 +32,36 @@ export default function StudyAreasPage() {
   const [subdomainAreas, setSubdomainAreas] = useState<CategoryPerformance[]>(
     []
   );
+  const [imageAnalyses, setImageAnalyses] = useState<ExamImageAnalysis[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
-    Promise.all([
-      getCategoryPerformance(isLoggedIn),
-      getExamAttempts(isLoggedIn),
-    ])
-      .then(([perf, attempts]) => {
+
+    async function load() {
+      try {
+        const [perf, attempts] = await Promise.all([
+          getCategoryPerformance(isLoggedIn),
+          getExamAttempts(isLoggedIn),
+        ]);
         setPerformance(perf.length > 0 ? perf : buildEmptyPerformance());
         setSubdomainAreas(aggregateSubdomainPerformance(attempts));
-      })
-      .finally(() => setMounted(true));
+
+        if (isLoggedIn) {
+          const res = await fetch("/api/exam-image-analyses", {
+            credentials: "include",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setImageAnalyses((data.analyses as ExamImageAnalysis[]) ?? []);
+          }
+        }
+      } finally {
+        setMounted(true);
+      }
+    }
+
+    void load();
   }, [isLoggedIn, authLoading]);
 
   const groupedAreas = useMemo(
@@ -74,6 +92,10 @@ export default function StudyAreasPage() {
         .sort((a, b) => b.percentage - a.percentage)
         .slice(0, 5),
     [subdomainAreas]
+  );
+
+  const hasPrometricWeakAreas = imageAnalyses.some(
+    (a) => a.weakAreas.length > 0
   );
 
   if (!mounted || authLoading) {
@@ -118,12 +140,18 @@ export default function StudyAreasPage() {
           </div>
 
           <div className="space-y-6">
+            <StudyAreasPrometricPanel analyses={imageAnalyses} />
+
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
               <h3 className="font-semibold text-amber-900">Focus First</h3>
+              <p className="mt-1 text-xs text-amber-800/80">
+                From in-app practice exams
+              </p>
               {weakSubdomains.length === 0 && weakDomains.length === 0 ? (
                 <p className="mt-2 text-sm text-amber-800">
-                  No weak topics yet. Take a practice exam to build your study
-                  list.
+                  {hasPrometricWeakAreas
+                    ? "No weak practice topics yet — use the Prometric report above to study first."
+                    : "No weak topics yet. Take a practice exam to build your study list."}
                 </p>
               ) : (
                 <ul className="mt-2 space-y-1 text-sm text-amber-900">
