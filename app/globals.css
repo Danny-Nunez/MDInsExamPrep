@@ -215,6 +215,54 @@ body {
     @apply absolute inset-y-0 right-0 block h-full w-auto max-w-none object-right object-bottom sm:min-h-[280px] lg:min-h-0;
   }
 
+  @keyframes landing-hero-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes landing-hero-slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(2.75rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .landing-hero-animate-title {
+    animation: landing-hero-fade-in 0.65s ease-out both;
+  }
+
+  .landing-hero-animate-subtitle {
+    animation: landing-hero-fade-in 0.65s ease-out 0.18s both;
+  }
+
+  .landing-hero-animate-actions {
+    animation: landing-hero-fade-in 0.65s ease-out 0.38s both;
+  }
+
+  .landing-hero-animate-media {
+    animation: landing-hero-slide-in-right 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s
+      both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-hero-animate-title,
+    .landing-hero-animate-subtitle,
+    .landing-hero-animate-actions,
+    .landing-hero-animate-media {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   /* Nav wordmark: stretch MARYLAND to match INSURANCE EXAM width */
   .landing-wordmark-stretch {
     @apply block w-full text-[11px] font-bold uppercase tracking-normal sm:text-xs;
