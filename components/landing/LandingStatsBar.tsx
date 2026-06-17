@@ -1,11 +1,11 @@
-import { BookOpen, MapPin, TrendingUp, Users } from "lucide-react";
+import { BookOpen, HelpCircle, Play, Shield } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 const stats: { icon: LucideIcon; value: string; label: string }[] = [
-  { icon: Users, value: "2,500+", label: "Students Prepared" },
-  { icon: TrendingUp, value: "86%", label: "Pass Rate Improvement" },
-  { icon: BookOpen, value: "2,000+", label: "Practice Questions" },
-  { icon: MapPin, value: "100%", label: "Focused on Maryland Exam" },
+  { icon: BookOpen, value: "15", label: "Modules" },
+  { icon: Play, value: "100+", label: "Lessons" },
+  { icon: HelpCircle, value: "1,000+", label: "Practice Questions" },
+  { icon: Shield, value: "Maryland", label: "Specific" },
 ];
 
 export default function LandingStatsBar() {

@@ -119,10 +119,18 @@ function MockupSparkline() {
   );
 }
 
-export default function LandingHeroMockup() {
+export default function LandingHeroMockup({ embedded = false }: { embedded?: boolean }) {
   return (
-    <div className="w-full max-w-full overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-xl shadow-stone-300/50">
-      <div className="flex min-h-0 flex-col md:min-h-[640px] md:flex-row">
+    <div
+      className={
+        embedded
+          ? "h-full w-full overflow-hidden bg-stone-50"
+          : "w-full max-w-full overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-xl shadow-stone-300/50"
+      }
+    >
+      <div
+        className={`flex min-h-0 flex-col ${embedded ? "h-full min-h-[420px]" : "md:min-h-[640px]"} md:flex-row`}
+      >
         <div className="hidden shrink-0 md:flex">
           <LandingMockupSidebar />
         </div>

@@ -14,6 +14,7 @@ import type { ComponentType } from "react";
 
 type IconProps = {
   className?: string;
+  arrowColor?: string;
 };
 
 const defaultClass = "h-14 w-14 shrink-0 sm:h-16 sm:w-16";
@@ -53,8 +54,11 @@ export function FeatureBrainIcon({ className = defaultClass }: IconProps) {
   );
 }
 
-/** /public/upload.svg — cloud Maryland red, arrow black */
-export function FeatureCloudUploadIcon({ className = defaultClass }: IconProps) {
+/** /public/upload.svg — cloud Maryland red, arrow black (override arrowColor on dark bg) */
+export function FeatureCloudUploadIcon({
+  className = defaultClass,
+  arrowColor = BLACK,
+}: IconProps) {
   return (
     <svg
       className={className}
@@ -71,7 +75,7 @@ export function FeatureCloudUploadIcon({ className = defaultClass }: IconProps) 
       />
       <path
         d={UPLOAD_ARROW_PATH}
-        fill={BLACK}
+        fill={arrowColor}
         fillRule="evenodd"
         clipRule="evenodd"
       />

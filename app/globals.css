@@ -212,7 +212,7 @@ body {
   }
 
   .landing-hero-media img {
-    @apply absolute top-0 right-0 block h-full min-h-[220px] w-auto max-w-none sm:min-h-[280px] lg:min-h-0;
+    @apply absolute inset-y-0 right-0 block h-full w-auto max-w-none object-right object-bottom sm:min-h-[280px] lg:min-h-0;
   }
 
   /* Nav wordmark: stretch MARYLAND to match INSURANCE EXAM width */
@@ -221,5 +221,34 @@ body {
     text-align: justify;
     text-align-last: justify;
     text-justify: inter-character;
+  }
+
+  @keyframes upload-connector-fill {
+    0% {
+      transform: scaleX(0);
+      opacity: 0.45;
+    }
+    55% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 0.45;
+    }
+  }
+
+  .upload-step-connector-fill {
+    width: 100%;
+    transform-origin: left center;
+    animation: upload-connector-fill 2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .upload-step-connector-fill {
+      animation: none;
+      transform: scaleX(1);
+      opacity: 1;
+    }
   }
 }

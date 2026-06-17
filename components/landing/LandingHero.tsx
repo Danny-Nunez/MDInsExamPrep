@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import LandingHowItWorksButton from "@/components/landing/LandingHowItWorksButton";
+import LandingHeroStatsBar from "@/components/landing/LandingHeroStatsBar";
 
 type LandingHeroProps = {
   sampleHref: string;
@@ -15,9 +16,25 @@ const trustItems = [
 
 export default function LandingHero({ sampleHref }: LandingHeroProps) {
   return (
-    <section className="overflow-x-clip border-b border-stone-200 bg-white lg:overflow-x-visible">
-      <div className="landing-shell relative grid items-stretch gap-8 overflow-visible lg:grid-cols-[minmax(0,1.15fr)_1fr] lg:gap-10 xl:gap-14">
-        <div className="relative z-10 flex min-w-0 flex-col justify-center py-10 sm:py-12 lg:py-14 xl:py-16">
+    <section className="relative overflow-x-clip border-b border-stone-200 bg-white pb-8 sm:pb-10 lg:overflow-x-visible lg:pb-20">
+      <div className="pointer-events-none absolute inset-x-0 top-0 bottom-0 z-0 hidden lg:block">
+        <div className="landing-shell relative h-full">
+          <div className="landing-hero-media absolute top-0 bottom-0 right-0 -ml-10 w-[calc(50%+2.5rem)] xl:-ml-14 xl:w-[calc(50%+3.5rem)]">
+            <Image
+              src="/hero.png"
+              alt="Maryland State House with Maryland flag-inspired design"
+              width={1402}
+              height={1122}
+              priority
+              className="h-full w-auto max-w-none"
+              sizes="(max-width: 1024px) 100vw, 42vw"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="landing-shell relative z-10 grid items-stretch gap-8 overflow-visible lg:grid-cols-[minmax(0,1.15fr)_1fr] lg:gap-10 xl:gap-14">
+        <div className="relative flex min-w-0 flex-col justify-center py-10 sm:py-12 lg:py-14 xl:py-16">
           <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-md-black sm:text-5xl lg:text-[3.25rem]">
             Pass the Maryland{" "}
             <span className="text-md-red">Life &amp; Health Insurance</span>{" "}
@@ -58,16 +75,16 @@ export default function LandingHero({ sampleHref }: LandingHeroProps) {
           </div>
         </div>
 
-        <div className="landing-hero-media relative hidden min-h-0 w-full lg:block lg:-ml-10 lg:h-full lg:w-[calc(100%+2.5rem)] lg:self-stretch xl:-ml-14 xl:w-[calc(100%+3.5rem)]">
-          <Image
-            src="/hero.png"
-            alt="Maryland State House with Maryland flag-inspired design"
-            width={1402}
-            height={1122}
-            priority
-            className="h-full w-auto max-w-none"
-            sizes="(max-width: 1024px) 100vw, 42vw"
-          />
+        <div className="hidden min-w-0 lg:block" aria-hidden />
+      </div>
+
+      <div className="landing-shell relative z-10 mt-8 sm:mt-10 lg:hidden">
+        <LandingHeroStatsBar />
+      </div>
+
+      <div className="landing-shell pointer-events-none absolute inset-x-0 bottom-0 z-20 hidden translate-y-1/2 lg:block">
+        <div className="pointer-events-auto">
+          <LandingHeroStatsBar />
         </div>
       </div>
     </section>

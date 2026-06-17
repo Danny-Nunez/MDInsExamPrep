@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CourseHubView from "@/components/course/CourseHubView";
+import LandingFreeCourseCarousel from "@/components/landing/LandingFreeCourseCarousel";
 import { absoluteUrl } from "@/lib/seo-sitemap";
 import { COURSE_BASE_PATH, MARYLAND_COURSE } from "@/lib/course";
 
@@ -18,5 +19,12 @@ export const metadata: Metadata = {
 };
 
 export default function FreeMarylandInsuranceCoursePage() {
-  return <CourseHubView />;
+  return (
+    <>
+      <CourseHubView />
+      <div className="relative left-1/2 mt-10 w-screen -translate-x-1/2">
+        <LandingFreeCourseCarousel />
+      </div>
+    </>
+  );
 }

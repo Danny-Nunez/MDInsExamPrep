@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LandingFreeCourseCarousel from "@/components/landing/LandingFreeCourseCarousel";
 import MarketingPageShell, {
   marketingMetadata,
 } from "@/components/landing/MarketingPageShell";
@@ -30,6 +31,10 @@ export default function PracticeTestPage() {
         >
           {SIGN_UP_CTA}
         </Link>
+      </div>
+
+      <div className="relative left-1/2 mt-12 w-screen -translate-x-1/2">
+        <LandingFreeCourseCarousel />
       </div>
     </MarketingPageShell>
   );
