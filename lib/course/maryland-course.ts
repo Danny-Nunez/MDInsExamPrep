@@ -1,5 +1,10 @@
 import { COURSE_BASE_PATH } from "@/lib/course/constants";
 import { LESSON_4_1_TRANSCRIPT } from "@/lib/course/lessons/lesson-4-1";
+import { LESSON_4_4_KNOWLEDGE_CHECK } from "@/lib/course/lessons/lesson-4-4-knowledge-check";
+import {
+  LESSON_4_4_DESCRIPTION,
+  LESSON_4_4_TRANSCRIPT,
+} from "@/lib/course/lessons/lesson-4-4";
 import { LESSON_4_3_KNOWLEDGE_CHECK } from "@/lib/course/lessons/lesson-4-3-knowledge-check";
 import {
   LESSON_4_3_DESCRIPTION,
@@ -162,7 +167,15 @@ export const MARYLAND_COURSE: MarylandCourse = {
         knowledgeCheck: LESSON_4_3_KNOWLEDGE_CHECK,
         estimatedMinutes: 4,
       },
-      { id: "4.4", title: "Fixed vs Variable Annuities Deep Dive" },
+      {
+        id: "4.4",
+        title: "Fixed vs Variable Annuities Deep Dive",
+        youtubeId: "-g8_t0zACaw",
+        description: LESSON_4_4_DESCRIPTION,
+        transcript: LESSON_4_4_TRANSCRIPT,
+        knowledgeCheck: LESSON_4_4_KNOWLEDGE_CHECK,
+        estimatedMinutes: 3,
+      },
       { id: "4.5", title: "Immediate vs Deferred Annuities Deep Dive" },
       { id: "4.6", title: "Accumulation vs Annuitization" },
       { id: "4.7", title: "Owner vs Annuitant vs Beneficiary" },
